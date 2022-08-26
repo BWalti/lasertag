@@ -7,12 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "src\Server\Server
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "src\Client\Client.csproj", "{395612A0-BF68-488A-8A4A-E17310327476}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Grains", "src\Grains\Grains.csproj", "{9601CB9E-8C0C-4BD3-AD06-BC031211B3CA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrainInterfaces", "src\GrainInterfaces\GrainInterfaces.csproj", "{E9D7CF71-0420-4D5A-A99D-11EC6C083A51}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C2D040C6-3015-4CE8-95C1-B193223A21A5}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
@@ -20,19 +18,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{52FD4493-DF3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{38E3CDCD-A89A-47C0-ADFD-726E4A9955AB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Grains.Tests", "tests\Lasertag.Grains.Tests\Lasertag.Grains.Tests.csproj", "{A5CF61FF-4F3F-4767-9DF8-173F943D62CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Tests", "tests\Lasertag.Tests\Lasertag.Tests.csproj", "{A5CF61FF-4F3F-4767-9DF8-173F943D62CB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.EventSourcing.CustomStorage.Marten", "src\Orleans.EventSourcing.CustomStorage.Marten\Orleans.EventSourcing.CustomStorage.Marten.csproj", "{921CE2EA-9463-4227-83AF-9C783D2B7101}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lasertag.DomainModel", "src\Lasertag.DomainModel\Lasertag.DomainModel.csproj", "{B5E3E2CB-F732-4F62-8A19-5CE4E89B5015}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.DomainModel", "src\Lasertag.DomainModel\Lasertag.DomainModel.csproj", "{B5E3E2CB-F732-4F62-8A19-5CE4E89B5015}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lasertag.Api", "src\Lasertag.Api\Lasertag.Api.csproj", "{46D1248C-E72D-49C3-AEE4-E110E23F12DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Api", "src\Lasertag.Api\Lasertag.Api.csproj", "{46D1248C-E72D-49C3-AEE4-E110E23F12DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lasertag.Manager", "src\Lasertag.Manager\Lasertag.Manager.csproj", "{644A9D9D-B64D-4474-9C1C-5941F02AA16D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "archive", "archive", "{D726D87F-542D-4C86-9BB3-91CFD0F7BEE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Manager", "src\Lasertag.Manager\Lasertag.Manager.csproj", "{644A9D9D-B64D-4474-9C1C-5941F02AA16D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "build", "build\build.csproj", "{51045D5F-198C-4076-B219-AD8923C81B74}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build", "_build", "{BE0FD097-E00E-4D2E-9D99-53008CCA3E11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,8 +38,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{51045D5F-198C-4076-B219-AD8923C81B74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{51045D5F-198C-4076-B219-AD8923C81B74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -50,14 +46,6 @@ Global
 		{395612A0-BF68-488A-8A4A-E17310327476}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{395612A0-BF68-488A-8A4A-E17310327476}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{395612A0-BF68-488A-8A4A-E17310327476}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9601CB9E-8C0C-4BD3-AD06-BC031211B3CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9601CB9E-8C0C-4BD3-AD06-BC031211B3CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9601CB9E-8C0C-4BD3-AD06-BC031211B3CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9601CB9E-8C0C-4BD3-AD06-BC031211B3CA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E9D7CF71-0420-4D5A-A99D-11EC6C083A51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E9D7CF71-0420-4D5A-A99D-11EC6C083A51}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E9D7CF71-0420-4D5A-A99D-11EC6C083A51}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E9D7CF71-0420-4D5A-A99D-11EC6C083A51}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A5CF61FF-4F3F-4767-9DF8-173F943D62CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5CF61FF-4F3F-4767-9DF8-173F943D62CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5CF61FF-4F3F-4767-9DF8-173F943D62CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -78,6 +66,8 @@ Global
 		{644A9D9D-B64D-4474-9C1C-5941F02AA16D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{644A9D9D-B64D-4474-9C1C-5941F02AA16D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{644A9D9D-B64D-4474-9C1C-5941F02AA16D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51045D5F-198C-4076-B219-AD8923C81B74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51045D5F-198C-4076-B219-AD8923C81B74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,13 +75,12 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 		{395612A0-BF68-488A-8A4A-E17310327476} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
-		{9601CB9E-8C0C-4BD3-AD06-BC031211B3CA} = {D726D87F-542D-4C86-9BB3-91CFD0F7BEE2}
-		{E9D7CF71-0420-4D5A-A99D-11EC6C083A51} = {D726D87F-542D-4C86-9BB3-91CFD0F7BEE2}
 		{A5CF61FF-4F3F-4767-9DF8-173F943D62CB} = {38E3CDCD-A89A-47C0-ADFD-726E4A9955AB}
 		{921CE2EA-9463-4227-83AF-9C783D2B7101} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 		{B5E3E2CB-F732-4F62-8A19-5CE4E89B5015} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 		{46D1248C-E72D-49C3-AEE4-E110E23F12DE} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 		{644A9D9D-B64D-4474-9C1C-5941F02AA16D} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
+		{51045D5F-198C-4076-B219-AD8923C81B74} = {BE0FD097-E00E-4D2E-9D99-53008CCA3E11}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2CB5560A-7F9B-4A01-85A3-F95B4DC96810}
