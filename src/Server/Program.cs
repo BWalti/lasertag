@@ -26,10 +26,10 @@ host.UseOrleans((_, builder) =>
 host.ConfigureLogging(builder =>
 {
     builder
-        .AddFilter("Microsoft", LogLevel.Warning)   // generic host lifecycle messages
-        .AddFilter("Orleans", LogLevel.Information)     // suppress status dumps
-        .AddFilter("Runtime", LogLevel.Warning)     // also an Orleans prefix
-        .AddDebug()                                 // VS Debug window
+        .AddFilter("Microsoft", LogLevel.Warning) // generic host lifecycle messages
+        .AddFilter("Orleans", LogLevel.Information) // suppress status dumps
+        .AddFilter("Runtime", LogLevel.Warning) // also an Orleans prefix
+        .AddDebug() // VS Debug window
         .AddConsole();
 });
 

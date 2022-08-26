@@ -7,10 +7,8 @@ public class EventSourcedGrain<TDomainModel, TDomainState, TEventBase>
     where TDomainState : class, TDomainModel, new()
     where TEventBase : class
 {
-    public Task<TDomainModel> GetManagedState()
-    {
-        return Task.FromResult((TDomainModel)State);
-    }
+    public Task<TDomainModel> GetManagedState() =>
+        Task.FromResult((TDomainModel)State);
 
     public new Task RaiseEvent<TEvent>(TEvent @event)
         where TEvent : TEventBase
@@ -27,16 +25,12 @@ public class EventSourcedGrain<TDomainModel, TDomainState, TEventBase>
     }
 
     public new Task<bool> RaiseConditionalEvent<TEvent>(TEvent @event)
-        where TEvent : TEventBase
-    {
-        return base.RaiseConditionalEvent(@event);
-    }
+        where TEvent : TEventBase =>
+        base.RaiseConditionalEvent(@event);
 
     public new Task<bool> RaiseConditionalEvents<TEvent>(IEnumerable<TEvent> events)
-        where TEvent : TEventBase
-    {
-        return base.RaiseConditionalEvents(events);
-    }
+        where TEvent : TEventBase =>
+        base.RaiseConditionalEvents(events);
 
     public new async Task ConfirmEvents()
     {

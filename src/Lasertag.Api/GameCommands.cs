@@ -22,7 +22,9 @@ public class GameCommands : Grain, IGameCommands
         return await EventRaiser.RaiseEventWithChecks(gameId, game =>
         {
             if (game.Status != GameStatus.None)
+            {
                 throw new InvalidStateException("Can only Initialize game once after application start!");
+            }
 
             return new GameInitialized(gameId);
         });
@@ -33,7 +35,9 @@ public class GameCommands : Grain, IGameCommands
         return await EventRaiser.RaiseEventWithChecks(gameId, game =>
         {
             if (game.Status != GameStatus.Initialized)
+            {
                 throw new InvalidStateException("Connecting GameSets is only possible when Game is initialized!");
+            }
 
             return new GameSetConnected(gameSetId);
         });
@@ -44,16 +48,24 @@ public class GameCommands : Grain, IGameCommands
         return await EventRaiser.RaiseEventWithChecks(gameId, game =>
         {
             if (game.Status != GameStatus.LobyOpened)
+            {
                 throw new InvalidStateException("Game is not ready for players!");
+            }
 
             if (game.ConnectedGameSets.All(gs => gs.GameSetId != gameSetId))
+            {
                 throw new InvalidOperationException("This GameSet is unknown!");
+            }
 
             if (game.ActiveGameSets.Any(gs => gs.GameSetId == gameSetId))
+            {
                 throw new InvalidOperationException("This GameSet is already active!");
+            }
 
             if (game.ActiveGameSets.Any(gs => gs.PlayerId == playerId))
+            {
                 throw new InvalidOperationException("This Player is already active!");
+            }
 
             return new GameSetActivated(playerId, gameSetId);
         });
@@ -64,7 +76,9 @@ public class GameCommands : Grain, IGameCommands
         return await EventRaiser.RaiseEventWithChecks(gameId, game =>
         {
             if (game.Status != GameStatus.Initialized && game.Status != GameStatus.GameFinished)
+            {
                 throw new InvalidStateException("Lobby cannot be created currently!");
+            }
 
             var groups = game.ConnectedGameSets
                 .Select((s, i) => new { s, i })
@@ -85,9 +99,12 @@ public class GameCommands : Grain, IGameCommands
         return EventRaiser.RaiseEventWithChecks(gameId, _ => new GameStarted());
     }
 
-    private static GroupColor GetGameColor(int index)
+    static GroupColor GetGameColor(int index)
     {
-        if (index > 8) throw new InvalidOperationException("We do only support up to 8 groups (colors)");
+        if (index > 8)
+        {
+            throw new InvalidOperationException("We do only support up to 8 groups (colors)");
+        }
 
         return (GroupColor)(index - 1);
     }

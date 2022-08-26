@@ -6,7 +6,7 @@ public class MartenJournaledGrainAdapter<TState, TEvent>
     where TState : class, new()
     where TEvent : class
 {
-    private readonly IDocumentStore _store;
+    readonly IDocumentStore _store;
 
     public MartenJournaledGrainAdapter(IDocumentStore store)
     {
@@ -21,7 +21,9 @@ public class MartenJournaledGrainAdapter<TState, TEvent>
 
         var state = default(TState);
         if (stream.Any())
+        {
             state = await session.Events.AggregateStreamAsync<TState>(id);
+        }
 
         state ??= new TState();
         return new KeyValuePair<int, TState>(stream.Count, state);
@@ -32,12 +34,19 @@ public class MartenJournaledGrainAdapter<TState, TEvent>
         await using var session = _store.OpenSession();
 
         var stream = await session.Events.FetchStreamAsync(id);
-        if (stream.Count != expectedversion) return false;
+        if (stream.Count != expectedversion)
+        {
+            return false;
+        }
 
         if (stream.Count == 0)
+        {
             session.Events.StartStream<TState>(id, updates);
+        }
         else
+        {
             await session.Events.AppendExclusive(id, updates.Cast<object>().ToArray());
+        }
 
         await session.SaveChangesAsync();
         return true;

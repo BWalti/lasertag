@@ -1,9 +1,9 @@
-﻿using Lasertag.DomainModel.DomainEvents;
+﻿using System.Runtime.CompilerServices;
 using Lasertag.DomainModel;
+using Lasertag.DomainModel.DomainEvents;
 using Lasertag.Manager;
-using Orleans;
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
+using Orleans;
 
 namespace Lasertag.Api;
 
@@ -17,7 +17,7 @@ public class EventRaiser
 
     public ILogger Log { get; }
     public IGrainFactory GrainFactory { get; }
-    
+
     public Task<ApiResult<Game>> RaiseEvent<TEvent>(Guid gameId, Func<TEvent> eventFactory,
         [CallerMemberName] string? callerName = null)
         where TEvent : IGameEventBase

@@ -7,78 +7,77 @@ using Orleans;
 using Orleans.Hosting;
 using Weasel.Core;
 
-namespace Lasertag.Tests
+namespace Lasertag.Tests;
+
+public class OrleansFixture : IDisposable
 {
-    public class OrleansFixture : IDisposable
+    readonly IHost _host;
+
+    public OrleansFixture()
     {
-        readonly IHost _host;
+        _host = BuildAndStartSiloAsync();
+        ClusterClient = _host.Services.GetRequiredService<IClusterClient>();
+    }
 
-        public OrleansFixture()
-        {
-            _host = BuildAndStartSiloAsync();
-            ClusterClient = _host.Services.GetRequiredService<IClusterClient>();
-        }
+    public IClusterClient ClusterClient { get; }
 
-        public IClusterClient ClusterClient { get; }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+    protected virtual void Dispose(bool disposing)
+    {
+        _host.Dispose();
+    }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            _host.Dispose();
-        }
-
-        static IHost BuildAndStartSiloAsync()
-        {
-            var hostBuilder = new HostBuilder()
-                .ConfigureHostConfiguration(builder => builder.AddJsonFile("appsettings.json"))
-                .UseOrleans((_, builder) =>
-                {
-                    builder.UseLocalhostClustering();
-                    builder.AddLogStorageBasedLogConsistencyProviderAsDefault();
-                    builder.AddCustomStorageBasedLogConsistencyProviderAsDefault();
-
-                    builder.AddActivityPropagation();
-                    builder.ConfigureLogging(logging => logging.AddConsole());
-                });
-
-
-            hostBuilder.ConfigureLogging(builder =>
+    static IHost BuildAndStartSiloAsync()
+    {
+        var hostBuilder = new HostBuilder()
+            .ConfigureHostConfiguration(builder => builder.AddJsonFile("appsettings.json"))
+            .UseOrleans((_, builder) =>
             {
-                builder
-                    .AddFilter("Microsoft", LogLevel.Warning) // generic host lifecycle messages
-                    .AddFilter("Orleans", LogLevel.Information) // suppress status dumps
-                    .AddFilter("Runtime", LogLevel.Warning) // also an Orleans prefix
-                    .AddDebug() // VS Debug window
-                    .AddConsole();
+                builder.UseLocalhostClustering();
+                builder.AddLogStorageBasedLogConsistencyProviderAsDefault();
+                builder.AddCustomStorageBasedLogConsistencyProviderAsDefault();
+
+                builder.AddActivityPropagation();
+                builder.ConfigureLogging(logging => logging.AddConsole());
             });
 
-            hostBuilder.ConfigureServices((context, services) =>
-            {
-                services.AddLogging();
+
+        hostBuilder.ConfigureLogging(builder =>
+        {
+            builder
+                .AddFilter("Microsoft", LogLevel.Warning) // generic host lifecycle messages
+                .AddFilter("Orleans", LogLevel.Information) // suppress status dumps
+                .AddFilter("Runtime", LogLevel.Warning) // also an Orleans prefix
+                .AddDebug() // VS Debug window
+                .AddConsole();
+        });
+
+        hostBuilder.ConfigureServices((context, services) =>
+        {
+            services.AddLogging();
 
 #pragma warning disable S125
-                // services.AddSingleton<IGrainStorage, CustomGrainStorage>();
+            // services.AddSingleton<IGrainStorage, CustomGrainStorage>();
 #pragma warning restore S125
 
-                services.AddMarten(options =>
+            services.AddMarten(options =>
+            {
+                options.Connection(context.Configuration.GetConnectionString("Marten"));
+                if (context.HostingEnvironment.IsDevelopment())
                 {
-                    options.Connection(context.Configuration.GetConnectionString("Marten"));
-                    if (context.HostingEnvironment.IsDevelopment())
-                    {
-                        options.AutoCreateSchemaObjects = AutoCreate.All;
-                    }
-                });
+                    options.AutoCreateSchemaObjects = AutoCreate.All;
+                }
             });
+        });
 
-            var host = hostBuilder.Build();
-            host.Start();
+        var host = hostBuilder.Build();
+        host.Start();
 
-            return host;
-        }
+        return host;
     }
 }
