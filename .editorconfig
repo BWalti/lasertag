@@ -12,7 +12,7 @@ csharp_style_expression_bodied_accessors = true:warning
 csharp_using_directive_placement = outside_namespace:silent
 csharp_prefer_simple_using_statement = true:suggestion
 csharp_prefer_braces = true:silent
-csharp_style_namespace_declarations = block_scoped:silent
+csharp_style_namespace_declarations = file_scoped:none
 csharp_style_prefer_method_group_conversion = true:silent
 csharp_style_prefer_top_level_statements = true:silent
 csharp_style_expression_bodied_constructors = false:silent
@@ -20,6 +20,11 @@ csharp_style_expression_bodied_operators = false:silent
 csharp_style_expression_bodied_lambdas = true:silent
 csharp_style_expression_bodied_local_functions = false:silent
 csharp_indent_labels = one_less_than_current
+
+# ReSharper properties
+resharper_instance_members_qualify_declared_in = base_class
+resharper_place_expr_method_on_single_line = false
+resharper_use_heuristics_for_body_style = true
 
 [*.{cs,vb}]
 #### Naming styles ####
@@ -81,3 +86,4 @@ dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
 indent_size = 4
 end_of_line = crlf
+dotnet_style_namespace_match_folder = true:suggestion
