@@ -54,9 +54,14 @@
     "MultiProjectConfigurations": {
       "Server + Client": {
         "Projects": {
-          "Server": {},
-          "Client": {} 
-        } 
+          "Server": {
+            "StartProject": true
+          },
+          "Client": {
+            "StartProject": true
+          }
+        },
+        "SolutionConfiguration": "Debug"
       }
     }
 }
