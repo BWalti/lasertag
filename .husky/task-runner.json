@@ -1,0 +1,33 @@
+{
+  "tasks": [
+    {
+      "name": "commit-message-linter",
+      "command": "dotnet",
+      "args": [
+        "husky",
+        "exec",
+        ".husky/csx/commit-lint.csx",
+        "--args",
+        "${args}"
+      ]
+    },
+    {
+      "name": "dotnet-format",
+      "group": "pre-commit",
+      "command": "dotnet",
+      "args": ["dotnet-format", "--include", "${staged}"],
+      "include": ["**/*.cs", "**/*.vb"]
+    },
+    {
+      "name": "Compile",
+      "group": "pre-push",
+      "output": "always",
+      "command": "bash",
+      "args": ["build.sh", "--target", "Compile"],
+      "windows": {
+        "command": "pwsh",
+        "args": ["build.ps1", "--Target", "Compile"]
+      }
+    }
+  ]
+}

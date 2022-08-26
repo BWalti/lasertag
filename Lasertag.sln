@@ -32,12 +32,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lasertag.Manager", "src\Las
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "archive", "archive", "{D726D87F-542D-4C86-9BB3-91CFD0F7BEE2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "build", "build\build.csproj", "{51045D5F-198C-4076-B219-AD8923C81B74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{51045D5F-198C-4076-B219-AD8923C81B74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51045D5F-198C-4076-B219-AD8923C81B74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19}.Release|Any CPU.ActiveCfg = Release|Any CPU
