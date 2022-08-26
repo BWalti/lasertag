@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Lasertag.Grains.Tests;
+namespace Lasertag.Tests;
 
 [CollectionDefinition(nameof(OrleansCollection))]
 public class OrleansCollection : ICollectionFixture<OrleansFixture>

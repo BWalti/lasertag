@@ -2,6 +2,8 @@
 
 namespace Lasertag.Api;
 
+#pragma warning disable S3925
+[Serializable]
 [GenerateSerializer]
 public class InvalidStateException : Exception
 {
@@ -9,3 +11,4 @@ public class InvalidStateException : Exception
     {
     }
 }
+#pragma warning restore S3925

@@ -19,7 +19,7 @@ host.UseOrleans((_, builder) =>
 
     builder.AddLogStorageBasedLogConsistencyProviderAsDefault();
     builder.AddCustomStorageBasedLogConsistencyProviderAsDefault();
-    
+
     builder.AddActivityPropagation();
 });
 
@@ -37,8 +37,11 @@ host.ConfigureServices((context, services) =>
 {
     services.AddLogging();
     services.AddTransient<MartenJournaledGrainAdapter<GameState, IGameEventBase>>();
-    //services.AddSingleton<IGrainStorage, CustomGrainStorage>();
-    
+
+#pragma warning disable S125
+    // services.AddSingleton<IGrainStorage, CustomGrainStorage>();
+#pragma warning restore S125
+
     services.AddMarten(options =>
     {
         options.Connection(context.Configuration.GetConnectionString("Marten"));

@@ -10,7 +10,7 @@ public class GameState : Game
     public void Apply(GameInitialized e)
     {
         GameId = e.GameId;
-        State = GameStateEnum.Initialized;
+        Status = GameStatus.Initialized;
     }
 
     public void Apply(GameSetConnected e)
@@ -26,7 +26,7 @@ public class GameState : Game
     public void Apply(GameLobbyCreated e)
     {
         GameSetGroups = e.GameSetGroups;
-        State = GameStateEnum.LobyOpened;
+        Status = GameStatus.LobyOpened;
     }
 
     public void Apply(GameSetActivated e)
@@ -36,6 +36,6 @@ public class GameState : Game
 
     public void Apply(GameStarted e)
     {
-        State = GameStateEnum.GameStarted;
+        Status = GameStatus.GameStarted;
     }
 }

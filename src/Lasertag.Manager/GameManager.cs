@@ -1,7 +1,6 @@
 ﻿using Lasertag.DomainModel;
 using Lasertag.DomainModel.DomainEvents;
 using Orleans;
-using Orleans.EventSourcing.CustomStorage;
 using Orleans.EventSourcing.CustomStorage.Marten;
 
 namespace Lasertag.Manager;
@@ -24,11 +23,4 @@ public class GameManager : EventSourcedGrain<Game, GameState, IGameEventBase>, I
     {
         return _martenAdapter.ApplyUpdatesToStorage(this.GetPrimaryKey(), updates, expectedversion);
     }
-}
-
-public interface IGameManager : IGrainWithGuidKey, 
-    IEventSourcedGrain<Game, IGameEventBase>,
-    ICustomStorageInterface<GameState, IGameEventBase>
-{
-
 }

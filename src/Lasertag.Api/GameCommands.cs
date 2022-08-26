@@ -21,7 +21,7 @@ public class GameCommands : Grain, IGameCommands
     {
         return await EventRaiser.RaiseEventWithChecks(gameId, game =>
         {
-            if (game.State != GameStateEnum.None)
+            if (game.Status != GameStatus.None)
                 throw new InvalidStateException("Can only Initialize game once after application start!");
 
             return new GameInitialized(gameId);
@@ -32,7 +32,7 @@ public class GameCommands : Grain, IGameCommands
     {
         return await EventRaiser.RaiseEventWithChecks(gameId, game =>
         {
-            if (game.State != GameStateEnum.Initialized)
+            if (game.Status != GameStatus.Initialized)
                 throw new InvalidStateException("Connecting GameSets is only possible when Game is initialized!");
 
             return new GameSetConnected(gameSetId);
@@ -43,7 +43,7 @@ public class GameCommands : Grain, IGameCommands
     {
         return await EventRaiser.RaiseEventWithChecks(gameId, game =>
         {
-            if (game.State != GameStateEnum.LobyOpened)
+            if (game.Status != GameStatus.LobyOpened)
                 throw new InvalidStateException("Game is not ready for players!");
 
             if (game.ConnectedGameSets.All(gs => gs.GameSetId != gameSetId))
@@ -63,7 +63,7 @@ public class GameCommands : Grain, IGameCommands
     {
         return await EventRaiser.RaiseEventWithChecks(gameId, game =>
         {
-            if (game.State != GameStateEnum.Initialized && game.State != GameStateEnum.GameFinished)
+            if (game.Status != GameStatus.Initialized && game.Status != GameStatus.GameFinished)
                 throw new InvalidStateException("Lobby cannot be created currently!");
 
             var groups = game.ConnectedGameSets

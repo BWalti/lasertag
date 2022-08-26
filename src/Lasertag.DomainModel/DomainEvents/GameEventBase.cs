@@ -7,8 +7,7 @@ public record GameEventBase : IGameEventBase
 {
     public static readonly int NewEtag = -1;
 
-    [Id(0)]
-    public DateTimeOffset Timestamp = DateTimeOffset.Now;
+    [Id(0)] public DateTimeOffset Timestamp { get; set; } = DateTimeOffset.Now;
 
     [Id(1)]
     public int ETag { get; set; } = NewEtag;
