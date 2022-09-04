@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Lasertag.DomainModel;
-using Lasertag.DomainModel.DomainEvents;
+using Lasertag.DomainModel.DomainEvents.GameEvents;
 using Orleans;
 
 namespace Lasertag.Manager;
@@ -18,13 +18,13 @@ public class GameState : Game
     [UsedImplicitly]
     public void Apply(GameSetConnected e)
     {
-        ConnectedGameSets.Add(new GameSet(e.GameSetId));
+        ConnectedGameSets.Add(new LasertagSet(e.GameSetId));
     }
 
     [UsedImplicitly]
     public void Apply(GameSetDisconnected e)
     {
-        ConnectedGameSets.Remove(new GameSet(e.GameSetId));
+        ConnectedGameSets.Remove(new LasertagSet(e.GameSetId));
     }
 
     [UsedImplicitly]
@@ -41,8 +41,9 @@ public class GameState : Game
     }
 
     [UsedImplicitly]
-    public void Apply(GameStarted _)
+    public void Apply(GameRoundStarted e)
     {
+        ActiveRoundId = e.GameRoundId;
         Status = GameStatus.GameStarted;
     }
 }

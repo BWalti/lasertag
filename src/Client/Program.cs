@@ -53,8 +53,9 @@ var playerTwoId = Guid.NewGuid();
 apiResult = await gameCommands.ActivateGameSet(gameId, gameSetTwoId, playerTwoId);
 apiResult.EnsureSuccess();
 
-apiResult = await gameCommands.StartGame(gameId);
+(apiResult, var apiResult2) = await gameCommands.StartGameRound(gameId);
 apiResult.EnsureSuccess();
+apiResult2.EnsureSuccess();
 
 Console.ReadLine();
 await app.StopAsync();

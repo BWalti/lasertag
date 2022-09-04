@@ -1,65 +1,72 @@
 <Project>
-	<PropertyGroup>
-		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="SonarAnalyzer.CSharp">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="JetBrains.Annotations" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageVersion Include="coverlet.collector">
-			<Version>3.1.2</Version>
-		</PackageVersion>
-		<PackageVersion Include="FluentAssertions">
-			<Version>6.7.0</Version>
-		</PackageVersion>
-		<PackageVersion Include="JetBrains.Annotations">
-			<Version>2022.1.0</Version>
-		</PackageVersion>
-		<PackageVersion Include="Marten" Version="5.8.0" />
-		<PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers">
-			<Version>6.0.0</Version>
-		</PackageVersion>
-		<PackageVersion Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
-		<PackageVersion Include="Microsoft.NET.Test.Sdk">
-			<Version>17.3.0</Version>
-		</PackageVersion>
-		<PackageVersion Include="Microsoft.Orleans.Client" Version="4.0.0-preview2" />
-		<PackageVersion Include="Microsoft.Orleans.EventSourcing" Version="4.0.0-preview2" />
-		<PackageVersion Include="Microsoft.Orleans.Sdk" Version="4.0.0-preview2" />
-		<PackageVersion Include="Microsoft.Orleans.Serialization.Abstractions">
-			<Version>4.0.0-preview2</Version>
-		</PackageVersion>
-		<PackageVersion Include="Microsoft.Orleans.Server" Version="4.0.0-preview2" />
-		<PackageVersion Include="Orleans.EventSourcing">
-			<Version>1.0.3.2</Version>
-		</PackageVersion>
-		<PackageVersion Include="SonarAnalyzer.CSharp">
-			<Version>8.44.0.52574</Version>
-		</PackageVersion>
-		<PackageVersion Include="xunit">
-			<Version>2.4.2</Version>
-		</PackageVersion>
-		<PackageVersion Include="xunit.analyzers">
-			<Version>1.0.0</Version>
-		</PackageVersion>
-		<PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
-		<PackageVersion Include="Nuke.Common" Version="6.2.1" />
-	</ItemGroup>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SonarAnalyzer.CSharp">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="JetBrains.Annotations" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="coverlet.collector">
+      <Version>3.1.2</Version>
+    </PackageVersion>
+    <PackageVersion Include="EasyNetQ.DI.Microsoft">
+      <Version>7.0.1</Version>
+    </PackageVersion>
+    <PackageVersion Include="FluentAssertions">
+      <Version>6.7.0</Version>
+    </PackageVersion>
+    <PackageVersion Include="JetBrains.Annotations">
+      <Version>2022.1.0</Version>
+    </PackageVersion>
+    <PackageVersion Include="Marten" Version="5.8.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers">
+      <Version>6.0.0</Version>
+    </PackageVersion>
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk">
+      <Version>17.3.0</Version>
+    </PackageVersion>
+    <PackageVersion Include="Microsoft.Orleans.Client" Version="4.0.0-preview2" />
+    <PackageVersion Include="Microsoft.Orleans.EventSourcing" Version="4.0.0-preview2" />
+    <PackageVersion Include="Microsoft.Orleans.Sdk" Version="4.0.0-preview2" />
+    <PackageVersion Include="Microsoft.Orleans.Serialization.Abstractions">
+      <Version>4.0.0-preview2</Version>
+    </PackageVersion>
+    <PackageVersion Include="Microsoft.Orleans.Server" Version="4.0.0-preview2" />
+    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets">
+      <Version>1.17.0</Version>
+    </PackageVersion>
+    <PackageVersion Include="Newtonsoft.Json">
+      <Version>13.0.1</Version>
+    </PackageVersion>
+    <PackageVersion Include="Orleans.EventSourcing">
+      <Version>1.0.3.2</Version>
+    </PackageVersion>
+    <PackageVersion Include="SonarAnalyzer.CSharp">
+      <Version>8.44.0.52574</Version>
+    </PackageVersion>
+    <PackageVersion Include="xunit">
+      <Version>2.4.2</Version>
+    </PackageVersion>
+    <PackageVersion Include="xunit.analyzers">
+      <Version>1.0.0</Version>
+    </PackageVersion>
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
+    <PackageVersion Include="Nuke.Common" Version="6.2.1" />
+  </ItemGroup>
 </Project>

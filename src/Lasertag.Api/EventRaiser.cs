@@ -1,13 +1,14 @@
 ﻿using System.Runtime.CompilerServices;
-using Lasertag.DomainModel;
-using Lasertag.DomainModel.DomainEvents;
 using Lasertag.Manager;
 using Microsoft.Extensions.Logging;
 using Orleans;
 
 namespace Lasertag.Api;
 
-public class EventRaiser
+public class EventRaiser<TDomainManager, TDomainModel, TState, TDomainEventBase>
+    where TDomainManager : IDomainManager<TDomainModel, TState, TDomainEventBase>
+    where TDomainModel : class
+    where TDomainEventBase : class
 {
     public EventRaiser(ILogger log, IGrainFactory grainFactory)
     {
@@ -18,22 +19,23 @@ public class EventRaiser
     public ILogger Log { get; }
     public IGrainFactory GrainFactory { get; }
 
-    public Task<ApiResult<Game>> RaiseEvent<TEvent>(Guid gameId, Func<TEvent> eventFactory,
+    public Task<ApiResult<TDomainModel>> RaiseEvent<TEvent>(Guid streamId, Func<TEvent> eventFactory,
         [CallerMemberName] string? callerName = null)
-        where TEvent : IGameEventBase
+        where TEvent : TDomainEventBase
     {
-        return RaiseEventWithChecks(gameId, _ => eventFactory(), callerName);
+        return RaiseEventWithChecks(streamId, _ => eventFactory(), callerName);
     }
 
-    public async Task<ApiResult<Game>> RaiseEventWithChecks<TEvent>(Guid gameId, Func<Game, TEvent> checkedEventFactory,
+    public async Task<ApiResult<TDomainModel>> RaiseEventWithChecks<TEvent>(Guid streamId,
+        Func<TDomainModel, TEvent> checkedEventFactory,
         [CallerMemberName] string? callerName = null)
-        where TEvent : IGameEventBase
+        where TEvent : TDomainEventBase
     {
         Log.LogInformation("{CallerName}: start", callerName);
         try
         {
             Log.LogInformation("{CallerName}: get manager", callerName);
-            var mgr = GrainFactory.GetGrain<IGameManager>(gameId);
+            var mgr = GrainFactory.GetGrain<TDomainManager>(streamId);
 
             Log.LogInformation("{CallerName}: Get Game", callerName);
             var game = await mgr.GetManagedState();
@@ -48,38 +50,12 @@ public class EventRaiser
             await mgr.ConfirmEvents();
 
             Log.LogInformation("{CallerName}: returning GetManagedState", callerName);
-            return new ApiResult<Game>(await mgr.GetManagedState());
+            return new ApiResult<TDomainModel>(await mgr.GetManagedState());
         }
         catch (Exception ex)
         {
             Log.LogError(ex, "{CallerName}: exception", callerName);
-            return new ApiResult<Game>(ex);
-        }
-    }
-
-    public async Task<ApiResult<Game>> RaiseEvents<TEvent>(Guid gameId, Func<TEvent[]> eventFactory,
-        [CallerMemberName] string? callerName = null)
-        where TEvent : IGameEventBase
-    {
-        Log.LogInformation("{CallerName}: start", callerName);
-        try
-        {
-            Log.LogInformation("{CallerName}: get manager", callerName);
-            var mgr = GrainFactory.GetGrain<IGameManager>(gameId);
-
-            Log.LogInformation("{CallerName}: raising events", callerName);
-            await mgr.RaiseEvents(eventFactory());
-
-            Log.LogInformation("{CallerName}: confirming events", callerName);
-            await mgr.ConfirmEvents();
-
-            Log.LogInformation("{CallerName}: returning GetManagedState", callerName);
-            return new ApiResult<Game>(await mgr.GetManagedState());
-        }
-        catch (Exception ex)
-        {
-            Log.LogError(ex, "{CallerName}: exception", callerName);
-            return new ApiResult<Game>(ex);
+            return new ApiResult<TDomainModel>(ex);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Lasertag.DomainModel.DomainEvents;
 using Lasertag.Manager;
 using Marten;
+using Marten.Events.Daemon.Resiliency;
+using Marten.Events.Projections;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,20 +38,26 @@ host.ConfigureLogging(builder =>
 host.ConfigureServices((context, services) =>
 {
     services.AddLogging();
-    services.AddTransient<MartenJournaledGrainAdapter<GameState, IGameEventBase>>();
+    services.AddTransient<MartenJournaledGrainAdapter<GameState, IDomainEventBase>>();
+    services.AddTransient<MartenJournaledGrainAdapter<GameRoundState, IDomainEventBase>>();
 
 #pragma warning disable S125
     // services.AddSingleton<IGrainStorage, CustomGrainStorage>();
 #pragma warning restore S125
 
-    services.AddMarten(options =>
-    {
-        options.Connection(context.Configuration.GetConnectionString("Marten"));
-        if (context.HostingEnvironment.IsDevelopment())
+    services.AddMarten(o =>
         {
-            options.AutoCreateSchemaObjects = AutoCreate.All;
-        }
-    });
+            o.Connection(context.Configuration.GetConnectionString("Marten"));
+            if (context.HostingEnvironment.IsDevelopment())
+            {
+                o.AutoCreateSchemaObjects = AutoCreate.All;
+            }
+
+#pragma warning disable S125
+            // o.Projections.SelfAggregate<GameRoundState>(ProjectionLifecycle.Async);
+#pragma warning restore S125
+        })
+        .AddAsyncDaemon(DaemonMode.Solo);
 });
 
 await host.RunConsoleAsync();

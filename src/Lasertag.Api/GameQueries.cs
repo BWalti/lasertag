@@ -1,5 +1,10 @@
-﻿namespace Lasertag.Api;
+﻿using Orleans;
+using Orleans.Concurrency;
 
-public class GameQueries
+namespace Lasertag.Api;
+
+[Reentrant]
+[StatelessWorker]
+public class GameQueries : Grain, IGameQueries
 {
 }

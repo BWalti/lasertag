@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "AdminApp": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5275",
+      "dotnetRunMessages": true
+    },
+    "Docker": {
+      "commandName": "Project",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "publishAllPorts": true
+    }
+  }
+}

@@ -1,5 +1,7 @@
 ﻿using Lasertag.DomainModel;
 using Lasertag.DomainModel.DomainEvents;
+using Lasertag.DomainModel.DomainEvents.GameEvents;
+using Lasertag.Manager;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Concurrency;
@@ -12,10 +14,10 @@ public class GameCommands : Grain, IGameCommands
 {
     public GameCommands(ILogger<GameCommands> logger)
     {
-        EventRaiser = new EventRaiser(logger, GrainFactory);
+        EventRaiser = new EventRaiser<IGameManager, Game, GameState, IDomainEventBase>(logger, GrainFactory);
     }
 
-    public EventRaiser EventRaiser { get; }
+    public EventRaiser<IGameManager, Game, GameState, IDomainEventBase> EventRaiser { get; }
 
     public async Task<ApiResult<Game>> InitializeGame(Guid gameId)
     {
@@ -54,12 +56,12 @@ public class GameCommands : Grain, IGameCommands
 
             if (game.ConnectedGameSets.All(gs => gs.GameSetId != gameSetId))
             {
-                throw new InvalidOperationException("This GameSet is unknown!");
+                throw new InvalidOperationException("This LasertagSet is unknown!");
             }
 
             if (game.ActiveGameSets.Any(gs => gs.GameSetId == gameSetId))
             {
-                throw new InvalidOperationException("This GameSet is already active!");
+                throw new InvalidOperationException("This LasertagSet is already active!");
             }
 
             if (game.ActiveGameSets.Any(gs => gs.PlayerId == playerId))
@@ -83,7 +85,7 @@ public class GameCommands : Grain, IGameCommands
             var groups = game.ConnectedGameSets
                 .Select((s, i) => new { s, i })
                 .GroupBy(x => x.i % numberOfGroups)
-                .Select((g, i) => new GameSetGroup(
+                .Select((g, i) => new GameGroup(
                     Guid.NewGuid(),
                     g.Select(x => x.s).ToArray(),
                     GetGameColor(i)
@@ -94,18 +96,43 @@ public class GameCommands : Grain, IGameCommands
         });
     }
 
-    public Task<ApiResult<Game>> StartGame(Guid gameId)
+    public async Task<(ApiResult<Game>, ApiResult<GameRound>)> StartGameRound(Guid gameId)
     {
-        return EventRaiser.RaiseEventWithChecks(gameId, _ => new GameStarted());
+        var game = await EventRaiser.RaiseEventWithChecks(gameId, game => new GameRoundStarted(Guid.NewGuid(), game.ActiveGameSets, game.GameSetGroups));
+        var gameRoundCommands = GrainFactory.GetGrain<IGameRoundCommands>(0);
+
+        try
+        {
+            if (game.Output == null)
+            {
+                throw new InvalidOperationException("GameRound ID not found!");
+            }
+
+            var gameRound = await gameRoundCommands.StartGameRound(
+                game.Output.ActiveRoundId,
+                game.Output.ActiveGameSets,
+                game.Output.GameSetGroups);
+
+            if (gameRound.Output == null)
+            {
+                throw new InvalidOperationException("GameRound not correctly initialized");
+            }
+
+            return (game, gameRound);
+        }
+        catch (Exception e)
+        {
+            return (game, new ApiResult<GameRound>(e));
+        }
     }
 
     static GroupColor GetGameColor(int index)
     {
-        if (index > 8)
+        if (index > 7)
         {
             throw new InvalidOperationException("We do only support up to 8 groups (colors)");
         }
 
-        return (GroupColor)(index - 1);
+        return (GroupColor)index;
     }
 }

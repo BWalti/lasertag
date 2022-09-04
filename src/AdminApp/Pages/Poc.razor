@@ -1,0 +1,297 @@
+﻿@page "/poc"
+@using Orleans
+@using Lasertag.Api
+@using Lasertag.DomainModel
+
+@inject IClusterClient Client;
+
+<PageTitle>Poc</PageTitle>
+
+<h1>Poc</h1>
+
+<button class="btn btn-primary" @onclick="InitializeGame">Init Game</button>
+<button class="btn btn-primary" @onclick="ConnectGameSet">Connect LasertagSet</button>
+<button class="btn btn-primary" @onclick="CreateLobby">Create Lobby</button>
+<button class="btn btn-primary" @onclick="ActivateGameSet">Activate LasertagSet</button>
+<button class="btn btn-primary" @onclick="StartGame">Start Game</button>
+
+@if (Game != null)
+{
+    if (!string.IsNullOrEmpty(Game.Message))
+    {
+        @if (Game.Success)
+        {
+            <div class="alert alert-success" role="alert">
+                @Game.Message
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning" role="alert">
+                @Game.Message
+            </div>
+        }
+    }
+
+    @if (Game?.Output != null)
+    {
+        <div class="container">
+            <div class="row">
+                <table class="col table text-center">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th>Game Id</th>
+                        <td>@Game.Output.GameId</td>
+                    </tr>
+                    <tr>
+                        <th>Shots Fired</th>
+                        <td>@(GameRound?.Output?.ShotsFired ?? 0)</td>
+                    </tr>
+                    <tr>
+                        <th>Shots Hit</th>
+                        <td>@(GameRound?.Output?.ShotsHit ?? 0)</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="col">
+                    <h2>Connected Game Sets:</h2>
+                    <ul>
+                        @foreach (var gameSet in Game.Output.ConnectedGameSets)
+                        {
+                            <li>@gameSet</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+
+                    <h2>Game Set Groups:</h2>
+                    <div class="row row-cols-1 row-cols-md-3 mb-4">
+                        @foreach (var gameSetGroup in Game.Output.GameSetGroups)
+                        {
+                            <div class="col">
+                                <div class="card mb-3 rounded-3 shadow-sm">
+                                    <div class="card-header py-2">
+                                        <h4>@gameSetGroup.Color</h4>
+                                        <h6 class="fst-italic">(@gameSetGroup.GroupId)</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul>
+                                            @foreach (var gameSet in gameSetGroup.GameSets)
+                                            {
+                                                <li>@gameSet.GameSetId</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="col">
+                    <h2>Active PlayerStats with Game Sets:</h2>
+                    <table class="table text-center">
+                        <thead>
+                        <tr>
+                            <th>Player ID</th>
+                            <th>LasertagSet ID</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var activeGameSet in Game.Output.ActiveGameSets)
+                        {
+                            <tr>
+                                <td>@activeGameSet.PlayerId</td>
+                                <td>@activeGameSet.GameSetId</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            @if (Game.Output.Status == GameStatus.GameStarted)
+            {
+                <div class="row">
+                    <div class="col">
+                        <h2>Shoot</h2>
+
+                        <div class="mb-3">
+                            <label for="shootFrom" class="form-label">Shot from</label>
+                            <select @bind="@FromGameSet" id="shootFrom" class="form-select">
+                                @foreach (var item in Game.Output.ActiveGameSets)
+                                {
+                                    <option value="@item.GameSetId">@item.GameSetId (@item.PlayerId)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="shootAt" class="form-label">Shot from</label>
+                            <select @bind="@Target" id="shootAt" class="form-select">
+                                <option value="00000000-0000-0000-0000-000000000000">Nothing</option>
+                                @foreach (var item in Game.Output.ActiveGameSets)
+                                {
+                                    <option value="@item.GameSetId">@item.GameSetId (@item.PlayerId)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <button class="btn btn-primary" @onclick="Fire">Fire</button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
+
+@if (GameRound?.Output != null)
+{
+    <h2>PlayerStats Statistics!</h2>
+    <table class="table text-center">
+        <thead>
+        <tr>
+            <th>Player ID</th>
+            <th>#Shots Fired</th>
+            <th>#Shots Hit</th>
+            <th>Ratio</th>
+            <th>#Got Hit</th>
+            <th>LasertagSet ID</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var player in GameRound.Output.PlayerStats)
+        {
+            <tr>
+                <td>@player.PlayerId</td>
+                <td>@player.ShotsFired</td>
+                <td>@player.ShotsHit</td>
+                <td>@(player.ShotsFired > 0 ? $"{player.ShotsHit / (double)player.ShotsFired:P}" : "NaN")</td>
+                <td>@player.GotHit</td>
+                <td>@player.GameSetId</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IGameCommands _gameCommands = null!;
+    private IGameRoundCommands _gameRoundCommands = null!;
+    private ApiResult<Game>? _game;
+    private ApiResult<GameRound>? _gameRound;
+
+    public Guid? GameId => Game?.Output?.GameId;
+
+    public ApiResult<Game>? Game
+    {
+        get => _game;
+        set
+        {
+            _game = value;
+            StateHasChanged();
+        }
+    }
+
+    public ApiResult<GameRound>? GameRound
+    {
+        get => _gameRound;
+        set
+        {
+            _gameRound = value;
+            StateHasChanged();
+        }
+    }
+
+    public Guid? FromGameSet { get; set; }
+    public Guid? Target { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        _gameCommands = Client.GetGrain<IGameCommands>(0);
+        _gameRoundCommands = Client.GetGrain<IGameRoundCommands>(0);
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task InitializeGame()
+    {
+        var gameId = Guid.NewGuid();
+        Game = await _gameCommands.InitializeGame(gameId);
+    }
+
+    private async Task ConnectGameSet()
+    {
+        if (GameId == null)
+        {
+            return;
+        }
+
+        var gameSetId = Guid.NewGuid();
+        Game = await _gameCommands.ConnectGameSet(GameId.Value, gameSetId);
+    }
+
+    private async Task CreateLobby()
+    {
+        if (!GameId.HasValue)
+        {
+            return;
+        }
+
+        Game = await _gameCommands.CreateLobby(GameId.Value, 2);
+    }
+
+    private async Task ActivateGameSet()
+    {
+        if (!GameId.HasValue || Game?.Output == null)
+        {
+            return;
+        }
+
+        var connectedGameSets = Game.Output.ConnectedGameSets.Select(gs => gs.GameSetId).ToList();
+        var activeGameSets = Game.Output.ActiveGameSets.Select(ags => ags.GameSetId).ToList();
+
+        Guid? freeGameSet = connectedGameSets.Except(activeGameSets).FirstOrDefault();
+
+        if (freeGameSet != null && freeGameSet != Guid.Empty)
+        {
+            var playerId = Guid.NewGuid();
+            Game = await _gameCommands.ActivateGameSet(GameId.Value, freeGameSet.Value, playerId);
+        }
+    }
+
+    private async Task StartGame()
+    {
+        if (!GameId.HasValue)
+        {
+            return;
+        }
+
+        (Game, GameRound) = await _gameCommands.StartGameRound(GameId.Value);
+    }
+
+    private async Task Fire()
+    {
+        if (GameRound?.Output == null || !FromGameSet.HasValue)
+        {
+            return;
+        }
+
+        var gameRoundId = GameRound.Output.Id;
+        GameRound = await _gameRoundCommands.Fire(gameRoundId, FromGameSet.Value);
+
+        if (Target.HasValue && Target.Value != Guid.Empty)
+        {
+            GameRound = await _gameRoundCommands.Hit(gameRoundId, FromGameSet.Value, Target.Value);
+        }
+    }
+}
