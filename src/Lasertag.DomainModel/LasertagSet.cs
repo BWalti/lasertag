@@ -3,4 +3,4 @@
 namespace Lasertag.DomainModel;
 
 [GenerateSerializer]
-public record LasertagSet(Guid GameSetId);
+public record LasertagSet(Guid Id, string Name);

@@ -1,11 +1,10 @@
-﻿using Lasertag.DomainModel;
-using Lasertag.DomainModel.DomainEvents;
+﻿using Lasertag.DomainModel.DomainEvents;
 using Orleans;
 using Orleans.EventSourcing.CustomStorage.Marten;
 
-namespace Lasertag.Manager;
+namespace Lasertag.Manager.Game;
 
-public class GameManager : EventSourcedGrain<Game, GameState, IDomainEventBase>, IGameManager
+public class GameManager : EventSourcedGrain<DomainModel.Game, GameState, IDomainEventBase>, IGameManager
 {
     readonly MartenJournaledGrainAdapter<GameState, IDomainEventBase> _martenAdapter;
 

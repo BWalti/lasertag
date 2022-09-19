@@ -2,7 +2,7 @@
 using Lasertag.DomainModel.DomainEvents;
 using Lasertag.DomainModel.DomainEvents.GameEvents;
 using Lasertag.DomainModel.DomainEvents.RoundEvents;
-using Lasertag.Manager;
+using Lasertag.Manager.GameRound;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Concurrency;
@@ -34,7 +34,7 @@ public class GameRoundCommands : Grain, IGameRoundCommands
         });
     }
 
-    public Task<ApiResult<GameRound>> Fire(Guid gameRoundId, Guid sourceGameSetId)
+    public Task<ApiResult<GameRound>> Fire(Guid gameRoundId, Guid sourceLasertagSetId)
     {
         return EventRaiser.RaiseEventWithChecks(gameRoundId, gameRound =>
         {
@@ -43,23 +43,23 @@ public class GameRoundCommands : Grain, IGameRoundCommands
                 throw new InvalidStateException("Shots are not gonna be registered right now!");
             }
 
-            var activeGameSet = gameRound.ActiveGameSets.FirstOrDefault(gs => gs.GameSetId == sourceGameSetId);
+            var activeGameSet = gameRound.ActiveGameSets.FirstOrDefault(gs => gs.GameSetId == sourceLasertagSetId);
             if (activeGameSet == null)
             {
-                throw new InvalidOperationException($"LasertagSet with ID {sourceGameSetId} is not active");
+                throw new InvalidOperationException($"LasertagSet with ID {sourceLasertagSetId} is not active");
             }
 
-            var sourceGroup = GetGroup(gameRound, sourceGameSetId);
-            return new PlayerFiredShot(sourceGameSetId, activeGameSet.PlayerId, sourceGroup.GroupId);
+            var sourceGroup = GetGroup(gameRound, sourceLasertagSetId);
+            return new PlayerFiredShot(sourceLasertagSetId, activeGameSet.PlayerId, sourceGroup.GroupId);
         });
     }
 
     static GameGroup GetGroup(GameRound game, Guid gameSetId)
     {
-        return game.GameSetGroups.First(gsg => gsg.GameSets.Any(gs => gs.GameSetId == gameSetId));
+        return game.GameSetGroups.First(gsg => gsg.GameSets.Any(gs => gs.Id == gameSetId));
     }
 
-    public Task<ApiResult<GameRound>> Hit(Guid gameRoundId, Guid sourceGameSetId, Guid targetGameSetId)
+    public Task<ApiResult<GameRound>> Hit(Guid gameRoundId, Guid sourceLasertagSetId, Guid targetGameSetId)
     {
         return EventRaiser.RaiseEventWithChecks(gameRoundId, gameRound =>
         {
@@ -68,16 +68,16 @@ public class GameRoundCommands : Grain, IGameRoundCommands
                 throw new InvalidStateException("Hits are not gonna be registered right now!");
             }
 
-            var sourceActiveGameSet = gameRound.ActiveGameSets.FirstOrDefault(gs => gs.GameSetId == sourceGameSetId);
+            var sourceActiveGameSet = gameRound.ActiveGameSets.FirstOrDefault(gs => gs.GameSetId == sourceLasertagSetId);
             var targetActiveGameSet = gameRound.ActiveGameSets.FirstOrDefault(gs => gs.GameSetId == targetGameSetId);
             if (sourceActiveGameSet == null || targetActiveGameSet == null)
             {
-                throw new InvalidOperationException($"Either LasertagSet with ID {sourceGameSetId} or {targetGameSetId} is not active");
+                throw new InvalidOperationException($"Either LasertagSet with ID {sourceLasertagSetId} or {targetGameSetId} is not active");
             }
 
-            var sourceGroup = GetGroup(gameRound, sourceGameSetId);
+            var sourceGroup = GetGroup(gameRound, sourceLasertagSetId);
             var targetGroup = GetGroup(gameRound, targetGameSetId);
-            return new PlayerGotHit(sourceGameSetId, targetGameSetId, sourceActiveGameSet.PlayerId, targetActiveGameSet.PlayerId, sourceGroup.GroupId, targetGroup.GroupId);
+            return new PlayerGotHitBy(sourceLasertagSetId, targetGameSetId, sourceActiveGameSet.PlayerId, targetActiveGameSet.PlayerId, sourceGroup.GroupId, targetGroup.GroupId);
         });
     }
 }

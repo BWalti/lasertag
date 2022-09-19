@@ -10,4 +10,8 @@
 		<PackageReference Include="Microsoft.Orleans.Sdk" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="DomainEvents\ConfigurationEvents\" />
+	</ItemGroup>
+
 </Project>

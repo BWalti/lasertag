@@ -1,0 +1,45 @@
+﻿@page "/configuration"
+@using Orleans
+@using Lasertag.Api
+
+@inject IClusterClient Client;
+
+<PageTitle>Configuration</PageTitle>
+
+<h1>Configuration</h1>
+
+<button class="btn btn-primary" @onclick="AddLasertag">Add Lasertag Set</button>
+
+@if (_configuration.Output != null)
+{
+    <ul>
+        @foreach (var lasertagSet in _configuration.Output.RegisteredLasertagSets)
+        {
+            <li>
+                @lasertagSet.Id
+            </li>
+        }
+    </ul>
+}
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        _configurationQueries = Client.GetGrain<IConfigurationQueries>(0);
+        _configurationCommands = Client.GetGrain<IConfigurationCommands>(0);
+
+        _configuration = await _configurationQueries.GetCurrentConfiguration(Guid.Empty);
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task AddLasertag()
+    {
+        _configuration = await _configurationCommands.RegisterLasertagSet(Guid.Empty, Guid.NewGuid());
+    }
+
+    private IConfigurationQueries _configurationQueries = null!;
+    private IConfigurationCommands _configurationCommands = null!;
+    private ApiResult<Lasertag.DomainModel.Configuration> _configuration = null!;
+}

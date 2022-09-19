@@ -1,5 +1,6 @@
 ﻿using Lasertag.DomainModel.DomainEvents;
-using Lasertag.Manager;
+using Lasertag.Manager.Game;
+using Lasertag.Manager.GameRound;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
 using Marten.Events.Projections;

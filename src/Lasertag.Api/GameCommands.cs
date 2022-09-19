@@ -1,7 +1,7 @@
 ﻿using Lasertag.DomainModel;
 using Lasertag.DomainModel.DomainEvents;
 using Lasertag.DomainModel.DomainEvents.GameEvents;
-using Lasertag.Manager;
+using Lasertag.Manager.Game;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Concurrency;
@@ -54,7 +54,7 @@ public class GameCommands : Grain, IGameCommands
                 throw new InvalidStateException("Game is not ready for players!");
             }
 
-            if (game.ConnectedGameSets.All(gs => gs.GameSetId != gameSetId))
+            if (game.ConnectedGameSets.All(gs => gs.Id != gameSetId))
             {
                 throw new InvalidOperationException("This LasertagSet is unknown!");
             }

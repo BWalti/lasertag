@@ -52,6 +52,17 @@
         }
     */
   "MultiProjectConfigurations": {
+    "Admin API + Server": {
+      "Projects": {
+        "Server": {
+          "StartProject": true
+        },
+        "Admin.Api": {
+          "StartProject": true,
+          "CommandLineArguments": "start"
+        }
+      }
+    },
     "AdminApp + Server": {
       "Projects": {
         "Server": {

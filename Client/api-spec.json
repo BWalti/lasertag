@@ -1,0 +1,515 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null",
+    "version": "1.0"
+  },
+  "paths": {
+    "/game/init": {
+      "post": {
+        "tags": [
+          "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/game/{gameId}/{gameSetId}/connect": {
+      "post": {
+        "tags": [
+          "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
+        ],
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "gameSetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/game/{gameId}/createLobby": {
+      "post": {
+        "tags": [
+          "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
+        ],
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "numberOfGroups",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/game/{gameId}/{gameSetId}/activate/{playerId}": {
+      "post": {
+        "tags": [
+          "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
+        ],
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "gameSetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "playerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/game/{gameId}/start": {
+      "post": {
+        "tags": [
+          "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
+        ],
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameRoundStartResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gameRound/{gameRoundId}/lasertagSet/{sourceLasertagSetId}/shotFired": {
+      "post": {
+        "tags": [
+          "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
+        ],
+        "parameters": [
+          {
+            "name": "gameRoundId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sourceLasertagSetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameRoundApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gameRound/{gameRoundId}/lasertagSet/{sourceLasertagSetId}/got-hit-from-lasertagSet/{targetLasertagSetId}": {
+      "post": {
+        "tags": [
+          "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
+        ],
+        "parameters": [
+          {
+            "name": "gameRoundId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sourceLasertagSetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "targetLasertagSetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameRoundApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActiveGameSet": {
+        "type": "object",
+        "properties": {
+          "playerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gameSetId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Game": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "connectedGameSets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LasertagSet"
+            },
+            "nullable": true
+          },
+          "activeGameSets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActiveGameSet"
+            },
+            "nullable": true
+          },
+          "gameSetGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameGroup"
+            },
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/GameStatus"
+          },
+          "activeRoundId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GameApiResult": {
+        "type": "object",
+        "properties": {
+          "output": {
+            "$ref": "#/components/schemas/Game"
+          },
+          "success": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GameGroup": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gameSets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LasertagSet"
+            },
+            "nullable": true
+          },
+          "color": {
+            "$ref": "#/components/schemas/GroupColor"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GameRound": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "shotsFired": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "playerStats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlayerStats"
+            },
+            "nullable": true
+          },
+          "shotsHit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GameRoundStatus"
+          },
+          "activeGameSets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActiveGameSet"
+            },
+            "nullable": true
+          },
+          "gameSetGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameGroup"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GameRoundApiResult": {
+        "type": "object",
+        "properties": {
+          "output": {
+            "$ref": "#/components/schemas/GameRound"
+          },
+          "success": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GameRoundStartResult": {
+        "type": "object",
+        "properties": {
+          "game": {
+            "$ref": "#/components/schemas/GameApiResult"
+          },
+          "gameRound": {
+            "$ref": "#/components/schemas/GameRoundApiResult"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GameRoundStatus": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "GameStatus": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          -1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "GroupColor": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "LasertagSet": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlayerStats": {
+        "type": "object",
+        "properties": {
+          "playerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gameSetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "shotsFired": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gotHit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "shotsHit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hitRatio": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

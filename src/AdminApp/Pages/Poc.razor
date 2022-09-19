@@ -87,7 +87,7 @@
                                         <ul>
                                             @foreach (var gameSet in gameSetGroup.GameSets)
                                             {
-                                                <li>@gameSet.GameSetId</li>
+                                                <li>@gameSet.Id</li>
                                             }
                                         </ul>
                                     </div>
@@ -257,7 +257,7 @@
             return;
         }
 
-        var connectedGameSets = Game.Output.ConnectedGameSets.Select(gs => gs.GameSetId).ToList();
+        var connectedGameSets = Game.Output.ConnectedGameSets.Select(gs => gs.Id).ToList();
         var activeGameSets = Game.Output.ActiveGameSets.Select(ags => ags.GameSetId).ToList();
 
         Guid? freeGameSet = connectedGameSets.Except(activeGameSets).FirstOrDefault();

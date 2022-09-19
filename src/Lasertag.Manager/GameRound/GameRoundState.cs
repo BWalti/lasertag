@@ -4,10 +4,10 @@ using Lasertag.DomainModel.DomainEvents.GameEvents;
 using Lasertag.DomainModel.DomainEvents.RoundEvents;
 using Orleans;
 
-namespace Lasertag.Manager;
+namespace Lasertag.Manager.GameRound;
 
 [GenerateSerializer]
-public class GameRoundState : GameRound
+public class GameRoundState : DomainModel.GameRound
 {
     [UsedImplicitly]
     public void Apply(GameRoundStarted e)
@@ -33,13 +33,13 @@ public class GameRoundState : GameRound
     }
 
     [UsedImplicitly]
-    public void Apply(PlayerGotHit e)
+    public void Apply(PlayerGotHitBy e)
     {
         ShotsHit += 1;
         var sourcePlayerStatistics = PlayerStats.First(p => p.PlayerId == e.SourcePlayerId);
-        sourcePlayerStatistics.ShotsHit += 1;
+        sourcePlayerStatistics.GotHit += 1;
 
         var targetPlayerStatistics = PlayerStats.First(p => p.PlayerId == e.TargetPlayerId);
-        targetPlayerStatistics.GotHit += 1;
+        targetPlayerStatistics.ShotsHit += 1;
     }
 }

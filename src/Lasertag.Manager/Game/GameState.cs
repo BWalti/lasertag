@@ -3,10 +3,10 @@ using Lasertag.DomainModel;
 using Lasertag.DomainModel.DomainEvents.GameEvents;
 using Orleans;
 
-namespace Lasertag.Manager;
+namespace Lasertag.Manager.Game;
 
 [GenerateSerializer]
-public class GameState : Game
+public class GameState : DomainModel.Game
 {
     [UsedImplicitly]
     public void Apply(GameInitialized e)
@@ -18,13 +18,14 @@ public class GameState : Game
     [UsedImplicitly]
     public void Apply(GameSetConnected e)
     {
-        ConnectedGameSets.Add(new LasertagSet(e.GameSetId));
+        ConnectedGameSets.Add(new LasertagSet(e.GameSetId, "Name"));
     }
 
     [UsedImplicitly]
     public void Apply(GameSetDisconnected e)
     {
-        ConnectedGameSets.Remove(new LasertagSet(e.GameSetId));
+        var lasertagSet = ConnectedGameSets.First(set => set.Id == e.GameSetId);
+        ConnectedGameSets.Remove(lasertagSet);
     }
 
     [UsedImplicitly]

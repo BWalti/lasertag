@@ -13,6 +13,12 @@
       "commands": [
         "dotnet-format"
       ]
+    },
+    "Swashbuckle.AspNetCore.Cli": {
+      "version": "6.4.0",
+      "commands": [
+        "swagger"
+      ]
     }
   }
 }
