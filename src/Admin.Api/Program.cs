@@ -42,7 +42,11 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseCors(corsBuilder => corsBuilder.WithOrigins("http://localhost:5173").AllowAnyMethod().AllowAnyHeader());
+    app.UseCors(corsBuilder =>
+    {
+        corsBuilder.WithOrigins("http://127.0.0.1:5173").AllowAnyMethod().AllowAnyHeader();
+        corsBuilder.WithOrigins("http://localhost:5173").AllowAnyMethod().AllowAnyHeader();
+    });
 
     app.UseSwagger();
     app.UseSwaggerUI();

@@ -1,4 +1,4 @@
 window.document.__env = {
     variableOne: 'hello world!',
-    baseAddress: 'http://localhost:5004'
+    baseAddress: 'http://host.docker.internal:5004'
 };
