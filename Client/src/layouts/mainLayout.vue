@@ -23,7 +23,7 @@
               <router-link
                 v-for="item in navigation"
                 :key="item.name"
-                :to="{ name: item.name }"
+                :to="{ path: item.path }"
                 :class="[
                   item.current
                     ? 'border-indigo-500 text-gray-900'
@@ -67,12 +67,12 @@
                   class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                 >
                   <MenuItem
-                    v-for="item in userNavigation"
+                    v-for="item in navigation"
                     :key="item.name"
                     v-slot="{ active }"
                   >
                     <router-link
-                      :to="{ name: item.name }"
+                      :to="{ path: item.path }"
                       :class="[
                         active ? 'bg-gray-100' : '',
                         'block px-4 py-2 text-sm text-gray-700',
@@ -104,7 +104,7 @@
             v-for="item in navigation"
             :key="item.name"
             as="a"
-            :href="item.href"
+            :href="item.path"
             :class="[
               item.current
                 ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
@@ -138,10 +138,10 @@
           </div>
           <div class="mt-3 space-y-1">
             <DisclosureButton
-              v-for="item in userNavigation"
+              v-for="item in navigation"
               :key="item.name"
               as="a"
-              :href="item.href"
+              :href="item.path"
               class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
               >{{ item.name }}</DisclosureButton
             >
@@ -180,11 +180,14 @@ import {
 
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { useRouter } from "vue-router";
-import { navigationalRoutes } from "../router/routes";
+import { routes } from 'vue-router/auto/routes'
 
 const router = useRouter();
-const navigation = navigationalRoutes.map((r) => ({
-  name: r.name,
+const navigation = routes
+.filter(r => r.meta && r.meta.title)
+.map((r) => ({
+  name: r.meta!.title,
+  path: r.path,
   current: router.currentRoute.value.path == r.path,
 }));
 
@@ -194,13 +197,4 @@ const user = {
   imageUrl:
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
-// const navigation = [
-//   { name: "Dashboard", href: "/", current: true },
-//   { name: "About", href: "/about", current: false },
-// ];
-const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
-];
 </script>

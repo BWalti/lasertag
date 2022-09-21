@@ -1,4 +1,12 @@
-<template>
+<route lang="json">
+  {
+    "meta": {
+      "title": "Home"
+    }
+  }
+  </route>
+  
+  <template>
   <MainLayout>
     <div class="flex gap-2">
       <PrimaryButton @click="initGame">Init Game</PrimaryButton>
@@ -62,16 +70,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
-
-import MainLayout from "../layouts/mainLayout.vue";
-import PrimaryButton from "../components/PrimaryButton.vue";
-import SecondaryButton from "../components/SecondaryButton.vue";
-
 import { Game as GameService } from "../services/Game";
 import { Game, GameRound } from "../services/data-contracts";
 import { lasertagApiHttpClient } from "../utils/httpClient";
 import { GameRound as GameRoundService } from "../services/GameRound";
+
+useHead({
+  title: "Home" 
+});
 
 const game = ref<Game>();
 const gameRound = ref<GameRound>();
