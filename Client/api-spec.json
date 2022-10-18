@@ -5,7 +5,7 @@
     "version": "1.0"
   },
   "paths": {
-    "/game/init": {
+    "/api/game/init": {
       "post": {
         "tags": [
           "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
@@ -24,7 +24,7 @@
         }
       }
     },
-    "/game/{gameId}/{gameSetId}/connect": {
+    "/api/game/{gameId}/{gameSetId}/connect": {
       "post": {
         "tags": [
           "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
@@ -63,7 +63,7 @@
         }
       }
     },
-    "/game/{gameId}/createLobby": {
+    "/api/game/{gameId}/createLobby": {
       "post": {
         "tags": [
           "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
@@ -101,7 +101,7 @@
         }
       }
     },
-    "/game/{gameId}/{gameSetId}/activate/{playerId}": {
+    "/api/game/{gameId}/{gameSetId}/activate/{playerId}": {
       "post": {
         "tags": [
           "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
@@ -149,7 +149,7 @@
         }
       }
     },
-    "/game/{gameId}/start": {
+    "/api/game/{gameId}/start": {
       "post": {
         "tags": [
           "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
@@ -179,7 +179,7 @@
         }
       }
     },
-    "/gameRound/{gameRoundId}/lasertagSet/{sourceLasertagSetId}/shotFired": {
+    "/api/gameRound/{gameRoundId}/lasertagSet/{sourceLasertagSetId}/shotFired": {
       "post": {
         "tags": [
           "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
@@ -218,7 +218,7 @@
         }
       }
     },
-    "/gameRound/{gameRoundId}/lasertagSet/{sourceLasertagSetId}/got-hit-from-lasertagSet/{targetLasertagSetId}": {
+    "/api/gameRound/{gameRoundId}/lasertagSet/{sourceLasertagSetId}/got-hit-from-lasertagSet/{targetLasertagSetId}": {
       "post": {
         "tags": [
           "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
@@ -259,6 +259,36 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GameRoundApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gameRound/{gameRoundId}/stats": {
+      "get": {
+        "tags": [
+          "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
+        ],
+        "parameters": [
+          {
+            "name": "gameRoundId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScoreBoardApiResult"
                 }
               }
             }
@@ -506,6 +536,42 @@
           "hitRatio": {
             "type": "number",
             "format": "double",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ScoreBoard": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "shotsFired": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "shotsHit": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ScoreBoardApiResult": {
+        "type": "object",
+        "properties": {
+          "output": {
+            "$ref": "#/components/schemas/ScoreBoard"
+          },
+          "success": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true,
             "readOnly": true
           }
         },

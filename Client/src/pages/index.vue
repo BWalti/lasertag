@@ -67,10 +67,9 @@
 </template>
 
 <script setup lang="ts">
-import { Game as GameService } from "../services/Game";
+import { Api  } from "../services/Api";
 import { Game, GameRound } from "../services/data-contracts";
 import { lasertagApiHttpClient } from "../utils/httpClient";
-import { GameRound as GameRoundService } from "../services/GameRound";
 
 useHead({
   title: "Home"
@@ -78,11 +77,10 @@ useHead({
 
 const game = ref<Game>();
 const gameRound = ref<GameRound>();
-const gameService = new GameService(lasertagApiHttpClient);
-const gameRoundService = new GameRoundService(lasertagApiHttpClient);
+const api = new Api(lasertagApiHttpClient);
 
 const initGame = async function () {
-  var result = await gameService.initCreate();
+  var result = await api.gameInitCreate();
   game.value = result.output;
 };
 
@@ -94,7 +92,7 @@ const connectLasertag = async function () {
   const gameSetId = crypto.randomUUID();
   console.log(`Generated GameSet ID: ${gameSetId}`);
 
-  var result = await gameService.connectCreate(game.value!.gameId!, gameSetId);
+  var result = await api.gameConnectCreate(game.value!.gameId!, gameSetId);
   game.value = result.output;
 };
 
@@ -103,7 +101,7 @@ const createLobby = async function () {
     return;
   }
 
-  var result = await gameService.createLobbyCreate(game.value!.gameId!);
+  var result = await api.gameCreateLobbyCreate(game.value!.gameId!);
   game.value = result.output;
 };
 
@@ -113,7 +111,7 @@ const activateGameSet = async function (gameSetId: string) {
   }
 
   const playerId = crypto.randomUUID();
-  var result = await gameService.activateCreate(
+  var result = await api.gameActivateCreate(
     game.value!.gameId!,
     gameSetId,
     playerId,
@@ -126,17 +124,17 @@ const startGame = async function () {
     return;
   }
 
-  var result = await gameService.startCreate(game.value!.gameId!);
+  var result = await api.gameStartCreate(game.value!.gameId!);
   game.value = result.game?.output;
   gameRound.value = result.gameRound?.output;
 };
 
 const fire = async function(sourceId: string, targetId: string) {
-  var result = await gameRoundService.lasertagSetShotFiredCreate(gameRound.value!.id!, sourceId);
+  var result = await api.gameRoundLasertagSetShotFiredCreate(gameRound.value!.id!, sourceId);
   gameRound.value = result.output;
 
   if(targetId){
-    var result = await gameRoundService.lasertagSetGotHitFromLasertagSetCreate(gameRound.value!.id!, sourceId, targetId);
+    var result = await api.gameRoundLasertagSetGotHitFromLasertagSetCreate(gameRound.value!.id!, sourceId, targetId);
     gameRound.value = result.output;
   }
 };

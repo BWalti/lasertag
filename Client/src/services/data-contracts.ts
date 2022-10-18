@@ -115,3 +115,20 @@ export interface PlayerStats {
   /** @format double */
   hitRatio?: number;
 }
+
+export interface ScoreBoard {
+  /** @format uuid */
+  id?: string;
+
+  /** @format int32 */
+  shotsFired?: number;
+
+  /** @format int32 */
+  shotsHit?: number;
+}
+
+export interface ScoreBoardApiResult {
+  output?: ScoreBoard;
+  success?: boolean;
+  message?: string | null;
+}

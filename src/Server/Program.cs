@@ -1,8 +1,10 @@
 ﻿using Lasertag.DomainModel.DomainEvents;
+using Lasertag.Manager;
 using Lasertag.Manager.Game;
 using Lasertag.Manager.GameRound;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
+using Marten.Events.Projections;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,8 +28,6 @@ host.UseOrleans((_, builder) =>
     builder.AddLogStorageBasedLogConsistencyProviderAsDefault();
     builder.AddCustomStorageBasedLogConsistencyProviderAsDefault();
 
-
-
     builder.AddActivityPropagation();
 });
 
@@ -43,11 +43,11 @@ host.ConfigureLogging(builder =>
 
 host.ConfigureServices((context, services) =>
 {
-    services.AddHostedService<InitializeStuff>();
-
     services.AddLogging();
     services.AddTransient<MartenJournaledGrainAdapter<GameState, IDomainEventBase>>();
     services.AddTransient<MartenJournaledGrainAdapter<GameRoundState, IDomainEventBase>>();
+
+    services.AddHostedService<InitializeStuff>();
 
     services.AddSingleton(provider =>
         provider.GetServiceByName<IGrainStorage>(ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME));
@@ -61,6 +61,8 @@ host.ConfigureServices((context, services) =>
             {
                 o.AutoCreateSchemaObjects = AutoCreate.All;
             }
+
+            o.Projections.Add<ScoreBoardProjection>(ProjectionLifecycle.Async);
 
 #pragma warning disable S125
             // o.Projections.SelfAggregate<GameRoundState>(ProjectionLifecycle.Async);
