@@ -1,24 +1,18 @@
 <route lang="json">
-  {
-    "meta": {
-      "title": "Home"
-    }
+{
+  "meta": {
+    "title": "Home"
   }
-  </route>
+}
+</route>
   
-  <template>
+<template>
   <MainLayout>
     <div class="flex gap-2">
       <PrimaryButton @click="initGame">Init Game</PrimaryButton>
-      <SecondaryButton @click="connectLasertag" v-if="isGameInInitializedState"
-        >Connect LasertagSet</SecondaryButton
-      >
-      <SecondaryButton @click="createLobby" v-if="isGameInInitializedState"
-        >Create Lobby</SecondaryButton
-      >
-      <SecondaryButton @click="startGame" v-if="isGameInLobbyState"
-        >Start Game</SecondaryButton
-      >
+      <SecondaryButton @click="connectLasertag" v-if="isGameInInitializedState">Connect LasertagSet</SecondaryButton>
+      <SecondaryButton @click="createLobby" v-if="isGameInInitializedState">Create Lobby</SecondaryButton>
+      <SecondaryButton @click="startGame" v-if="isGameInLobbyState">Start Game</SecondaryButton>
     </div>
 
     <div class="m-2 rounded-md border border-2 border-blue-400 p-4">
@@ -30,40 +24,43 @@
     <div class="bg-gray-100 p-4">
       <h3 class="mb-4 text-lg font-semibold">Connected Game Sets:</h3>
 
-      <div
-        v-for="gameSet in lasertagSets"
-        :key="gameSet.id"
-        class="my-4 rounded-md border-b border-gray-200 bg-white px-4 py-5 sm:px-6"
-      >
-        <h3 class="text-lg font-medium leading-6 text-gray-900">
-          Name
-          <span class="text-sm font-normal text-gray-400"
-            >({{ gameSet.id }})</span
-          >
-        </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 items-stretch gap-2">
 
-        <span>- {{ gameSet.id }}</span>
-        <span
-          class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
-          :class="{
+        <div v-for="gameSet in lasertagSets" :key="gameSet.id" class="relative rounded-md border-b p-4 bg-white">
+          <h3 class="text-lg font-medium leading-6 text-gray-900 rounded p-2" :class="{
+            'bg-white': gameSet.color === undefined,
+          'bg-red-100': gameSet.color == 'Red',
+          'bg-blue-100': gameSet.color == 'Blue',
+          'bg-yellow-100': gameSet.color == 'Yellow',
+          'bg-green-100': gameSet.color == 'Green',
+          'bg-turquoise-100': gameSet.color == 'Turquoise',
+          'bg-pink-100': gameSet.color == 'Pink',
+          'bg-violet-100': gameSet.color == 'Violet',
+          'bg-white-100': gameSet.color == 'White',
+          'text-black-800': gameSet.color == 'White',
+          }">
+            {{ gameSet.name }}
+          </h3>
+          <p class="text-sm font-normal text-gray-400">({{ gameSet.id }})</p>
+
+          <div class="absolute top-3 right-2 rounded-full w-16 px-2.5 py-0.5 text-xs font-medium border" :class="{
             'bg-green-100': gameSet.isActive,
             'text-green-800': gameSet.isActive,
+            'border-greem-800': gameSet.isActive,
             'bg-red-100': !gameSet.isActive,
             'text-red-800': !gameSet.isActive,
-          }"
-          >{{ gameSet.isActive ? "Online" : "Offline" }}</span
-        >
+            'border-red-800': !gameSet.isActive,
+          }">{{ gameSet.isActive ? "Online" : "Offline" }}</div>
 
-        <span
-          class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800"
-          >{{ gameSet.color }}</span
-        >
-        <SecondaryButton
-          @click="activateGameSet(gameSet.id!)"
-          class="m-2"
-          v-if="isGameInLobbyState && !gameSet.isActive"
-          >Activate LasertagSet</SecondaryButton
-        >
+
+          <SecondaryButton @click="activateGameSet(gameSet.id!)" class="m-2"
+            v-if="isGameInLobbyState && !gameSet.isActive">Activate LasertagSet</SecondaryButton>
+
+          <div v-if="isGameInGameStartedState">
+            <SecondaryButton @click="fire(gameSet.id!, gameSet.fireAt)" class="m-2">Fire At</SecondaryButton>
+            <input type="text" v-model="gameSet.fireAt" />
+          </div>
+        </div>
       </div>
     </div>
   </MainLayout>
@@ -76,7 +73,7 @@ import { lasertagApiHttpClient } from "../utils/httpClient";
 import { GameRound as GameRoundService } from "../services/GameRound";
 
 useHead({
-  title: "Home" 
+  title: "Home"
 });
 
 const game = ref<Game>();
@@ -134,6 +131,16 @@ const startGame = async function () {
   gameRound.value = result.gameRound?.output;
 };
 
+const fire = async function(sourceId: string, targetId: string) {
+  var result = await gameRoundService.lasertagSetShotFiredCreate(gameRound.value!.id!, sourceId);
+  gameRound.value = result.output;
+
+  if(targetId){
+    var result = await gameRoundService.lasertagSetGotHitFromLasertagSetCreate(gameRound.value!.id!, sourceId, targetId);
+    gameRound.value = result.output;
+  }
+};
+
 const isGameIdAvailable = computed(() => {
   if (game && game.value && game.value.gameId) {
     return true;
@@ -143,7 +150,7 @@ const isGameIdAvailable = computed(() => {
 });
 
 const isGameInInitializedState = computed(() => {
-  if (game && game.value && game.value.status == 0) {
+  if (game && game.value && game.value.status == "Initialized") {
     return true;
   }
 
@@ -151,7 +158,15 @@ const isGameInInitializedState = computed(() => {
 });
 
 const isGameInLobbyState = computed(() => {
-  if (game && game.value && game.value.status == 1) {
+  if (game && game.value && game.value.status == "LobyOpened") {
+    return true;
+  }
+
+  return false;
+});
+
+const isGameInGameStartedState = computed(() => {
+  if (game && game.value && game.value.status == "GameStarted") {
     return true;
   }
 
@@ -170,6 +185,7 @@ const lasertagSets = computed(() => {
       id: item.id,
       isActive: false,
       playerId: null,
+      name: item.name,
     };
   });
 

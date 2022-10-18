@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Lasertag.DomainModel;
+using Lasertag.DomainModel.Data;
 using Lasertag.DomainModel.DomainEvents.GameEvents;
 using Orleans;
 
@@ -18,7 +19,8 @@ public class GameState : DomainModel.Game
     [UsedImplicitly]
     public void Apply(GameSetConnected e)
     {
-        ConnectedGameSets.Add(new LasertagSet(e.GameSetId, "Name"));
+        var randomName = PokemonNames.GetRandomName();
+        ConnectedGameSets.Add(new LasertagSet(e.GameSetId, randomName));
     }
 
     [UsedImplicitly]

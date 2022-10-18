@@ -36,10 +36,10 @@ public class GameRoundState : DomainModel.GameRound
     public void Apply(PlayerGotHitBy e)
     {
         ShotsHit += 1;
-        var sourcePlayerStatistics = PlayerStats.First(p => p.PlayerId == e.SourcePlayerId);
-        sourcePlayerStatistics.GotHit += 1;
+        var target = PlayerStats.First(p => p.PlayerId == e.TargetPlayerId);
+        target.GotHit += 1;
 
-        var targetPlayerStatistics = PlayerStats.First(p => p.PlayerId == e.TargetPlayerId);
-        targetPlayerStatistics.ShotsHit += 1;
+        var source = PlayerStats.First(p => p.PlayerId == e.SourcePlayerId);
+        source.ShotsHit += 1;
     }
 }

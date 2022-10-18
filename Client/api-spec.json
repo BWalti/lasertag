@@ -437,37 +437,34 @@
       },
       "GameRoundStatus": {
         "enum": [
-          0,
-          1,
-          2
+          "Created",
+          "Started",
+          "Finished"
         ],
-        "type": "integer",
-        "format": "int32"
+        "type": "string"
       },
       "GameStatus": {
         "enum": [
-          0,
-          1,
-          2,
-          3,
-          -1
+          "Initialized",
+          "LobyOpened",
+          "GameStarted",
+          "GameFinished",
+          "None"
         ],
-        "type": "integer",
-        "format": "int32"
+        "type": "string"
       },
       "GroupColor": {
         "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7
+          "Red",
+          "Blue",
+          "Yellow",
+          "Green",
+          "Turquoise",
+          "Pink",
+          "Violet",
+          "White"
         ],
-        "type": "integer",
-        "format": "int32"
+        "type": "string"
       },
       "LasertagSet": {
         "type": "object",
@@ -475,6 +472,10 @@
           "id": {
             "type": "string",
             "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

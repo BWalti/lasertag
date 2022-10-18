@@ -8,6 +8,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="EasyNetQ.DI.Microsoft" />
+		<PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" />
 		<PackageReference Include="Swashbuckle.AspNetCore" />
 		<PackageReference Include="Newtonsoft.Json" />
 	</ItemGroup>

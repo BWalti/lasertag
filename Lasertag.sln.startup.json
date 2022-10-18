@@ -83,6 +83,14 @@
         }
       },
       "SolutionConfiguration": "Debug"
+    },
+    "Server": {
+      "Projects": {
+        "Server": {
+          "StartProject": true
+        }
+      },
+      "SolutionConfiguration": "Debug"
     }
   }
 }

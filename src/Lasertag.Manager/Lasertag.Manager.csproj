@@ -14,4 +14,8 @@
 		<ProjectReference Include="..\Orleans.EventSourcing.CustomStorage.Marten\Orleans.EventSourcing.CustomStorage.Marten.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Server\" />
+	</ItemGroup>
+
 </Project>

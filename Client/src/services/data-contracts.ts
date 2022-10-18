@@ -71,24 +71,29 @@ export interface GameRoundStartResult {
   gameRound?: GameRoundApiResult;
 }
 
-/**
- * @format int32
- */
-export type GameRoundStatus = 0 | 1 | 2;
+export type GameRoundStatus = "Created" | "Started" | "Finished";
 
-/**
- * @format int32
- */
-export type GameStatus = 0 | 1 | 2 | 3 | -1;
+export type GameStatus =
+  | "Initialized"
+  | "LobyOpened"
+  | "GameStarted"
+  | "GameFinished"
+  | "None";
 
-/**
- * @format int32
- */
-export type GroupColor = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export type GroupColor =
+  | "Red"
+  | "Blue"
+  | "Yellow"
+  | "Green"
+  | "Turquoise"
+  | "Pink"
+  | "Violet"
+  | "White";
 
 export interface LasertagSet {
   /** @format uuid */
   id?: string;
+  name?: string | null;
 }
 
 export interface PlayerStats {

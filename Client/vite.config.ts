@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+
 import AutoImport from "unplugin-auto-import/vite";
 import VueRouter from "unplugin-vue-router/vite";
 import { VueRouterAutoImports } from "unplugin-vue-router";
@@ -11,7 +12,7 @@ export default defineConfig({
   plugins: [
     VueRouter({
       importMode: "sync",
-      
+
       // Folder(s) to scan for vue components and generate routes. Can be a string, or
       // an object, or an array of those.
       routesFolder: "src/pages",
@@ -22,14 +23,14 @@ export default defineConfig({
       dts: "./typed-router.d.ts",
     }),
     vue(),
-    Components({ 
-      dirs:[
+    Components({
+      dirs: [
         './src/components',
         './src/layouts'
       ],
       resolvers: [HeadlessUiResolver()],
       dts: true
-     }),
+    }),
     AutoImport({
       include: [
         /\.vue$/, /\.vue\?vue/, // .vue
@@ -43,8 +44,10 @@ export default defineConfig({
     }),
   ],
   server: {
-    open: false,
     host: true,
     port: 5173,
+    hmr:{
+      clientPort: 5010
+    }
   },
 });

@@ -3,13 +3,16 @@ using Lasertag.Manager.Game;
 using Lasertag.Manager.GameRound;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
-using Marten.Events.Projections;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orleans.EventSourcing.CustomStorage.Marten;
 using Orleans.Hosting;
+using Orleans.Providers;
+using Orleans.Runtime;
+using Orleans.Storage;
+using Server;
 using Weasel.Core;
 
 // docker run --name martendb -p 5432:5432 -e POSTGRES_USER=demo -e POSTGRES_PASSWORD=demo -e POSTGRES_DATABASE=demo postgres
@@ -22,6 +25,8 @@ host.UseOrleans((_, builder) =>
 
     builder.AddLogStorageBasedLogConsistencyProviderAsDefault();
     builder.AddCustomStorageBasedLogConsistencyProviderAsDefault();
+
+
 
     builder.AddActivityPropagation();
 });
@@ -38,13 +43,16 @@ host.ConfigureLogging(builder =>
 
 host.ConfigureServices((context, services) =>
 {
+    services.AddHostedService<InitializeStuff>();
+
     services.AddLogging();
     services.AddTransient<MartenJournaledGrainAdapter<GameState, IDomainEventBase>>();
     services.AddTransient<MartenJournaledGrainAdapter<GameRoundState, IDomainEventBase>>();
 
-#pragma warning disable S125
-    // services.AddSingleton<IGrainStorage, CustomGrainStorage>();
-#pragma warning restore S125
+    services.AddSingleton(provider =>
+        provider.GetServiceByName<IGrainStorage>(ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME));
+    services.AddSingletonNamedService<IGrainStorage>(ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME,
+        (provider, _) => new MartenGrainStorage(provider.GetRequiredService<IDocumentSession>()));
 
     services.AddMarten(o =>
         {

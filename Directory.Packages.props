@@ -23,6 +23,9 @@
     <PackageVersion Include="Bogus">
       <Version>34.0.2</Version>
     </PackageVersion>
+    <PackageVersion Include="Microsoft.AspNetCore.SpaServices.Extensions">
+      <Version>6.0.10</Version>
+    </PackageVersion>
     <PackageVersion Include="NetEscapades.AspNetCore.SecurityHeaders">
       <Version>0.17.0</Version>
     </PackageVersion>

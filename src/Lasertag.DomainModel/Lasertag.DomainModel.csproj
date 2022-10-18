@@ -12,6 +12,7 @@
 
 	<ItemGroup>
 	  <Folder Include="DomainEvents\ConfigurationEvents\" />
+	  <Folder Include="Data\" />
 	</ItemGroup>
 
 </Project>

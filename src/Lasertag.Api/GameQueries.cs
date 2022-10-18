@@ -7,4 +7,5 @@ namespace Lasertag.Api;
 [StatelessWorker]
 public class GameQueries : Grain, IGameQueries
 {
+
 }
