@@ -7,6 +7,9 @@ At the end there shall be:
 - a few "targets" (the target part of the GameSet)
 - one Server (this repository)
 - a PostgresDB as persistence
+- an Admin API & Web App
+- a realtime statistics Web App
+- more :)
 
 ## Software
 
