@@ -1,7 +1,6 @@
 ﻿using Lasertag.DomainModel;
 using Lasertag.DomainModel.DomainEvents;
-using Lasertag.DomainModel.DomainEvents.GameEvents;
-using Lasertag.DomainModel.DomainEvents.RoundEvents;
+using static Lasertag.DomainModel.DomainEvents.GameRoundEvents;
 using Lasertag.Manager.GameRound;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -20,8 +19,42 @@ public class GameRoundCommands : Grain, IGameRoundCommands
 
     public EventRaiser<IGameRoundManager, GameRound, GameRoundState, IDomainEventBase> EventRaiser { get; }
 
-    public async Task<ApiResult<GameRound>> StartGameRound(Guid gameRoundId,
-        IEnumerable<ActiveGameSet> activeLasertagSets, IEnumerable<GameGroup> groups)
+
+    public async Task<ApiResult<GameRound>> CreateLobby(Guid gameRoundId, GameGroup[] gameSetGroups)
+    {
+        return await EventRaiser.RaiseEvent(gameRoundId, () => new LobbyCreated(gameRoundId, gameSetGroups));
+    }
+
+    public async Task<ApiResult<GameRound>> ActivateGameSet(Guid gameRoundId, Guid gameSetId, Guid playerId)
+    {
+        return await EventRaiser.RaiseEventWithChecks(gameRoundId, gameRound =>
+        {
+            if (gameRound.Status != GameRoundStatus.Created)
+            {
+                throw new InvalidStateException("Game is not ready for players!");
+            }
+
+            if (gameRound.ActiveGameSets.All(gs => gs.GameSetId != gameSetId))
+            {
+                throw new InvalidOperationException("This LasertagSet is unknown!");
+            }
+
+            if (gameRound.ActiveGameSets.Any(gs => gs.GameSetId == gameSetId))
+            {
+                throw new InvalidOperationException("This LasertagSet is already active!");
+            }
+
+            if (gameRound.ActiveGameSets.Any(gs => gs.PlayerId == playerId))
+            {
+                throw new InvalidOperationException("This Player is already active!");
+            }
+
+            return new GameSetActivated(gameRoundId, playerId, gameSetId);
+        });
+    }
+
+
+    public async Task<ApiResult<GameRound>> Start(Guid gameRoundId)
     {
         return await EventRaiser.RaiseEventWithChecks(gameRoundId, gameRound =>
         {
@@ -30,7 +63,7 @@ public class GameRoundCommands : Grain, IGameRoundCommands
                 throw new InvalidStateException("GameRound can only be started once!");
             }
 
-            return new GameRoundStarted(gameRoundId, activeLasertagSets, groups);
+            return new Started(gameRoundId);
         });
     }
 
@@ -50,7 +83,7 @@ public class GameRoundCommands : Grain, IGameRoundCommands
             }
 
             var sourceGroup = GetGroup(gameRound, sourceLasertagSetId);
-            return new PlayerFiredShot(sourceLasertagSetId, activeGameSet.PlayerId, sourceGroup.GroupId);
+            return new PlayerFiredShot(gameRoundId, sourceLasertagSetId, activeGameSet.PlayerId, sourceGroup.GroupId);
         });
     }
 
@@ -77,7 +110,7 @@ public class GameRoundCommands : Grain, IGameRoundCommands
 
             var sourceGroup = GetGroup(gameRound, sourceLasertagSetId);
             var targetGroup = GetGroup(gameRound, targetGameSetId);
-            return new PlayerGotHitBy(sourceLasertagSetId, targetGameSetId, sourceActiveGameSet.PlayerId, targetActiveGameSet.PlayerId, sourceGroup.GroupId, targetGroup.GroupId);
+            return new PlayerGotHitBy(gameRoundId, sourceLasertagSetId, targetGameSetId, sourceActiveGameSet.PlayerId, targetActiveGameSet.PlayerId, sourceGroup.GroupId, targetGroup.GroupId);
         });
     }
 }

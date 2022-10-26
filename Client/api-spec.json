@@ -10,6 +10,55 @@
         "tags": [
           "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
         ],
+        "operationId": "InitGame",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/game/{gameId}/{gameSetId}": {
+      "post": {
+        "tags": [
+          "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
+        ],
+        "operationId": "RegisterGameSet",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "gameSetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "isTargetOnly",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -29,6 +78,7 @@
         "tags": [
           "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
         ],
+        "operationId": "ConnectGameSet",
         "parameters": [
           {
             "name": "gameId",
@@ -68,6 +118,7 @@
         "tags": [
           "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
         ],
+        "operationId": "CreateGameRound",
         "parameters": [
           {
             "name": "gameId",
@@ -101,14 +152,45 @@
         }
       }
     },
-    "/api/game/{gameId}/{gameSetId}/activate/{playerId}": {
+    "/api/game/{gameId}/start": {
+      "post": {
+        "tags": [
+          "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
+        ],
+        "operationId": "StartGameRound",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameRoundStartResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gameRound/{gameRoundId}/lasertagSet/{gameSetId}/activate/{playerId}": {
       "post": {
         "tags": [
           "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
         ],
         "parameters": [
           {
-            "name": "gameId",
+            "name": "gameRoundId",
             "in": "path",
             "required": true,
             "schema": {
@@ -141,37 +223,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/game/{gameId}/start": {
-      "post": {
-        "tags": [
-          "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
-        ],
-        "parameters": [
-          {
-            "name": "gameId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GameRoundStartResult"
+                  "$ref": "#/components/schemas/GameRoundApiResult"
                 }
               }
             }
@@ -320,24 +372,10 @@
             "type": "string",
             "format": "uuid"
           },
-          "connectedGameSets": {
+          "gameSets": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/LasertagSet"
-            },
-            "nullable": true
-          },
-          "activeGameSets": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ActiveGameSet"
-            },
-            "nullable": true
-          },
-          "gameSetGroups": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GameGroup"
+              "$ref": "#/components/schemas/GameSet"
             },
             "nullable": true
           },
@@ -379,7 +417,7 @@
           "gameSets": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/LasertagSet"
+              "$ref": "#/components/schemas/GameSet"
             },
             "nullable": true
           },
@@ -396,20 +434,12 @@
             "type": "string",
             "format": "uuid"
           },
-          "shotsFired": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "playerStats": {
+          "gameSetGroups": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PlayerStats"
+              "$ref": "#/components/schemas/GameGroup"
             },
             "nullable": true
-          },
-          "shotsHit": {
-            "type": "integer",
-            "format": "int32"
           },
           "version": {
             "type": "integer",
@@ -422,13 +452,6 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ActiveGameSet"
-            },
-            "nullable": true
-          },
-          "gameSetGroups": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GameGroup"
             },
             "nullable": true
           }
@@ -473,6 +496,39 @@
         ],
         "type": "string"
       },
+      "GameSet": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isOnline": {
+            "type": "boolean"
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/GameSetConfiguration"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GameSetConfiguration": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isTargetOnly": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "GameStatus": {
         "enum": [
           "Initialized",
@@ -495,51 +551,6 @@
           "White"
         ],
         "type": "string"
-      },
-      "LasertagSet": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PlayerStats": {
-        "type": "object",
-        "properties": {
-          "playerId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "gameSetId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "shotsFired": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "gotHit": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "shotsHit": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "hitRatio": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
       },
       "ScoreBoard": {
         "type": "object",

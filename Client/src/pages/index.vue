@@ -10,7 +10,7 @@
   <MainLayout>
     <div class="flex gap-2">
       <PrimaryButton @click="initGame">Init Game</PrimaryButton>
-      <SecondaryButton @click="connectLasertag" v-if="isGameInInitializedState">Connect LasertagSet</SecondaryButton>
+      <SecondaryButton @click="registerLasertag" v-if="isGameInInitializedState">Register LasertagSet</SecondaryButton>
       <SecondaryButton @click="createLobby" v-if="isGameInInitializedState">Create Lobby</SecondaryButton>
       <SecondaryButton @click="startGame" v-if="isGameInLobbyState">Start Game</SecondaryButton>
     </div>
@@ -29,15 +29,15 @@
         <div v-for="gameSet in lasertagSets" :key="gameSet.id" class="relative rounded-md border-b p-4 bg-white">
           <h3 class="text-lg font-medium leading-6 text-gray-900 rounded p-2" :class="{
             'bg-white': gameSet.color === undefined,
-          'bg-red-100': gameSet.color == 'Red',
-          'bg-blue-100': gameSet.color == 'Blue',
-          'bg-yellow-100': gameSet.color == 'Yellow',
-          'bg-green-100': gameSet.color == 'Green',
-          'bg-turquoise-100': gameSet.color == 'Turquoise',
-          'bg-pink-100': gameSet.color == 'Pink',
-          'bg-violet-100': gameSet.color == 'Violet',
-          'bg-white-100': gameSet.color == 'White',
-          'text-black-800': gameSet.color == 'White',
+            'bg-red-100': gameSet.color == 'Red',
+            'bg-blue-100': gameSet.color == 'Blue',
+            'bg-yellow-100': gameSet.color == 'Yellow',
+            'bg-green-100': gameSet.color == 'Green',
+            'bg-turquoise-100': gameSet.color == 'Turquoise',
+            'bg-pink-100': gameSet.color == 'Pink',
+            'bg-violet-100': gameSet.color == 'Violet',
+            'bg-white-100': gameSet.color == 'White',
+            'text-black-800': gameSet.color == 'White',
           }">
             {{ gameSet.name }}
           </h3>
@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { Api  } from "../services/Api";
+import { Api } from "../services/Api";
 import { Game, GameRound } from "../services/data-contracts";
 import { lasertagApiHttpClient } from "../utils/httpClient";
 
@@ -80,11 +80,11 @@ const gameRound = ref<GameRound>();
 const api = new Api(lasertagApiHttpClient);
 
 const initGame = async function () {
-  var result = await api.gameInitCreate();
+  var result = await api.initGame();
   game.value = result.output;
 };
 
-const connectLasertag = async function () {
+const registerLasertag = async function () {
   if (!isGameIdAvailable.value) {
     return;
   }
@@ -92,7 +92,7 @@ const connectLasertag = async function () {
   const gameSetId = crypto.randomUUID();
   console.log(`Generated GameSet ID: ${gameSetId}`);
 
-  var result = await api.gameConnectCreate(game.value!.gameId!, gameSetId);
+  var result = await api.registerGameSet(game.value!.gameId!, gameSetId, { isTargetOnly: false });
   game.value = result.output;
 };
 
@@ -101,7 +101,7 @@ const createLobby = async function () {
     return;
   }
 
-  var result = await api.gameCreateLobbyCreate(game.value!.gameId!);
+  var result = await api.createGameRound(game.value!.gameId!);
   game.value = result.output;
 };
 
@@ -110,11 +110,9 @@ const activateGameSet = async function (gameSetId: string) {
     return;
   }
 
-  const playerId = crypto.randomUUID();
-  var result = await api.gameActivateCreate(
+  var result = await api.connectGameSet(
     game.value!.gameId!,
-    gameSetId,
-    playerId,
+    gameSetId
   );
   game.value = result.output;
 };
@@ -124,16 +122,16 @@ const startGame = async function () {
     return;
   }
 
-  var result = await api.gameStartCreate(game.value!.gameId!);
+  var result = await api.startGameRound(game.value!.gameId!);
   game.value = result.game?.output;
   gameRound.value = result.gameRound?.output;
 };
 
-const fire = async function(sourceId: string, targetId: string) {
+const fire = async function (sourceId: string, targetId: string) {
   var result = await api.gameRoundLasertagSetShotFiredCreate(gameRound.value!.id!, sourceId);
   gameRound.value = result.output;
 
-  if(targetId){
+  if (targetId) {
     var result = await api.gameRoundLasertagSetGotHitFromLasertagSetCreate(gameRound.value!.id!, sourceId, targetId);
     gameRound.value = result.output;
   }
@@ -154,7 +152,6 @@ const isGameInInitializedState = computed(() => {
 
   return false;
 });
-
 const isGameInLobbyState = computed(() => {
   if (game && game.value && game.value.status == "LobyOpened") {
     return true;
@@ -172,9 +169,9 @@ const isGameInGameStartedState = computed(() => {
 });
 
 const lasertagSets = computed(() => {
-  const connected = game.value?.connectedGameSets;
-  const groups = game.value?.gameSetGroups;
-  const active = game.value?.activeGameSets;
+  const connected = game.value?.gameSets;
+  // const groups = game.value?.gameSetGroups;
+  // const active = game.value?.activeGameSets;
 
   var obj: any = {};
 
@@ -187,17 +184,17 @@ const lasertagSets = computed(() => {
     };
   });
 
-  groups?.forEach((group) => {
-    group.gameSets?.forEach((gameSet) => {
-      obj[gameSet.id!].groupId = group.groupId;
-      obj[gameSet.id!].color = group.color;
-    });
-  });
+  // groups?.forEach((group) => {
+  //   group.gameSets?.forEach((gameSet) => {
+  //     obj[gameSet.id!].groupId = group.groupId;
+  //     obj[gameSet.id!].color = group.color;
+  //   });
+  // });
 
-  active?.forEach((item) => {
-    obj[item.gameSetId!].isActive = true;
-    obj[item.gameSetId!].playerId = item.playerId!;
-  });
+  // active?.forEach((item) => {
+  //   obj[item.gameSetId!].isActive = true;
+  //   obj[item.gameSetId!].playerId = item.playerId!;
+  // });
 
   return obj;
 });

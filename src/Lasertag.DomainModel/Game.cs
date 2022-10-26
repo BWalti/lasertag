@@ -7,11 +7,7 @@ public class Game
 {
     [Id(0)] public Guid GameId { get; set; }
 
-    [Id(1)] public List<LasertagSet> ConnectedGameSets { get; set; } = new();
-
-    [Id(2)] public List<ActiveGameSet> ActiveGameSets { get; set; } = new();
-
-    [Id(4)] public GameGroup[] GameSetGroups { get; set; } = { };
+    [Id(1)] public List<GameSet> GameSets { get; set; } = new();
 
     [Id(5)] public GameStatus Status { get; set; } = GameStatus.None;
 

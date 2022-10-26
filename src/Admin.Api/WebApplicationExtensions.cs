@@ -17,6 +17,13 @@ public static class WebApplicationExtensions
 
     public static WebApplication MapGameRoundEndpoints(this WebApplication app)
     {
+        app.MapPost("/api/gameRound/{gameRoundId}/lasertagSet/{gameSetId}/activate/{playerId}",
+            async(IGameRoundCommands gameRoundCommands, [FromRoute] Guid gameRoundId, [FromRoute] Guid gameSetId,
+                [FromRoute] Guid playerId) =>
+            {
+            return await gameRoundCommands.ActivateGameSet(gameRoundId, gameSetId, playerId);
+        }).WithDisplayName("Activate GameSet");
+
         app.MapPost("/api/gameRound/{gameRoundId}/lasertagSet/{sourceLasertagSetId}/shotFired",
             async(IGameRoundCommands gameRoundCommands, [FromRoute] Guid gameRoundId,
                 [FromRoute] Guid sourceLasertagSetId) =>
@@ -39,27 +46,35 @@ public static class WebApplicationExtensions
     public static WebApplication MapGameEndpoints(this WebApplication app)
     {
         app.MapPost("/api/game/init",
-                async (IGameCommands gameCommands) => { return await gameCommands.InitializeGame(Guid.NewGuid()); })
+                async (IGameCommands gameCommands) => await gameCommands.InitializeGame(Guid.NewGuid()))
+            .WithName("InitGame")
             .WithDisplayName("Initialize Game");
+
+
+        app.MapPost("/api/game/{gameId}/{gameSetId}",
+            async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromRoute] Guid gameSetId, [FromQuery] bool isTargetOnly) => await gameCommands.RegisterGameSet(gameId, new GameSetConfiguration
+            {
+                Id = gameSetId,
+                IsTargetOnly = isTargetOnly
+            }))
+            .WithName("RegisterGameSet")
+            .WithDisplayName("Register GameSet");
 
         app.MapPost("/api/game/{gameId}/{gameSetId}/connect",
             async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromRoute] Guid gameSetId) =>
             {
             return await gameCommands.ConnectGameSet(gameId, gameSetId);
-        }).WithDisplayName("Connect GameSet");
+        })
+            .WithName("ConnectGameSet")
+            .WithDisplayName("Connect GameSet");
 
         app.MapPost("/api/game/{gameId}/createLobby",
             async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromQuery] int ? numberOfGroups) =>
             {
             return await gameCommands.CreateLobby(gameId, numberOfGroups ?? 2);
-        }).WithDisplayName("Open Lobby");
-
-        app.MapPost("/api/game/{gameId}/{gameSetId}/activate/{playerId}",
-            async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromRoute] Guid gameSetId,
-                [FromRoute] Guid playerId) =>
-            {
-            return await gameCommands.ActivateGameSet(gameId, gameSetId, playerId);
-        }).WithDisplayName("Activate GameSet");
+        })
+            .WithName("CreateGameRound")
+            .WithDisplayName("Open Lobby");
 
         app.MapPost("/api/game/{gameId}/start",
             async(IGameCommands gameCommands, [FromRoute] Guid gameId) =>
@@ -67,7 +82,9 @@ public static class WebApplicationExtensions
             var startGameRound = await gameCommands.StartGameRound(gameId);
 
             return new GameRoundStartResult(startGameRound.Item1, startGameRound.Item2);
-        }).WithDisplayName("Start GameRound");
+        })
+            .WithName("StartGameRound")
+            .WithDisplayName("Start GameRound");
 
         return app;
     }

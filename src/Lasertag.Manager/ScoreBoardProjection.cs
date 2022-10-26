@@ -1,7 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Lasertag.DomainModel;
-using Lasertag.DomainModel.DomainEvents.GameEvents;
-using Lasertag.DomainModel.DomainEvents.RoundEvents;
+using static Lasertag.DomainModel.DomainEvents.GameRoundEvents;
 using Marten.Events.Aggregation;
 
 namespace Lasertag.Manager;
@@ -9,7 +8,7 @@ namespace Lasertag.Manager;
 public class ScoreBoardProjection : SingleStreamAggregation<ScoreBoard>
 {
     [UsedImplicitly]
-    public void Apply(ScoreBoard snapshot, GameRoundStarted e)
+    public void Apply(ScoreBoard snapshot, Started e)
     {
         snapshot.Id = e.GameRoundId;
     }

@@ -1,8 +1,9 @@
 ﻿using JetBrains.Annotations;
 using Lasertag.DomainModel;
 using Lasertag.DomainModel.Data;
-using Lasertag.DomainModel.DomainEvents.GameEvents;
 using Orleans;
+using static Lasertag.DomainModel.DomainEvents.InfrastructureEvents;
+using static Lasertag.DomainModel.DomainEvents.GameRoundEvents;
 
 namespace Lasertag.Manager.Game;
 
@@ -10,41 +11,55 @@ namespace Lasertag.Manager.Game;
 public class GameState : DomainModel.Game
 {
     [UsedImplicitly]
-    public void Apply(GameInitialized e)
+    public void Apply(GameServerInitialized e)
     {
         GameId = e.GameId;
         Status = GameStatus.Initialized;
     }
 
     [UsedImplicitly]
+    public void Apply(GameSetRegistered e)
+    {
+        var name = PokemonNames.GetRandomName();
+
+        // there probably need to be two different kind of configurations
+        // one with ID, one without.
+        GameSets.Add(new GameSet
+        {
+            Id = e.Configuration.Id,
+            Configuration = e.Configuration,
+            Name = name
+        });
+    }
+
+    [UsedImplicitly]
     public void Apply(GameSetConnected e)
     {
-        var randomName = PokemonNames.GetRandomName();
-        ConnectedGameSets.Add(new LasertagSet(e.GameSetId, randomName));
+        var set = GameSets.Single(gameSet => gameSet.Id == e.GameSetId);
+        set.IsOnline = true;
     }
 
     [UsedImplicitly]
     public void Apply(GameSetDisconnected e)
     {
-        var lasertagSet = ConnectedGameSets.First(set => set.Id == e.GameSetId);
-        ConnectedGameSets.Remove(lasertagSet);
+        var set = GameSets.Single(gameSet => gameSet.Id == e.GameSetId);
+        set.IsOnline = false;
     }
 
     [UsedImplicitly]
-    public void Apply(GameLobbyCreated e)
+    public void Apply(GameSetUnregistered e)
     {
-        GameSetGroups = e.GameSetGroups;
+        GameSets.RemoveAll(gameSet => gameSet.Id == e.GameSetId);
+    }
+
+    [UsedImplicitly]
+    public void Apply(LobbyCreated _)
+    {
         Status = GameStatus.LobyOpened;
     }
 
     [UsedImplicitly]
-    public void Apply(GameSetActivated e)
-    {
-        ActiveGameSets.Add(new ActiveGameSet(e.PlayerId, e.GameSetId));
-    }
-
-    [UsedImplicitly]
-    public void Apply(GameRoundStarted e)
+    public void Apply(Started e)
     {
         ActiveRoundId = e.GameRoundId;
         Status = GameStatus.GameStarted;

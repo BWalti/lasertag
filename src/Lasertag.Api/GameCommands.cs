@@ -1,6 +1,7 @@
 ﻿using Lasertag.DomainModel;
 using Lasertag.DomainModel.DomainEvents;
-using Lasertag.DomainModel.DomainEvents.GameEvents;
+using static Lasertag.DomainModel.DomainEvents.GameRoundEvents;
+using static Lasertag.DomainModel.DomainEvents.InfrastructureEvents;
 using Lasertag.Manager.Game;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -28,8 +29,18 @@ public class GameCommands : Grain, IGameCommands
                 throw new InvalidStateException("Can only Initialize game once after application start!");
             }
 
-            return new GameInitialized(gameId);
+            return new GameServerInitialized(gameId);
         });
+    }
+
+    public async Task<ApiResult<Game>> RegisterGameSet(Guid gameId, GameSetConfiguration configuration)
+    {
+        return await EventRaiser.RaiseEvent(gameId, () => new GameSetRegistered(configuration));
+    }
+
+    public async Task<ApiResult<Game>> UnregisterGameSet(Guid gameId, Guid gameSetId)
+    {
+        return await EventRaiser.RaiseEvent(gameId, () => new GameSetUnregistered(gameSetId));
     }
 
     public async Task<ApiResult<Game>> ConnectGameSet(Guid gameId, Guid gameSetId)
@@ -45,44 +56,26 @@ public class GameCommands : Grain, IGameCommands
         });
     }
 
-    public async Task<ApiResult<Game>> ActivateGameSet(Guid gameId, Guid gameSetId, Guid playerId)
+    public Task<ApiResult<Game>> DisconnectGameSet(Guid gameId, Guid gameSetId)
     {
-        return await EventRaiser.RaiseEventWithChecks(gameId, game =>
-        {
-            if (game.Status != GameStatus.LobyOpened)
-            {
-                throw new InvalidStateException("Game is not ready for players!");
-            }
-
-            if (game.ConnectedGameSets.All(gs => gs.Id != gameSetId))
-            {
-                throw new InvalidOperationException("This LasertagSet is unknown!");
-            }
-
-            if (game.ActiveGameSets.Any(gs => gs.GameSetId == gameSetId))
-            {
-                throw new InvalidOperationException("This LasertagSet is already active!");
-            }
-
-            if (game.ActiveGameSets.Any(gs => gs.PlayerId == playerId))
-            {
-                throw new InvalidOperationException("This Player is already active!");
-            }
-
-            return new GameSetActivated(playerId, gameSetId);
-        });
+        throw new NotImplementedException();
     }
+
 
     public async Task<ApiResult<Game>> CreateLobby(Guid gameId, int numberOfGroups)
     {
-        return await EventRaiser.RaiseEventWithChecks(gameId, game =>
+        var gameRoundId = Guid.NewGuid();
+        GameGroup[]? groups = null;
+
+        var task = await EventRaiser.RaiseEventWithChecks(gameId, game =>
         {
             if (game.Status != GameStatus.Initialized && game.Status != GameStatus.GameFinished)
             {
                 throw new InvalidStateException("Lobby cannot be created currently!");
             }
 
-            var groups = game.ConnectedGameSets
+            groups = game.GameSets
+                .Where(set => set.IsOnline)
                 .Select((s, i) => new { s, i })
                 .GroupBy(x => x.i % numberOfGroups)
                 .Select((g, i) => new GameGroup(
@@ -92,13 +85,23 @@ public class GameCommands : Grain, IGameCommands
                 ))
                 .ToArray();
 
-            return new GameLobbyCreated(groups);
+            return new LobbyCreated(gameRoundId, groups);
         });
+
+        if (groups != null)
+        {
+            var gameRoundCommands = GrainFactory.GetGrain<IGameRoundCommands>(0);
+            await gameRoundCommands.CreateLobby(gameRoundId, groups);
+        }
+
+        return task;
     }
 
     public async Task<(ApiResult<Game>, ApiResult<GameRound>)> StartGameRound(Guid gameId)
     {
-        var game = await EventRaiser.RaiseEventWithChecks(gameId, game => new GameRoundStarted(Guid.NewGuid(), game.ActiveGameSets, game.GameSetGroups));
+        var gameRoundId = Guid.NewGuid();
+
+        var game = await EventRaiser.RaiseEventWithChecks(gameId, game => new Started(gameRoundId));
         var gameRoundCommands = GrainFactory.GetGrain<IGameRoundCommands>(0);
 
         try
@@ -108,10 +111,7 @@ public class GameCommands : Grain, IGameCommands
                 throw new InvalidOperationException("GameRound ID not found!");
             }
 
-            var gameRound = await gameRoundCommands.StartGameRound(
-                game.Output.ActiveRoundId,
-                game.Output.ActiveGameSets,
-                game.Output.GameSetGroups);
+            var gameRound = await gameRoundCommands.Start(gameRoundId);
 
             if (gameRound.Output == null)
             {

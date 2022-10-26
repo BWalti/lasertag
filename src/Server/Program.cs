@@ -44,8 +44,8 @@ host.ConfigureLogging(builder =>
 host.ConfigureServices((context, services) =>
 {
     services.AddLogging();
-    services.AddTransient<MartenJournaledGrainAdapter<GameState, IDomainEventBase>>();
-    services.AddTransient<MartenJournaledGrainAdapter<GameRoundState, IDomainEventBase>>();
+    services.AddSingleton<MartenJournaledGrainAdapter<GameState, IDomainEventBase>>();
+    services.AddSingleton<MartenJournaledGrainAdapter<GameRoundState, IDomainEventBase>>();
 
     services.AddHostedService<InitializeStuff>();
 

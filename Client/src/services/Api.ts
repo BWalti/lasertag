@@ -28,10 +28,10 @@ export class Api<SecurityDataType = unknown> {
    * No description
    *
    * @tags Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null
-   * @name GameInitCreate
+   * @name InitGame
    * @request POST:/api/game/init
    */
-  gameInitCreate = (params: RequestParams = {}) =>
+  initGame = (params: RequestParams = {}) =>
     this.http.request<GameApiResult, any>({
       path: `/api/game/init`,
       method: "POST",
@@ -42,10 +42,30 @@ export class Api<SecurityDataType = unknown> {
    * No description
    *
    * @tags Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null
-   * @name GameConnectCreate
+   * @name RegisterGameSet
+   * @request POST:/api/game/{gameId}/{gameSetId}
+   */
+  registerGameSet = (
+    gameId: string,
+    gameSetId: string,
+    query: { isTargetOnly: boolean },
+    params: RequestParams = {},
+  ) =>
+    this.http.request<GameApiResult, any>({
+      path: `/api/game/${gameId}/${gameSetId}`,
+      method: "POST",
+      query: query,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null
+   * @name ConnectGameSet
    * @request POST:/api/game/{gameId}/{gameSetId}/connect
    */
-  gameConnectCreate = (
+  connectGameSet = (
     gameId: string,
     gameSetId: string,
     params: RequestParams = {},
@@ -60,10 +80,10 @@ export class Api<SecurityDataType = unknown> {
    * No description
    *
    * @tags Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null
-   * @name GameCreateLobbyCreate
+   * @name CreateGameRound
    * @request POST:/api/game/{gameId}/createLobby
    */
-  gameCreateLobbyCreate = (
+  createGameRound = (
     gameId: string,
     query?: { numberOfGroups?: number },
     params: RequestParams = {},
@@ -79,17 +99,12 @@ export class Api<SecurityDataType = unknown> {
    * No description
    *
    * @tags Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null
-   * @name GameActivateCreate
-   * @request POST:/api/game/{gameId}/{gameSetId}/activate/{playerId}
+   * @name StartGameRound
+   * @request POST:/api/game/{gameId}/start
    */
-  gameActivateCreate = (
-    gameId: string,
-    gameSetId: string,
-    playerId: string,
-    params: RequestParams = {},
-  ) =>
-    this.http.request<GameApiResult, any>({
-      path: `/api/game/${gameId}/${gameSetId}/activate/${playerId}`,
+  startGameRound = (gameId: string, params: RequestParams = {}) =>
+    this.http.request<GameRoundStartResult, any>({
+      path: `/api/game/${gameId}/start`,
       method: "POST",
       format: "json",
       ...params,
@@ -98,12 +113,17 @@ export class Api<SecurityDataType = unknown> {
    * No description
    *
    * @tags Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null
-   * @name GameStartCreate
-   * @request POST:/api/game/{gameId}/start
+   * @name GameRoundLasertagSetActivateCreate
+   * @request POST:/api/gameRound/{gameRoundId}/lasertagSet/{gameSetId}/activate/{playerId}
    */
-  gameStartCreate = (gameId: string, params: RequestParams = {}) =>
-    this.http.request<GameRoundStartResult, any>({
-      path: `/api/game/${gameId}/start`,
+  gameRoundLasertagSetActivateCreate = (
+    gameRoundId: string,
+    gameSetId: string,
+    playerId: string,
+    params: RequestParams = {},
+  ) =>
+    this.http.request<GameRoundApiResult, any>({
+      path: `/api/gameRound/${gameRoundId}/lasertagSet/${gameSetId}/activate/${playerId}`,
       method: "POST",
       format: "json",
       ...params,
