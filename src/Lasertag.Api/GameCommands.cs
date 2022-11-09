@@ -52,15 +52,32 @@ public class GameCommands : Grain, IGameCommands
                 throw new InvalidStateException("Connecting GameSets is only possible when Game is initialized!");
             }
 
+            if (game.GameSets.All(gs => gs.Id != gameSetId))
+            {
+                throw new ArgumentException("Invalid GameSetId provided!");
+            }
+
             return new GameSetConnected(gameSetId);
         });
     }
 
-    public Task<ApiResult<Game>> DisconnectGameSet(Guid gameId, Guid gameSetId)
+    public async Task<ApiResult<Game>> DisconnectGameSet(Guid gameId, Guid gameSetId)
     {
-        throw new NotImplementedException();
-    }
+        return await EventRaiser.RaiseEventWithChecks(gameId, game =>
+        {
+            if (game.Status != GameStatus.Initialized)
+            {
+                throw new InvalidStateException("Disconnecting GameSets is only possible when Game is initialized!");
+            }
 
+            if (game.GameSets.All(gs => gs.Id != gameSetId))
+            {
+                throw new ArgumentException("Invalid GameSetId provided!");
+            }
+
+            return new GameSetDisconnected(gameSetId);
+        });
+    }
 
     public async Task<ApiResult<Game>> CreateLobby(Guid gameId, int numberOfGroups)
     {

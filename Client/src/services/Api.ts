@@ -80,6 +80,24 @@ export class Api<SecurityDataType = unknown> {
    * No description
    *
    * @tags Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null
+   * @name DisconnectGameSet
+   * @request POST:/api/game/{gameId}/{gameSetId}/disconnect
+   */
+  disconnectGameSet = (
+    gameId: string,
+    gameSetId: string,
+    params: RequestParams = {},
+  ) =>
+    this.http.request<GameApiResult, any>({
+      path: `/api/game/${gameId}/${gameSetId}/disconnect`,
+      method: "POST",
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null
    * @name CreateGameRound
    * @request POST:/api/game/{gameId}/createLobby
    */

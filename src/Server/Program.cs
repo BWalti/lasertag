@@ -1,4 +1,5 @@
-﻿using Lasertag.DomainModel.DomainEvents;
+﻿using Lasertag.DomainModel;
+using Lasertag.DomainModel.DomainEvents;
 using Lasertag.Manager;
 using Lasertag.Manager.Game;
 using Lasertag.Manager.GameRound;
@@ -61,6 +62,8 @@ host.ConfigureServices((context, services) =>
             {
                 o.AutoCreateSchemaObjects = AutoCreate.All;
             }
+
+            o.Schema.For<Game>().Identity(g => g.GameId);
 
             o.Projections.Add<ScoreBoardProjection>(ProjectionLifecycle.Async);
 

@@ -7,6 +7,11 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    copy: typeof import('./src/components/GridListGameSetItem.vue')['default']
+    GridList: typeof import('./src/components/GridList.vue')['default']
+    GridListGameSetItem: typeof import('./src/components/GridListGameSetItem.vue')['default']
+    GridListItem: typeof import('./src/components/GridListPersonItem.vue')['default']
+    GridListPersonItem: typeof import('./src/components/GridListPersonItem.vue')['default']
     MainLayout: typeof import('./src/layouts/mainLayout.vue')['default']
     PrimaryButton: typeof import('./src/components/PrimaryButton.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

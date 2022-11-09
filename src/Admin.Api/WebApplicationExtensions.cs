@@ -50,7 +50,6 @@ public static class WebApplicationExtensions
             .WithName("InitGame")
             .WithDisplayName("Initialize Game");
 
-
         app.MapPost("/api/game/{gameId}/{gameSetId}",
             async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromRoute] Guid gameSetId, [FromQuery] bool isTargetOnly) => await gameCommands.RegisterGameSet(gameId, new GameSetConfiguration
             {
@@ -67,6 +66,11 @@ public static class WebApplicationExtensions
         })
             .WithName("ConnectGameSet")
             .WithDisplayName("Connect GameSet");
+
+        app.MapPost("/api/game/{gameId}/{gameSetId}/disconnect",
+                async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromRoute] Guid gameSetId) => await gameCommands.DisconnectGameSet(gameId, gameSetId))
+            .WithName("DisconnectGameSet")
+            .WithDisplayName("Disconnect GameSet");
 
         app.MapPost("/api/game/{gameId}/createLobby",
             async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromQuery] int ? numberOfGroups) =>

@@ -113,6 +113,46 @@
         }
       }
     },
+    "/api/game/{gameId}/{gameSetId}/disconnect": {
+      "post": {
+        "tags": [
+          "Admin.Api, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null"
+        ],
+        "operationId": "DisconnectGameSet",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "gameSetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/game/{gameId}/createLobby": {
       "post": {
         "tags": [

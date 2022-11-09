@@ -1,7 +1,8 @@
 <route lang="json">
 {
   "meta": {
-    "title": "Home"
+    "title": "Dashboard",
+    "priority": 10
   }
 }
 </route>
@@ -9,17 +10,16 @@
 <template>
   <MainLayout>
     <div class="flex gap-2">
-      <PrimaryButton @click="initGame">Init Game</PrimaryButton>
       <SecondaryButton @click="registerLasertag" v-if="isGameInInitializedState">Register LasertagSet</SecondaryButton>
       <SecondaryButton @click="createLobby" v-if="isGameInInitializedState">Create Lobby</SecondaryButton>
       <SecondaryButton @click="startGame" v-if="isGameInLobbyState">Start Game</SecondaryButton>
     </div>
 
-    <div class="m-2 rounded-md border border-2 border-blue-400 p-4">
-      <p>Game ID: {{ game?.gameId }}</p>
-      <p>Game Status: {{ game?.status }}</p>
-      <p>Round ID: {{ game?.activeRoundId }}</p>
-    </div>
+
+    <GridList class="m-4">
+      <GridListPersonItem v-for="p in people" :name="p.name" :email="p.email" :image-url="p.imageUrl" :role="p.role"
+        :telephone="p.telephone" :title="p.title" :key="p.email"></GridListPersonItem>
+    </GridList>
 
     <div class="bg-gray-100 p-4">
       <h3 class="mb-4 text-lg font-semibold">Connected Game Sets:</h3>
@@ -71,9 +71,18 @@ import { Api } from "../services/Api";
 import { Game, GameRound } from "../services/data-contracts";
 import { lasertagApiHttpClient } from "../utils/httpClient";
 
-useHead({
-  title: "Home"
-});
+const people = [
+  {
+    name: 'Jane Cooper',
+    title: 'Regional Paradigm Technician',
+    role: 'Admin',
+    email: 'janecooper@example.com',
+    telephone: '+1-202-555-0170',
+    imageUrl:
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
+  },
+  // More people...
+]
 
 const game = ref<Game>();
 const gameRound = ref<GameRound>();

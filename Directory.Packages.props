@@ -36,10 +36,10 @@
       <Version>3.1.2</Version>
     </PackageVersion>
     <PackageVersion Include="EasyNetQ.DI.Microsoft">
-      <Version>7.2.0</Version>
+      <Version>7.2.1</Version>
     </PackageVersion>
     <PackageVersion Include="FluentAssertions">
-      <Version>6.7.0</Version>
+      <Version>6.8.0</Version>
     </PackageVersion>
     <PackageVersion Include="JetBrains.Annotations">
       <Version>2022.1.0</Version>
@@ -51,7 +51,7 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk">
-      <Version>17.3.1</Version>
+      <Version>17.3.2</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.Orleans.Client" Version="4.0.0-preview2" />
     <PackageVersion Include="Microsoft.Orleans.EventSourcing" Version="4.0.0-preview2" />
@@ -70,7 +70,7 @@
       <Version>1.0.3.2</Version>
     </PackageVersion>
     <PackageVersion Include="SonarAnalyzer.CSharp">
-      <Version>8.45.0.54064</Version>
+      <Version>8.47.0.55603</Version>
     </PackageVersion>
     <PackageVersion Include="xunit">
       <Version>2.4.2</Version>

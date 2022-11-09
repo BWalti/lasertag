@@ -1,19 +1,18 @@
 <route lang="json">
-  {
-    "meta": {
-      "title": "About"
-    }
+{
+  "meta": {
+    "title": "About",
+    "priority": 40
   }
-  </route>
+}
+</route>
 
 <template>
   <MainLayout>
-    <div>About</div>
+    Placeholder
   </MainLayout>
 </template>
 
 <script setup lang="ts">
-useHead({
-  title: "About" 
-});
+
 </script>
