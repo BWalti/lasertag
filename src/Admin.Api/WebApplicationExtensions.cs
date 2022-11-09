@@ -126,7 +126,9 @@ public static class WebApplicationExtensions
             app.UseSwagger();
             app.UseSwaggerUI();
 
+#pragma warning disable ASP0014
             app.UseEndpoints(_ => { });
+# pragma warning restore ASP0014
             app.UseApiFallback404();
 
 #pragma warning disable S1075

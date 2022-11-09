@@ -57,7 +57,13 @@ host.ConfigureServices((context, services) =>
 
     services.AddMarten(o =>
         {
-            o.Connection(context.Configuration.GetConnectionString("Marten"));
+            var connectionString = context.Configuration.GetConnectionString("Marten");
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException("Need to configure Marten connection string!");
+            }
+
+            o.Connection(connectionString);
             if (context.HostingEnvironment.IsDevelopment())
             {
                 o.AutoCreateSchemaObjects = AutoCreate.All;

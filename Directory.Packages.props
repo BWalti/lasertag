@@ -24,7 +24,7 @@
       <Version>34.0.2</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.AspNetCore.SpaServices.Extensions">
-      <Version>6.0.10</Version>
+      <Version>7.0.0</Version>
     </PackageVersion>
     <PackageVersion Include="NetEscapades.AspNetCore.SecurityHeaders">
       <Version>0.17.0</Version>
@@ -33,33 +33,31 @@
       <Version>6.4.0</Version>
     </PackageVersion>
     <PackageVersion Include="coverlet.collector">
-      <Version>3.1.2</Version>
+      <Version>3.2.0</Version>
     </PackageVersion>
     <PackageVersion Include="EasyNetQ.DI.Microsoft">
-      <Version>7.2.1</Version>
+      <Version>7.3.0</Version>
     </PackageVersion>
     <PackageVersion Include="FluentAssertions">
       <Version>6.8.0</Version>
     </PackageVersion>
     <PackageVersion Include="JetBrains.Annotations">
-      <Version>2022.1.0</Version>
+      <Version>2022.3.1</Version>
     </PackageVersion>
-    <PackageVersion Include="Marten" Version="5.10.1" />
+    <PackageVersion Include="Marten" Version="5.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers">
-      <Version>6.0.0</Version>
+      <Version>7.0.0-preview1.22518.1</Version>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk">
-      <Version>17.3.2</Version>
+      <Version>17.4.0</Version>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.Orleans.Client" Version="4.0.0-preview2" />
-    <PackageVersion Include="Microsoft.Orleans.EventSourcing" Version="4.0.0-preview2" />
-    <PackageVersion Include="Microsoft.Orleans.Sdk" Version="4.0.0-preview2" />
-    <PackageVersion Include="Microsoft.Orleans.Serialization.Abstractions">
-      <Version>4.0.0-preview2</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Orleans.Server" Version="4.0.0-preview2" />
+    <PackageVersion Include="Microsoft.Orleans.Analyzers" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Orleans.Client" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Orleans.EventSourcing" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Orleans.Sdk" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Orleans.Server" Version="7.0.0" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets">
       <Version>1.17.0</Version>
     </PackageVersion>
@@ -70,7 +68,7 @@
       <Version>1.0.3.2</Version>
     </PackageVersion>
     <PackageVersion Include="SonarAnalyzer.CSharp">
-      <Version>8.47.0.55603</Version>
+      <Version>8.48.0.56517</Version>
     </PackageVersion>
     <PackageVersion Include="xunit">
       <Version>2.4.2</Version>

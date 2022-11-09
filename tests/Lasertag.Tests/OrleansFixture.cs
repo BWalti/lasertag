@@ -67,7 +67,13 @@ public class OrleansFixture : IDisposable
 
             services.AddMarten(options =>
             {
-                options.Connection(context.Configuration.GetConnectionString("Marten"));
+                var connectionString = context.Configuration.GetConnectionString("Marten");
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    throw new InvalidOperationException("Need to configure Marten connection string!");
+                }
+
+                options.Connection(connectionString);
                 if (context.HostingEnvironment.IsDevelopment())
                 {
                     options.AutoCreateSchemaObjects = AutoCreate.All;

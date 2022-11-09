@@ -13,13 +13,14 @@ public class MartenGrainStorage : IGrainStorage
         _session = session;
     }
 
-    public async Task ReadStateAsync<T>(string grainType, GrainReference grainReference, IGrainState<T> grainState)
+
+    public async Task ReadStateAsync<T>(string stateName, GrainId grainId, IGrainState<T> grainState)
     {
-        var hashCode = grainReference.GetUniformHashCode();
+        var hashCode = grainId.GetUniformHashCode();
         _ = Guid.TryParse(grainState.ETag, out var etagAsGuid);
 
         var existing = await _session.Query<MartenGrainWrapper<T>>()
-            .SingleOrDefaultAsync(item => item.GrainType == grainType && item.HashCode == hashCode);
+            .SingleOrDefaultAsync(item => item.GrainType == stateName && item.HashCode == hashCode);
 
         if (existing != null)
         {
@@ -33,46 +34,47 @@ public class MartenGrainStorage : IGrainStorage
         }
     }
 
-    public async Task WriteStateAsync<T>(string grainType, GrainReference grainReference, IGrainState<T> grainState)
+    public async Task WriteStateAsync<T>(string stateName, GrainId grainId, IGrainState<T> grainState)
     {
-        var hashCode = grainReference.GetUniformHashCode();
+        var hashCode = grainId.GetUniformHashCode();
         _ = Guid.TryParse(grainState.ETag, out var etagAsGuid);
 
         if (grainState.RecordExists)
         {
             var existing = await _session.Query<MartenGrainWrapper<T>>()
-                .SingleAsync(item => item.GrainType == grainType && item.HashCode == hashCode);
+                .SingleAsync(item => item.GrainType == stateName && item.HashCode == hashCode);
 
             existing.Payload = grainState.State;
             existing.Version = etagAsGuid;
 
             _session.Store(existing);
-
         }
         else
         {
             var item = new MartenGrainWrapper<T>
             {
                 Id = Guid.NewGuid(),
-                GrainType = grainType,
+                GrainType = stateName,
                 HashCode = hashCode,
                 Payload = grainState.State
             };
 
             _session.Store(item);
         }
+
         await _session.SaveChangesAsync();
     }
 
-    public async Task ClearStateAsync<T>(string grainType, GrainReference grainReference, IGrainState<T> grainState)
+
+    public async Task ClearStateAsync<T>(string stateName, GrainId grainId, IGrainState<T> grainState)
     {
-        var hashCode = grainReference.GetUniformHashCode();
+        var hashCode = grainId.GetUniformHashCode();
         _ = Guid.TryParse(grainState.ETag, out var etagAsGuid);
 
         if (grainState.RecordExists)
         {
             var existing = await _session.Query<MartenGrainWrapper<T>>()
-                .SingleAsync(item => item.GrainType == grainType && item.HashCode == hashCode);
+                .SingleAsync(item => item.GrainType == stateName && item.HashCode == hashCode);
 
             _session.Delete(existing);
         }
