@@ -80,4 +80,4 @@ host.ConfigureServices((context, services) =>
         .AddAsyncDaemon(DaemonMode.Solo);
 });
 
-await host.RunConsoleAsync();
+await host.RunConsoleAsync().ConfigureAwait(false);

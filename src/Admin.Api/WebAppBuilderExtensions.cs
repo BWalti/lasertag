@@ -43,7 +43,7 @@ public static class WebAppBuilderExtensions
     /// <returns>The configured <see cref="WebApplicationBuilder"/></returns>
     public static WebApplicationBuilder UseSwaggerGeneratorHack(this WebApplicationBuilder builder, string[] args)
     {
-        if (args.Contains("start"))
+        if (args.Contains("start", StringComparer.CurrentCulture))
         {
             builder.Services.AddOrleansClient(clientBuilder => { clientBuilder.UseLocalhostClustering(); });
             builder.Services.RegisterEasyNetQ(resolver =>

@@ -30,17 +30,17 @@ public class GameCommands : Grain, IGameCommands
             }
 
             return new GameServerInitialized(gameId);
-        });
+        }).ConfigureAwait(false);
     }
 
     public async Task<ApiResult<Game>> RegisterGameSet(Guid gameId, GameSetConfiguration configuration)
     {
-        return await EventRaiser.RaiseEvent(gameId, () => new GameSetRegistered(configuration));
+        return await EventRaiser.RaiseEvent(gameId, () => new GameSetRegistered(configuration)).ConfigureAwait(false);
     }
 
     public async Task<ApiResult<Game>> UnregisterGameSet(Guid gameId, Guid gameSetId)
     {
-        return await EventRaiser.RaiseEvent(gameId, () => new GameSetUnregistered(gameSetId));
+        return await EventRaiser.RaiseEvent(gameId, () => new GameSetUnregistered(gameSetId)).ConfigureAwait(false);
     }
 
     public async Task<ApiResult<Game>> ConnectGameSet(Guid gameId, Guid gameSetId)
@@ -54,11 +54,13 @@ public class GameCommands : Grain, IGameCommands
 
             if (game.GameSets.All(gs => gs.Id != gameSetId))
             {
-                throw new ArgumentException("Invalid GameSetId provided!");
+#pragma warning disable S3928
+                throw new ArgumentException("Invalid GameSetId provided!", nameof(gameSetId));
+#pragma warning restore S3928
             }
 
             return new GameSetConnected(gameSetId);
-        });
+        }).ConfigureAwait(false);
     }
 
     public async Task<ApiResult<Game>> DisconnectGameSet(Guid gameId, Guid gameSetId)
@@ -72,11 +74,13 @@ public class GameCommands : Grain, IGameCommands
 
             if (game.GameSets.All(gs => gs.Id != gameSetId))
             {
-                throw new ArgumentException("Invalid GameSetId provided!");
+#pragma warning disable S3928
+                throw new ArgumentException("Invalid GameSetId provided!", nameof(gameSetId));
+#pragma warning restore S3928
             }
 
             return new GameSetDisconnected(gameSetId);
-        });
+        }).ConfigureAwait(false);
     }
 
     public async Task<ApiResult<Game>> CreateLobby(Guid gameId, int numberOfGroups)
@@ -103,12 +107,12 @@ public class GameCommands : Grain, IGameCommands
                 .ToArray();
 
             return new LobbyCreated(gameRoundId, groups);
-        });
+        }).ConfigureAwait(false);
 
         if (groups != null)
         {
             var gameRoundCommands = GrainFactory.GetGrain<IGameRoundCommands>(0);
-            await gameRoundCommands.CreateLobby(gameRoundId, groups);
+            await gameRoundCommands.CreateLobby(gameRoundId, groups).ConfigureAwait(false);
         }
 
         return task;
@@ -118,7 +122,7 @@ public class GameCommands : Grain, IGameCommands
     {
         var gameRoundId = Guid.NewGuid();
 
-        var game = await EventRaiser.RaiseEventWithChecks(gameId, game => new Started(gameRoundId));
+        var game = await EventRaiser.RaiseEventWithChecks(gameId, game => new Started(gameRoundId)).ConfigureAwait(false);
         var gameRoundCommands = GrainFactory.GetGrain<IGameRoundCommands>(0);
 
         try
@@ -128,7 +132,7 @@ public class GameCommands : Grain, IGameCommands
                 throw new InvalidOperationException("GameRound ID not found!");
             }
 
-            var gameRound = await gameRoundCommands.Start(gameRoundId);
+            var gameRound = await gameRoundCommands.Start(gameRoundId).ConfigureAwait(false);
 
             if (gameRound.Output == null)
             {

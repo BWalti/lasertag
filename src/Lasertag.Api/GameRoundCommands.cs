@@ -22,7 +22,7 @@ public class GameRoundCommands : Grain, IGameRoundCommands
 
     public async Task<ApiResult<GameRound>> CreateLobby(Guid gameRoundId, GameGroup[] gameSetGroups)
     {
-        return await EventRaiser.RaiseEvent(gameRoundId, () => new LobbyCreated(gameRoundId, gameSetGroups));
+        return await EventRaiser.RaiseEvent(gameRoundId, () => new LobbyCreated(gameRoundId, gameSetGroups)).ConfigureAwait(false);
     }
 
     public async Task<ApiResult<GameRound>> ActivateGameSet(Guid gameRoundId, Guid gameSetId, Guid playerId)
@@ -50,7 +50,7 @@ public class GameRoundCommands : Grain, IGameRoundCommands
             }
 
             return new GameSetActivated(gameRoundId, playerId, gameSetId);
-        });
+        }).ConfigureAwait(false);
     }
 
 
@@ -64,7 +64,7 @@ public class GameRoundCommands : Grain, IGameRoundCommands
             }
 
             return new Started(gameRoundId);
-        });
+        }).ConfigureAwait(false);
     }
 
     public Task<ApiResult<GameRound>> Fire(Guid gameRoundId, Guid sourceLasertagSetId)

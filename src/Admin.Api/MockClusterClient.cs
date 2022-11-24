@@ -1,4 +1,3 @@
-using Orleans;
 using Orleans.Runtime;
 
 namespace Admin.Api;
@@ -10,6 +9,9 @@ public class MockClusterClient : IClusterClient
         ServiceProvider = serviceProvider;
     }
 
+    public IServiceProvider ServiceProvider { get; }
+
+#pragma warning disable MA0025
     public TGrainInterface GetGrain<TGrainInterface>(Guid primaryKey, string? grainClassNamePrefix = null)
         where TGrainInterface : IGrainWithGuidKey =>
         throw new NotImplementedException();
@@ -63,6 +65,5 @@ public class MockClusterClient : IClusterClient
     {
         throw new NotImplementedException();
     }
-
-    public IServiceProvider ServiceProvider { get; }
+#pragma warning restore MA0025
 }

@@ -13,7 +13,7 @@ public class GameRoundQueries : Grain, IGameRoundQueries
     public async Task<ApiResult<ScoreBoard>> GetStats(Guid gameRoundId)
     {
         var querySession = ServiceProvider.GetRequiredService<IQuerySession>();
-        var scoreBoard = await querySession.Events.AggregateStreamAsync<ScoreBoard>(gameRoundId);
+        var scoreBoard = await querySession.Events.AggregateStreamAsync<ScoreBoard>(gameRoundId).ConfigureAwait(false);
         if (scoreBoard != null)
         {
             return new ApiResult<ScoreBoard>(scoreBoard);
