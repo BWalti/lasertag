@@ -8,6 +8,7 @@ namespace Lasertag.Builder;
 
 partial class Build
 {
+
     const string OtelContainerName = "otel-collector";
 
     public Target RunOtelCollector => _ => _

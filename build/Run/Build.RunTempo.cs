@@ -1,6 +1,8 @@
 using Nuke.Common;
+using Nuke.Common.IO;
 using Nuke.Common.Tools.Docker;
 using static Nuke.Common.Tools.Docker.DockerTasks;
+using static Nuke.Common.IO.FileSystemTasks;
 
 // ReSharper disable UnusedMember.Global
 
@@ -8,6 +10,8 @@ namespace Lasertag.Builder;
 
 partial class Build
 {
+    AbsolutePath TempoData = RootDirectory / "tempo-data";
+
     const string TempoContainerName = "tempo";
 
     public Target RunTempo => _ => _
@@ -55,5 +59,7 @@ partial class Build
                 .SetContainers(TempoContainerName);
 
             TryDockerRm(settings);
+
+            EnsureCleanDirectory(TempoData);
         });
 }

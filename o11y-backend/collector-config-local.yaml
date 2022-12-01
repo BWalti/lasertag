@@ -23,8 +23,18 @@ exporters:
 
 processors:
   batch:
+  # Data sources: traces
+  probabilistic_sampler:
+    hash_seed: 22
+    sampling_percentage: 80
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
 
 service:
+  extensions: [health_check, pprof, zpages]
   pipelines:
     metrics:
       receivers: [otlp]
@@ -33,3 +43,7 @@ service:
     traces:
       receivers: [otlp]
       exporters: [logging, otlp]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]
