@@ -1,6 +1,5 @@
 ﻿using Lasertag.Manager.Server;
 using Microsoft.Extensions.Hosting;
-using Orleans;
 
 namespace Server;
 
@@ -19,8 +18,6 @@ public class InitializeStuff : IHostedService
         await serverGrain.DoIt().ConfigureAwait(false);
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
+    public Task StopAsync(CancellationToken cancellationToken) =>
+        Task.CompletedTask;
 }

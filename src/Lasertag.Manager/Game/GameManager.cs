@@ -1,5 +1,4 @@
 ﻿using Lasertag.DomainModel.DomainEvents;
-using Orleans;
 using Orleans.EventSourcing.CustomStorage.Marten;
 
 namespace Lasertag.Manager.Game;

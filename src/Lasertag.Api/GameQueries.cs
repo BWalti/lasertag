@@ -1,5 +1,4 @@
-﻿using Orleans;
-using Orleans.Concurrency;
+﻿using Orleans.Concurrency;
 
 namespace Lasertag.Api;
 
@@ -7,5 +6,4 @@ namespace Lasertag.Api;
 [StatelessWorker]
 public class GameQueries : Grain, IGameQueries
 {
-
 }

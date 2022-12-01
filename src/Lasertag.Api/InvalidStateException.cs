@@ -1,6 +1,4 @@
-﻿using Orleans;
-
-namespace Lasertag.Api;
+﻿namespace Lasertag.Api;
 
 #pragma warning disable S3925
 [Serializable]

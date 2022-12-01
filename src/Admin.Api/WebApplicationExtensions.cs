@@ -9,7 +9,8 @@ public static class WebApplicationExtensions
     public static WebApplication MapGameStatisticsEndpoints(this WebApplication app)
     {
         app.MapGet("/api/gameRound/{gameRoundId}/stats",
-            async(IGameRoundQueries gameRoundQueries, [FromRoute] Guid gameRoundId) => await gameRoundQueries.GetStats(gameRoundId).ConfigureAwait(false))
+                async(IGameRoundQueries gameRoundQueries, [FromRoute] Guid gameRoundId) =>
+                    await gameRoundQueries.GetStats(gameRoundId).ConfigureAwait(false))
             .Produces<ApiResult<ScoreBoard>>()
             .WithDisplayName("Get ScoreBoard");
         return app;
@@ -37,7 +38,8 @@ public static class WebApplicationExtensions
                 [FromRoute] Guid sourceLasertagSetId,
                 [FromRoute] Guid targetLasertagSetId) =>
             {
-            return await gameRoundCommands.Hit(gameRoundId, sourceLasertagSetId, targetLasertagSetId).ConfigureAwait(false);
+            return await gameRoundCommands.Hit(gameRoundId, sourceLasertagSetId, targetLasertagSetId)
+                .ConfigureAwait(false);
         }).WithDisplayName("LasertagSet Got Hit by other LasertagSet");
 
         return app;
@@ -46,43 +48,47 @@ public static class WebApplicationExtensions
     public static WebApplication MapGameEndpoints(this WebApplication app)
     {
         app.MapPost("/api/game/init",
-                async (IGameCommands gameCommands) => await gameCommands.InitializeGame(Guid.NewGuid()).ConfigureAwait(false))
+                async (IGameCommands gameCommands) =>
+                    await gameCommands.InitializeGame(Guid.NewGuid()).ConfigureAwait(false))
             .WithName("InitGame")
             .WithDisplayName("Initialize Game");
 
         app.MapPost("/api/game/{gameId}/{gameSetId}",
-            async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromRoute] Guid gameSetId, [FromQuery] bool isTargetOnly) => await gameCommands.RegisterGameSet(gameId, new GameSetConfiguration
-            {
-                Id = gameSetId,
-                IsTargetOnly = isTargetOnly
-            }).ConfigureAwait(false))
+                async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromRoute] Guid gameSetId,
+                    [FromQuery] bool isTargetOnly) => await gameCommands.RegisterGameSet(gameId,
+                    new GameSetConfiguration
+                    {
+                        Id = gameSetId,
+                        IsTargetOnly = isTargetOnly
+                    }).ConfigureAwait(false))
             .WithName("RegisterGameSet")
             .WithDisplayName("Register GameSet");
 
         app.MapPost("/api/game/{gameId}/{gameSetId}/connect",
-            async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromRoute] Guid gameSetId) =>
-            {
+                async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromRoute] Guid gameSetId) =>
+                {
             return await gameCommands.ConnectGameSet(gameId, gameSetId).ConfigureAwait(false);
         })
             .WithName("ConnectGameSet")
             .WithDisplayName("Connect GameSet");
 
         app.MapPost("/api/game/{gameId}/{gameSetId}/disconnect",
-                async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromRoute] Guid gameSetId) => await gameCommands.DisconnectGameSet(gameId, gameSetId).ConfigureAwait(false))
+                async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromRoute] Guid gameSetId) =>
+                    await gameCommands.DisconnectGameSet(gameId, gameSetId).ConfigureAwait(false))
             .WithName("DisconnectGameSet")
             .WithDisplayName("Disconnect GameSet");
 
         app.MapPost("/api/game/{gameId}/createLobby",
-            async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromQuery] int ? numberOfGroups) =>
-            {
+                async(IGameCommands gameCommands, [FromRoute] Guid gameId, [FromQuery] int ? numberOfGroups) =>
+                {
             return await gameCommands.CreateLobby(gameId, numberOfGroups ?? 2).ConfigureAwait(false);
         })
             .WithName("CreateGameRound")
             .WithDisplayName("Open Lobby");
 
         app.MapPost("/api/game/{gameId}/start",
-            async(IGameCommands gameCommands, [FromRoute] Guid gameId) =>
-            {
+                async(IGameCommands gameCommands, [FromRoute] Guid gameId) =>
+                {
             var startGameRound = await gameCommands.StartGameRound(gameId).ConfigureAwait(false);
 
             return new GameRoundStartResult(startGameRound.Item1, startGameRound.Item2);

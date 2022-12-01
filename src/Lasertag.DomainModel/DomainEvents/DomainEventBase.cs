@@ -1,6 +1,4 @@
-﻿using Orleans;
-
-namespace Lasertag.DomainModel.DomainEvents;
+﻿namespace Lasertag.DomainModel.DomainEvents;
 
 [GenerateSerializer]
 public record DomainEventBase : IDomainEventBase

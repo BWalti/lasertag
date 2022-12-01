@@ -1,7 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Lasertag.DomainModel;
 using Lasertag.DomainModel.Data;
-using Orleans;
 using static Lasertag.DomainModel.DomainEvents.InfrastructureEvents;
 using static Lasertag.DomainModel.DomainEvents.GameRoundEvents;
 

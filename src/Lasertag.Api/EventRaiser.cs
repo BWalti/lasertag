@@ -1,7 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Lasertag.Manager;
 using Microsoft.Extensions.Logging;
-using Orleans;
 
 namespace Lasertag.Api;
 

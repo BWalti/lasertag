@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Lasertag.DomainModel;
-using static Lasertag.DomainModel.DomainEvents.GameRoundEvents;
 using Marten.Events.Aggregation;
+using static Lasertag.DomainModel.DomainEvents.GameRoundEvents;
 
 namespace Lasertag.Manager;
 

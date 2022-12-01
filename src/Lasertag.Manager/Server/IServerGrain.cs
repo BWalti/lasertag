@@ -1,6 +1,4 @@
-﻿using Orleans;
-
-namespace Lasertag.Manager.Server;
+﻿namespace Lasertag.Manager.Server;
 
 public interface IServerGrain : IGrainWithIntegerKey
 {

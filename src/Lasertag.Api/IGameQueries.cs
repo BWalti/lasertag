@@ -1,6 +1,4 @@
-﻿using Orleans;
-
-namespace Lasertag.Api;
+﻿namespace Lasertag.Api;
 
 public interface IGameQueries : IGrainWithIntegerKey
 {

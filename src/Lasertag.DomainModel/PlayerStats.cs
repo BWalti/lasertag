@@ -1,6 +1,4 @@
-﻿using Orleans;
-
-namespace Lasertag.DomainModel;
+﻿namespace Lasertag.DomainModel;
 
 [GenerateSerializer]
 public record PlayerStats

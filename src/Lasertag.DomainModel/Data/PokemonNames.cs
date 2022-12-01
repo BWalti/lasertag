@@ -1,15 +1,10 @@
 ﻿// ReSharper disable StringLiteralTypo
+
 namespace Lasertag.DomainModel.Data;
 
 public static class PokemonNames
 {
     static readonly Random Random = new();
-
-    public static string GetRandomName()
-    {
-        var index = Random.Next(Names.Length);
-        return Names[index];
-    }
 
     public static readonly string[] Names =
     {
@@ -165,4 +160,10 @@ public static class PokemonNames
         "Mewtu",
         "Mew"
     };
+
+    public static string GetRandomName()
+    {
+        var index = Random.Next(Names.Length);
+        return Names[index];
+    }
 }

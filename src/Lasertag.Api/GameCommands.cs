@@ -1,10 +1,10 @@
 ﻿using Lasertag.DomainModel;
 using Lasertag.DomainModel.DomainEvents;
-using static Lasertag.DomainModel.DomainEvents.GameRoundEvents;
-using static Lasertag.DomainModel.DomainEvents.InfrastructureEvents;
 using Lasertag.Manager.Game;
 using Microsoft.Extensions.Logging;
 using Orleans.Concurrency;
+using static Lasertag.DomainModel.DomainEvents.GameRoundEvents;
+using static Lasertag.DomainModel.DomainEvents.InfrastructureEvents;
 
 namespace Lasertag.Api;
 
@@ -121,7 +121,8 @@ public class GameCommands : Grain, IGameCommands
     {
         var gameRoundId = Guid.NewGuid();
 
-        var game = await EventRaiser.RaiseEventWithChecks(gameId, game => new Started(gameRoundId)).ConfigureAwait(false);
+        var game = await EventRaiser.RaiseEventWithChecks(gameId, game => new Started(gameRoundId))
+            .ConfigureAwait(false);
         var gameRoundCommands = GrainFactory.GetGrain<IGameRoundCommands>(0);
 
         try

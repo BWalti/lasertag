@@ -9,8 +9,7 @@ public class GameRound
 
     [Id(1)] public GameGroup[] GameSetGroups { get; set; } = Array.Empty<GameGroup>();
 
-    [UsedImplicitly]
-    [Id(2)] public int Version { get; set; }
+    [UsedImplicitly] [Id(2)] public int Version { get; set; }
 
     [Id(3)] public GameRoundStatus Status { get; set; }
 

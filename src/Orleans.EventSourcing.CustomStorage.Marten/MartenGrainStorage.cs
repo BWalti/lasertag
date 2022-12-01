@@ -20,7 +20,8 @@ public class MartenGrainStorage : IGrainStorage
         _ = Guid.TryParse(grainState.ETag, out var etagAsGuid);
 
         var existing = await _session.Query<MartenGrainWrapper<T>>()
-            .SingleOrDefaultAsync(item => item.GrainType == stateName && item.HashCode == hashCode).ConfigureAwait(false);
+            .SingleOrDefaultAsync(item => item.GrainType == stateName && item.HashCode == hashCode)
+            .ConfigureAwait(false);
 
         if (existing != null)
         {

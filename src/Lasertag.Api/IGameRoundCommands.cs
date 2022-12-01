@@ -1,5 +1,4 @@
 ﻿using Lasertag.DomainModel;
-using Orleans;
 
 namespace Lasertag.Api;
 

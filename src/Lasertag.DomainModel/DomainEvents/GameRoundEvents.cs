@@ -1,6 +1,4 @@
-﻿using Orleans;
-
-namespace Lasertag.DomainModel.DomainEvents;
+﻿namespace Lasertag.DomainModel.DomainEvents;
 
 public static class GameRoundEvents
 {
@@ -14,9 +12,12 @@ public static class GameRoundEvents
     public record Started(Guid GameRoundId) : DomainEventBase;
 
     [GenerateSerializer]
-    public record PlayerFiredShot(Guid GameRoundId, Guid SourceGameSetId, Guid SourcePlayerId, Guid SourceGroupId) : DomainEventBase, ISourcePlayerEvents;
+    public record PlayerFiredShot
+        (Guid GameRoundId, Guid SourceGameSetId, Guid SourcePlayerId, Guid SourceGroupId) : DomainEventBase,
+            ISourcePlayerEvents;
 
     [GenerateSerializer]
-    public record PlayerGotHitBy(Guid GameRoundId, Guid SourceGameSetId, Guid TargetGameSetId, Guid SourcePlayerId, Guid TargetPlayerId,
+    public record PlayerGotHitBy(Guid GameRoundId, Guid SourceGameSetId, Guid TargetGameSetId, Guid SourcePlayerId,
+        Guid TargetPlayerId,
         Guid SourceGroupId, Guid TargetGroupId) : DomainEventBase, ISourcePlayerEvents, ITargetPlayerEvents;
 }

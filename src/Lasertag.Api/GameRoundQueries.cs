@@ -1,7 +1,6 @@
 ﻿using Lasertag.DomainModel;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
-using Orleans;
 using Orleans.Concurrency;
 
 namespace Lasertag.Api;
@@ -21,5 +20,4 @@ public class GameRoundQueries : Grain, IGameRoundQueries
 
         return new ApiResult<ScoreBoard>("not found");
     }
-
 }

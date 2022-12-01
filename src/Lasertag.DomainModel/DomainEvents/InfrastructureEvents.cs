@@ -1,6 +1,4 @@
-﻿using Orleans;
-
-namespace Lasertag.DomainModel.DomainEvents;
+﻿namespace Lasertag.DomainModel.DomainEvents;
 
 public static class InfrastructureEvents
 {

@@ -1,5 +1,4 @@
-﻿using Orleans;
-using Orleans.EventSourcing.CustomStorage;
+﻿using Orleans.EventSourcing.CustomStorage;
 using Orleans.EventSourcing.CustomStorage.Marten;
 
 namespace Lasertag.Manager;

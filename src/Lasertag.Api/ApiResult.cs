@@ -1,6 +1,4 @@
-﻿using Orleans;
-
-namespace Lasertag.Api;
+﻿namespace Lasertag.Api;
 
 [GenerateSerializer]
 public record ApiResult<T>

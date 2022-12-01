@@ -1,7 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Lasertag.DomainModel;
 using static Lasertag.DomainModel.DomainEvents.GameRoundEvents;
-using Orleans;
 
 namespace Lasertag.Manager.GameRound;
 
