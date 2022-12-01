@@ -33,6 +33,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build", "_build", "{BE0FD0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Admin.Api", "src\Admin.Api\Admin.Api.csproj", "{389AF1CA-5D62-40DE-95EA-D0EEF7BD2364}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "o11y-backend", "o11y-backend", "{5B978752-EA8F-496F-B520-B64716B8A68A}"
+	ProjectSection(SolutionItems) = preProject
+		o11y-backend\collector-config-local.yaml = o11y-backend\collector-config-local.yaml
+		o11y-backend\grafana-bootstrap.ini = o11y-backend\grafana-bootstrap.ini
+		o11y-backend\grafana-datasources.yaml = o11y-backend\grafana-datasources.yaml
+		o11y-backend\prometheus.yaml = o11y-backend\prometheus.yaml
+		o11y-backend\tempo-config.yaml = o11y-backend\tempo-config.yaml
+		o11y-backend\tempo-overrides.yaml = o11y-backend\tempo-overrides.yaml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +92,7 @@ Global
 		{644A9D9D-B64D-4474-9C1C-5941F02AA16D} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 		{51045D5F-198C-4076-B219-AD8923C81B74} = {BE0FD097-E00E-4D2E-9D99-53008CCA3E11}
 		{389AF1CA-5D62-40DE-95EA-D0EEF7BD2364} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
+		{5B978752-EA8F-496F-B520-B64716B8A68A} = {C2D040C6-3015-4CE8-95C1-B193223A21A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2CB5560A-7F9B-4A01-85A3-F95B4DC96810}

@@ -78,17 +78,29 @@
             "enum": [
               "Clean",
               "CleanDependencies",
+              "CleanGrafana",
               "CleanMq",
+              "CleanOtelCollector",
               "CleanPostgres",
+              "CleanPrometheus",
+              "CleanTempo",
               "Compile",
               "GenerateTypings",
               "Restore",
               "RunDependencies",
+              "RunGrafana",
               "RunMq",
+              "RunOtelCollector",
               "RunPostgres",
+              "RunPrometheus",
+              "RunTempo",
               "StopDependencies",
+              "StopGrafana",
               "StopMq",
-              "StopPostgres"
+              "StopOtelCollector",
+              "StopPostgres",
+              "StopPrometheus",
+              "StopTempo"
             ]
           }
         },
@@ -104,17 +116,29 @@
             "enum": [
               "Clean",
               "CleanDependencies",
+              "CleanGrafana",
               "CleanMq",
+              "CleanOtelCollector",
               "CleanPostgres",
+              "CleanPrometheus",
+              "CleanTempo",
               "Compile",
               "GenerateTypings",
               "Restore",
               "RunDependencies",
+              "RunGrafana",
               "RunMq",
+              "RunOtelCollector",
               "RunPostgres",
+              "RunPrometheus",
+              "RunTempo",
               "StopDependencies",
+              "StopGrafana",
               "StopMq",
-              "StopPostgres"
+              "StopOtelCollector",
+              "StopPostgres",
+              "StopPrometheus",
+              "StopTempo"
             ]
           }
         },

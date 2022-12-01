@@ -10,8 +10,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Npgsql;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Orleans.EventSourcing.CustomStorage.Marten;
-using Orleans.Hosting;
 using Orleans.Providers;
 using Orleans.Runtime;
 using Orleans.Storage;
@@ -22,6 +27,7 @@ using Weasel.Core;
 // docker rm -f martendb
 
 var host = Host.CreateDefaultBuilder(args);
+
 host.UseOrleans((_, builder) =>
 {
     builder.UseLocalhostClustering();
@@ -32,8 +38,16 @@ host.UseOrleans((_, builder) =>
     builder.AddActivityPropagation();
 });
 
-host.ConfigureLogging(builder =>
+host.ConfigureLogging((context, builder) =>
 {
+    var resourceBuilder = ResourceBuilder.CreateDefault().AddService(context.HostingEnvironment.ApplicationName);
+    builder.AddOpenTelemetry(options =>
+    {
+        options
+            .SetResourceBuilder(resourceBuilder)
+            .AddOtlpExporter();
+    });
+
     builder
         .AddFilter("Microsoft", LogLevel.Warning) // generic host lifecycle messages
         .AddFilter("Orleans", LogLevel.Information) // suppress status dumps
@@ -44,6 +58,47 @@ host.ConfigureLogging(builder =>
 
 host.ConfigureServices((context, services) =>
 {
+    var resourceBuilder = ResourceBuilder.CreateDefault().AddService(context.HostingEnvironment.ApplicationName);
+
+    services.AddSingleton(resourceBuilder);
+
+    services.AddOpenTelemetryMetrics(metrics =>
+    {
+        metrics.SetResourceBuilder(resourceBuilder)
+            .AddPrometheusExporter()
+            .AddMeter("Microsoft.Orleans")
+            .AddAspNetCoreInstrumentation()
+            .AddRuntimeInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddEventCountersInstrumentation(c =>
+            {
+                // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
+                c.AddEventSources(
+                    "Microsoft.AspNetCore.Hosting",
+                    "Microsoft-AspNetCore-Server-Kestrel",
+                    "System.Net.Http",
+                    "System.Net.Sockets",
+                    "System.Net.NameResolution",
+                    "System.Net.Security");
+            })
+            .AddOtlpExporter();
+    });
+
+    services.AddOptions();
+    services.Configure<OtlpExporterOptions>(context.Configuration.GetSection("OtlpExporter"));
+
+    services.AddOpenTelemetryTracing(tracing =>
+    {
+        tracing.SetResourceBuilder(resourceBuilder)
+            .AddSource("Microsoft.Orleans.Runtime")
+            .AddSource("Microsoft.Orleans.Application")
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddNpgsql()
+            .AddOtlpExporter();
+    });
+
+
     services.AddLogging();
     services.AddSingleton<MartenJournaledGrainAdapter<GameState, IDomainEventBase>>();
     services.AddSingleton<MartenJournaledGrainAdapter<GameRoundState, IDomainEventBase>>();

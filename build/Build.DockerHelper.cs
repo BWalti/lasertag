@@ -1,26 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿using System.Globalization;
+using System.Text;
+using Lasertag.Builder.DockerModels;
+using Newtonsoft.Json;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Docker;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lasertag.Builder.DockerModels;
 using Serilog;
 using static Nuke.Common.Tools.Docker.DockerTasks;
 
 namespace Lasertag.Builder;
+
 public partial class Build
 {
     string GetImageTag(string projectName) =>
-        $"{projectName.Replace("Lasertag.", string.Empty).Replace(".", "-").ToLower()}:{ImageTag}";
+        $"{projectName.Replace("Lasertag.", string.Empty, StringComparison.CurrentCulture).Replace(".", "-", StringComparison.CurrentCulture).ToLower(CultureInfo.CurrentCulture)}:{ImageTag}";
 
     void ProcessDockerTemplate(string projectName, string template)
     {
         var rendered = template
-            .Replace("{APPNAME}", projectName);
+            .Replace("{APPNAME}", projectName, StringComparison.CurrentCulture);
 
         File.WriteAllText(Path.Combine(OutputDirectory, projectName, "Dockerfile"), rendered);
     }
@@ -112,7 +109,7 @@ public partial class Build
             }
 
             var first = inspectionResults.First();
-            return first.State!.Running && first.State.Status == "exited";
+            return first.State!.Running && "exited".Equals(first.State!.Status, StringComparison.CurrentCulture);
         }
         catch (ProcessException)
         {

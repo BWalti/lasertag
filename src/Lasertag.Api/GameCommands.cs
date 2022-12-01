@@ -4,7 +4,6 @@ using static Lasertag.DomainModel.DomainEvents.GameRoundEvents;
 using static Lasertag.DomainModel.DomainEvents.InfrastructureEvents;
 using Lasertag.Manager.Game;
 using Microsoft.Extensions.Logging;
-using Orleans;
 using Orleans.Concurrency;
 
 namespace Lasertag.Api;

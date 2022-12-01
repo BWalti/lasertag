@@ -8,7 +8,7 @@ namespace Lasertag.Builder;
 
 partial class Build
 {
-    const string PostgresContainerName = "rabbitPostgres";
+    const string PostgresContainerName = "postgres";
 
     public Target RunPostgres => _ => _
         .OnlyWhenDynamic(() => !DockerIsRunning(PostgresContainerName))

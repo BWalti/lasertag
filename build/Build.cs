@@ -1,11 +1,11 @@
 using Nuke.Common;
 using Nuke.Common.CI;
-using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities.Collections;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+
 // ReSharper disable UnusedMember.Global
 
 namespace Lasertag.Builder;
@@ -16,14 +16,11 @@ partial class Build : NukeBuild
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     public readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    [Parameter("Version number to use for assemblies - Default is 0.1.0.0")]
-    public readonly string Version = "0.1.0.0";
-
-    [GitRepository] readonly GitRepository GitRepository;
-
-    [Solution] readonly Solution Solution;
-
     [Parameter("Image Tag")] readonly string ImageTag = "dev";
+
+    [Parameter("Version number to use for assemblies - Default is 0.1.0.0")] public readonly string Version = "0.1.0.0";
+
+    [Solution] Solution Solution = default!;
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath TestsDirectory => RootDirectory / "tests";
