@@ -12,6 +12,7 @@ partial class Build
 
     public Target RunGrafana => _ => _
         .OnlyWhenDynamic(() => !DockerIsRunning(GrafanaContainerName))
+        .DependsOn(RunTempo, RunPrometheus)
         .Executes(() =>
         {
             if (!TryDockerStartIfStopped(GrafanaContainerName))

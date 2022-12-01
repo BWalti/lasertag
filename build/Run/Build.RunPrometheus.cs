@@ -11,6 +11,7 @@ partial class Build
     const string PrometheusContainerName = "prometheus";
 
     public Target RunPrometheus => _ => _
+        .DependsOn(RunOtelCollector)
         .OnlyWhenDynamic(() => !DockerIsRunning(PrometheusContainerName))
         .Executes(() =>
         {
@@ -20,6 +21,7 @@ partial class Build
                     .SetImage("prom/prometheus:latest")
                     .SetName(PrometheusContainerName)
                     .AddPublish("9090:9090")
+                    .AddLink(OtelContainerName)
                     .SetArgs(
                         "--config.file=/etc/prometheus.yaml",
                         "--web.enable-remote-write-receiver",
