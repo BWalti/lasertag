@@ -67,7 +67,7 @@ public partial class Build
                 return false;
             }
 
-            return inspectionResults.First().State!.Running;
+            return inspectionResults.First().State?.Running ?? false;
         }
         catch (ProcessException)
         {
@@ -109,7 +109,7 @@ public partial class Build
             }
 
             var first = inspectionResults.First();
-            return first.State!.Running && "exited".Equals(first.State!.Status, StringComparison.CurrentCulture);
+            return first.State is { Running: true, Status: "exited" };
         }
         catch (ProcessException)
         {

@@ -38,6 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "o11y-backend", "o11y-backen
 		o11y-backend\collector-config-local.yaml = o11y-backend\collector-config-local.yaml
 		o11y-backend\grafana-bootstrap.ini = o11y-backend\grafana-bootstrap.ini
 		o11y-backend\grafana-datasources.yaml = o11y-backend\grafana-datasources.yaml
+		o11y-backend\loki-config.yaml = o11y-backend\loki-config.yaml
 		o11y-backend\prometheus.yaml = o11y-backend\prometheus.yaml
 		o11y-backend\tempo-config.yaml = o11y-backend\tempo-config.yaml
 		o11y-backend\tempo-overrides.yaml = o11y-backend\tempo-overrides.yaml

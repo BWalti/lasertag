@@ -13,18 +13,18 @@ partial class Build
 
     public Target RunOtelCollector => _ => _
         .OnlyWhenDynamic(() => !DockerIsRunning(OtelContainerName))
-        .DependsOn(RunTempo)
+        .DependsOn(RunTempo, RunLoki)
         .Executes(() =>
         {
             if (!TryDockerStartIfStopped(OtelContainerName))
             {
                 var settings = new DockerRunSettings()
-                    .SetImage("otel/opentelemetry-collector:latest")
+                    .SetImage("otel/opentelemetry-collector-contrib:latest")
                     .SetName(OtelContainerName)
                     .AddPublish(
                         "5555:5555",
                         "8765:8765")
-                    .AddLink(TempoContainerName)
+                    .AddLink(TempoContainerName, LokiContainerName)
                     .SetArgs("--config=/etc/collector-config.yaml")
                     .AddVolume($"{RootDirectory}/o11y-backend/collector-config-local.yaml:/etc/collector-config.yaml")
                     .SetDetach(true);

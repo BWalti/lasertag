@@ -20,6 +20,13 @@ exporters:
     metric_expiration: 10m
     resource_to_telemetry_conversion:
       enabled: true
+  loki:
+    endpoint: "http://loki:3100/loki/api/v1/push"
+    tenant_id: "tenant1"
+    labels:
+      attributes:
+        container_name: "localhost"
+        container_id: "myid"
 
 processors:
   batch:
@@ -46,4 +53,4 @@ service:
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp]
+      exporters: [otlp, loki]

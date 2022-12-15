@@ -12,7 +12,7 @@ partial class Build
 
     public Target RunGrafana => _ => _
         .OnlyWhenDynamic(() => !DockerIsRunning(GrafanaContainerName))
-        .DependsOn(RunTempo, RunPrometheus)
+        .DependsOn(RunTempo, RunPrometheus, RunLoki)
         .Executes(() =>
         {
             if (!TryDockerStartIfStopped(GrafanaContainerName))
@@ -21,7 +21,7 @@ partial class Build
                     .SetImage("grafana/grafana:latest")
                     .SetName(GrafanaContainerName)
                     .AddPublish("3000:3000")
-                    .AddLink(TempoContainerName, PrometheusContainerName)
+                    .AddLink(TempoContainerName, PrometheusContainerName, LokiContainerName)
                     .AddVolume(
                         $"{RootDirectory}/o11y-backend/grafana-bootstrap.ini:/etc/grafana/grafana.ini",
                         $"{RootDirectory}/o11y-backend/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml")
@@ -31,7 +31,7 @@ partial class Build
                         "GF_AUTH_DISABLE_LOGIN_FORM=true")
                     .SetHealthInterval("5s")
                     .SetHealthRetries(10)
-                    .SetHealthCmd("wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1\r\n")
+                    .SetHealthCmd("wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1")
                     .SetDetach(true);
 
                 DockerRun(settings);
