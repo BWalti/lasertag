@@ -44,6 +44,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "o11y-backend", "o11y-backen
 		o11y-backend\tempo-overrides.yaml = o11y-backend\tempo-overrides.yaml
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Specifications", "tests\Lasertag.Specifications\Lasertag.Specifications.csproj", "{A7F6164B-4AC4-44A7-B845-E66FAEC3430D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,10 @@ Global
 		{389AF1CA-5D62-40DE-95EA-D0EEF7BD2364}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{389AF1CA-5D62-40DE-95EA-D0EEF7BD2364}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{389AF1CA-5D62-40DE-95EA-D0EEF7BD2364}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7F6164B-4AC4-44A7-B845-E66FAEC3430D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7F6164B-4AC4-44A7-B845-E66FAEC3430D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7F6164B-4AC4-44A7-B845-E66FAEC3430D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7F6164B-4AC4-44A7-B845-E66FAEC3430D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +100,7 @@ Global
 		{51045D5F-198C-4076-B219-AD8923C81B74} = {BE0FD097-E00E-4D2E-9D99-53008CCA3E11}
 		{389AF1CA-5D62-40DE-95EA-D0EEF7BD2364} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 		{5B978752-EA8F-496F-B520-B64716B8A68A} = {C2D040C6-3015-4CE8-95C1-B193223A21A5}
+		{A7F6164B-4AC4-44A7-B845-E66FAEC3430D} = {38E3CDCD-A89A-47C0-ADFD-726E4A9955AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2CB5560A-7F9B-4A01-85A3-F95B4DC96810}
