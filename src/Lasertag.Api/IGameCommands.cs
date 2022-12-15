@@ -12,3 +12,9 @@ public interface IGameCommands : IGrainWithIntegerKey
     Task<ApiResult<Game>> CreateLobby(Guid gameId, int numberOfGroups);
     Task<(ApiResult<Game>, ApiResult<GameRound>)> StartGameRound(Guid gameId);
 }
+
+public interface IServerCommands : IGrainWithIntegerKey
+{
+    Task<ApiResult<Server>> Configure(ServerConfiguration configuration);
+    Task<ApiResult<Server>> RegisterGameSet(GameSetConfiguration gameSetConfiguration);
+}

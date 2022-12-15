@@ -1,4 +1,5 @@
-﻿using OpenTelemetry.Logs;
+﻿using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -24,6 +25,9 @@ public static class OpenTelemetryExtensions
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
 
+        builder.Services.AddOptions();
+        builder.Services.Configure<OtlpExporterOptions>(builder.Configuration.GetSection("OtlpExporter"));
+
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.SetResourceBuilder(resourceBuilder)
@@ -47,7 +51,8 @@ public static class OpenTelemetryExtensions
                         "System.Net.Http",
                         "System.Net.Sockets",
                         "System.Net.NameResolution",
-                        "System.Net.Security");
+                        "System.Net.Security",
+                        "Wolverine");
                 })
                 .AddOtlpExporter();
         });
@@ -57,6 +62,7 @@ public static class OpenTelemetryExtensions
             tracing.SetResourceBuilder(resourceBuilder)
                 .AddSource("Microsoft.Orleans.Runtime")
                 .AddSource("Microsoft.Orleans.Application")
+                .AddSource("Wolverine")
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddOtlpExporter();

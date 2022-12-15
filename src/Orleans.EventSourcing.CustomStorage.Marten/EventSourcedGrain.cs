@@ -34,6 +34,6 @@ public class EventSourcedGrain<TDomainModel, TDomainState, TEventBase>
 
     public new async Task ConfirmEvents()
     {
-        await base.ConfirmEvents().ConfigureAwait(false);
+        await base.ConfirmEvents();
     }
 }

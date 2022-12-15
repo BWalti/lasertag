@@ -37,19 +37,19 @@ public class EventRaiser<TDomainManager, TDomainModel, TState, TDomainEventBase>
             var mgr = GrainFactory.GetGrain<TDomainManager>(streamId);
 
             Log.LogInformation("{CallerName}: Get Game", callerName);
-            var game = await mgr.GetManagedState().ConfigureAwait(false);
+            var game = await mgr.GetManagedState();
 
             Log.LogInformation("{CallerName}: Check conditions and create Event", callerName);
             var @event = checkedEventFactory(game);
 
             Log.LogInformation("{CallerName}: raising event", callerName);
-            await mgr.RaiseEvent(@event).ConfigureAwait(false);
+            await mgr.RaiseEvent(@event);
 
             Log.LogInformation("{CallerName}: confirming events", callerName);
-            await mgr.ConfirmEvents().ConfigureAwait(false);
+            await mgr.ConfirmEvents();
 
             Log.LogInformation("{CallerName}: returning GetManagedState", callerName);
-            return new ApiResult<TDomainModel>(await mgr.GetManagedState().ConfigureAwait(false));
+            return new ApiResult<TDomainModel>(await mgr.GetManagedState());
         }
         catch (Exception ex)
         {

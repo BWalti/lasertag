@@ -1,7 +1,7 @@
 using Admin.Api;
 using Admin.Api.Extensions;
 using Lasertag.Api;
-using OpenTelemetry.Exporter;
+using Wolverine;
 
 var builder = WebApplication
     .CreateBuilder(args)
@@ -9,6 +9,7 @@ var builder = WebApplication
     .UseSwaggerGeneratorHack(args);
 
 builder.AddOpenTelemetry();
+builder.Host.UseWolverine();
 
 builder.Services.AddTransient(provider =>
 {
@@ -28,12 +29,12 @@ builder.Services.AddTransient(provider =>
     return clusterClient.GetGrain<IGameRoundQueries>(0);
 });
 
-builder.Services.AddOptions();
-builder.Services.Configure<OtlpExporterOptions>(builder.Configuration.GetSection("OtlpExporter"));
-
 var app = builder
     .Build()
     .UseDevelopmentDefaults();
+
+
+app.MapServerEndpoints();
 
 app.MapGameEndpoints();
 app.MapGameRoundEndpoints();

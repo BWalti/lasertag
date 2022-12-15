@@ -16,14 +16,14 @@ public class MartenJournaledGrainAdapter<TState, TEvent>
     public async Task<KeyValuePair<int, TState>> ReadStateFromStorage(Guid id)
     {
         var session = _store.LightweightSession();
-        await using var _ = session.ConfigureAwait(false);
+        await using var _ = session;
 
-        var stream = await session.Events.FetchStreamAsync(id).ConfigureAwait(false);
+        var stream = await session.Events.FetchStreamAsync(id);
 
         var state = default(TState);
         if (stream.Any())
         {
-            state = await session.Events.AggregateStreamAsync<TState>(id).ConfigureAwait(false);
+            state = await session.Events.AggregateStreamAsync<TState>(id);
         }
 
         state ??= new TState();
@@ -33,9 +33,9 @@ public class MartenJournaledGrainAdapter<TState, TEvent>
     public async Task<bool> ApplyUpdatesToStorage(Guid id, IReadOnlyList<TEvent> updates, int expectedversion)
     {
         var session = _store.OpenSession();
-        await using var _ = session.ConfigureAwait(false);
+        await using var _ = session;
 
-        var stream = await session.Events.FetchStreamAsync(id).ConfigureAwait(false);
+        var stream = await session.Events.FetchStreamAsync(id);
         if (stream.Count != expectedversion)
         {
             return false;
@@ -47,10 +47,10 @@ public class MartenJournaledGrainAdapter<TState, TEvent>
         }
         else
         {
-            await session.Events.AppendExclusive(id, updates.Cast<object>().ToArray()).ConfigureAwait(false);
+            await session.Events.AppendExclusive(id, updates.Cast<object>().ToArray());
         }
 
-        await session.SaveChangesAsync().ConfigureAwait(false);
+        await session.SaveChangesAsync();
         return true;
     }
 }

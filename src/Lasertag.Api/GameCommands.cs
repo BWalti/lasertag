@@ -21,7 +21,7 @@ public class GameCommands : Grain, IGameCommands
 
     public async Task<ApiResult<Game>> InitializeGame(Guid gameId)
     {
-        return await EventRaiser.RaiseEventWithChecks(gameId, game =>
+        var result = await EventRaiser.RaiseEventWithChecks(gameId, game =>
         {
             if (game.Status != GameStatus.None)
             {
@@ -29,17 +29,19 @@ public class GameCommands : Grain, IGameCommands
             }
 
             return new GameServerInitialized(gameId);
-        }).ConfigureAwait(false);
+        });
+
+        return result;
     }
 
     public async Task<ApiResult<Game>> RegisterGameSet(Guid gameId, GameSetConfiguration configuration)
     {
-        return await EventRaiser.RaiseEvent(gameId, () => new GameSetRegistered(configuration)).ConfigureAwait(false);
+        return await EventRaiser.RaiseEvent(gameId, () => new GameSetRegistered(configuration));
     }
 
     public async Task<ApiResult<Game>> UnregisterGameSet(Guid gameId, Guid gameSetId)
     {
-        return await EventRaiser.RaiseEvent(gameId, () => new GameSetUnregistered(gameSetId)).ConfigureAwait(false);
+        return await EventRaiser.RaiseEvent(gameId, () => new GameSetUnregistered(gameSetId));
     }
 
     public async Task<ApiResult<Game>> ConnectGameSet(Guid gameId, Guid gameSetId)
@@ -59,7 +61,7 @@ public class GameCommands : Grain, IGameCommands
             }
 
             return new GameSetConnected(gameSetId);
-        }).ConfigureAwait(false);
+        });
     }
 
     public async Task<ApiResult<Game>> DisconnectGameSet(Guid gameId, Guid gameSetId)
@@ -79,7 +81,7 @@ public class GameCommands : Grain, IGameCommands
             }
 
             return new GameSetDisconnected(gameSetId);
-        }).ConfigureAwait(false);
+        });
     }
 
     public async Task<ApiResult<Game>> CreateLobby(Guid gameId, int numberOfGroups)
@@ -106,12 +108,12 @@ public class GameCommands : Grain, IGameCommands
                 .ToArray();
 
             return new LobbyCreated(gameRoundId, groups);
-        }).ConfigureAwait(false);
+        });
 
         if (groups != null)
         {
             var gameRoundCommands = GrainFactory.GetGrain<IGameRoundCommands>(0);
-            await gameRoundCommands.CreateLobby(gameRoundId, groups).ConfigureAwait(false);
+            await gameRoundCommands.CreateLobby(gameRoundId, groups);
         }
 
         return task;
@@ -122,7 +124,7 @@ public class GameCommands : Grain, IGameCommands
         var gameRoundId = Guid.NewGuid();
 
         var game = await EventRaiser.RaiseEventWithChecks(gameId, game => new Started(gameRoundId))
-            .ConfigureAwait(false);
+            ;
         var gameRoundCommands = GrainFactory.GetGrain<IGameRoundCommands>(0);
 
         try
@@ -132,7 +134,7 @@ public class GameCommands : Grain, IGameCommands
                 throw new InvalidOperationException("GameRound ID not found!");
             }
 
-            var gameRound = await gameRoundCommands.Start(gameRoundId).ConfigureAwait(false);
+            var gameRound = await gameRoundCommands.Start(gameRoundId);
 
             if (gameRound.Output == null)
             {

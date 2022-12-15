@@ -15,7 +15,7 @@ public class InitializeStuff : IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         var serverGrain = _grainFactory.GetGrain<IServerGrain>(0);
-        await serverGrain.DoIt().ConfigureAwait(false);
+        await serverGrain.DoIt();
     }
 
     public Task StopAsync(CancellationToken cancellationToken) =>

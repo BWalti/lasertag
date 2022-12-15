@@ -1,8 +1,5 @@
 ﻿using Lasertag.DomainModel;
-using Lasertag.DomainModel.DomainEvents;
 using Lasertag.Manager;
-using Lasertag.Manager.Game;
-using Lasertag.Manager.GameRound;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
 using Marten.Events.Projections;
@@ -10,16 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-using Orleans.EventSourcing.CustomStorage.Marten;
-using Orleans.Providers;
-using Orleans.Runtime;
-using Orleans.Storage;
 using Server;
 using Weasel.Core;
 
@@ -58,81 +48,16 @@ host.ConfigureLogging((context, builder) =>
 
 host.ConfigureServices((context, services) =>
 {
-    var resourceBuilder = ResourceBuilder.CreateDefault().AddService(context.HostingEnvironment.ApplicationName);
-
-    services.AddSingleton(resourceBuilder);
-
-    services.AddOpenTelemetryMetrics(metrics =>
-    {
-        metrics.SetResourceBuilder(resourceBuilder)
-            .AddPrometheusExporter()
-            .AddMeter("Microsoft.Orleans")
-            .AddAspNetCoreInstrumentation()
-            .AddRuntimeInstrumentation()
-            .AddHttpClientInstrumentation()
-            .AddEventCountersInstrumentation(c =>
-            {
-                // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
-                c.AddEventSources(
-                    "Microsoft.AspNetCore.Hosting",
-                    "Microsoft-AspNetCore-Server-Kestrel",
-                    "System.Net.Http",
-                    "System.Net.Sockets",
-                    "System.Net.NameResolution",
-                    "System.Net.Security");
-            })
-            .AddOtlpExporter();
-    });
-
+    services.AddLogging();
     services.AddOptions();
     services.Configure<OtlpExporterOptions>(context.Configuration.GetSection("OtlpExporter"));
 
-    services.AddOpenTelemetryTracing(tracing =>
-    {
-        tracing.SetResourceBuilder(resourceBuilder)
-            .AddSource("Microsoft.Orleans.Runtime")
-            .AddSource("Microsoft.Orleans.Application")
-            .AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation()
-            .AddNpgsql()
-            .AddOtlpExporter();
-    });
-
-
-    services.AddLogging();
-    services.AddSingleton<MartenJournaledGrainAdapter<GameState, IDomainEventBase>>();
-    services.AddSingleton<MartenJournaledGrainAdapter<GameRoundState, IDomainEventBase>>();
+    var resourceBuilder = ResourceBuilder.CreateDefault().AddService(context.HostingEnvironment.ApplicationName);
+    services.AddOpenTelemetry(resourceBuilder);
+    services.AddLasertagServer();
+    services.AddMartenBackend(context.Configuration.GetConnectionString("Marten"), context.HostingEnvironment.IsDevelopment());
 
     services.AddHostedService<InitializeStuff>();
-
-    services.AddSingleton(provider =>
-        provider.GetServiceByName<IGrainStorage>(ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME));
-    services.AddSingletonNamedService<IGrainStorage>(ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME,
-        (provider, _) => new MartenGrainStorage(provider.GetRequiredService<IDocumentSession>()));
-
-    services.AddMarten(o =>
-        {
-            var connectionString = context.Configuration.GetConnectionString("Marten");
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new InvalidOperationException("Need to configure Marten connection string!");
-            }
-
-            o.Connection(connectionString);
-            if (context.HostingEnvironment.IsDevelopment())
-            {
-                o.AutoCreateSchemaObjects = AutoCreate.All;
-            }
-
-            o.Schema.For<Game>().Identity(g => g.GameId);
-
-            o.Projections.Add<ScoreBoardProjection>(ProjectionLifecycle.Async);
-
-#pragma warning disable S125
-            // o.Projections.SelfAggregate<GameRoundState>(ProjectionLifecycle.Async);
-#pragma warning restore S125
-        })
-        .AddAsyncDaemon(DaemonMode.Solo);
 });
 
-await host.RunConsoleAsync().ConfigureAwait(false);
+await host.RunConsoleAsync();

@@ -21,7 +21,7 @@ public class MartenGrainStorage : IGrainStorage
 
         var existing = await _session.Query<MartenGrainWrapper<T>>()
             .SingleOrDefaultAsync(item => item.GrainType == stateName && item.HashCode == hashCode)
-            .ConfigureAwait(false);
+            ;
 
         if (existing != null)
         {
@@ -43,7 +43,7 @@ public class MartenGrainStorage : IGrainStorage
         if (grainState.RecordExists)
         {
             var existing = await _session.Query<MartenGrainWrapper<T>>()
-                .SingleAsync(item => item.GrainType == stateName && item.HashCode == hashCode).ConfigureAwait(false);
+                .SingleAsync(item => item.GrainType == stateName && item.HashCode == hashCode);
 
             existing.Payload = grainState.State;
             existing.Version = etagAsGuid;
@@ -63,7 +63,7 @@ public class MartenGrainStorage : IGrainStorage
             _session.Store(item);
         }
 
-        await _session.SaveChangesAsync().ConfigureAwait(false);
+        await _session.SaveChangesAsync();
     }
 
 
@@ -75,11 +75,11 @@ public class MartenGrainStorage : IGrainStorage
         if (grainState.RecordExists)
         {
             var existing = await _session.Query<MartenGrainWrapper<T>>()
-                .SingleAsync(item => item.GrainType == stateName && item.HashCode == hashCode).ConfigureAwait(false);
+                .SingleAsync(item => item.GrainType == stateName && item.HashCode == hashCode);
 
             _session.Delete(existing);
         }
 
-        await _session.SaveChangesAsync().ConfigureAwait(false);
+        await _session.SaveChangesAsync();
     }
 }
