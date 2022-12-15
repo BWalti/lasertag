@@ -16,7 +16,6 @@
 		<PackageReference Include="Newtonsoft.Json" />
 		<PackageReference Include="Microsoft.Orleans.Analyzers" />
 		<PackageReference Include="Microsoft.Orleans.Client" />
-		<PackageReference Include="WolverineFx" />
 	</ItemGroup>
 
 	<ItemGroup>

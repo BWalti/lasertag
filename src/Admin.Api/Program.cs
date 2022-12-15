@@ -1,7 +1,6 @@
 using Admin.Api;
 using Admin.Api.Extensions;
 using Lasertag.Api;
-using Wolverine;
 
 var builder = WebApplication
     .CreateBuilder(args)
@@ -9,7 +8,6 @@ var builder = WebApplication
     .UseSwaggerGeneratorHack(args);
 
 builder.AddOpenTelemetry();
-builder.Host.UseWolverine();
 
 builder.Services.AddTransient(provider =>
 {
@@ -35,7 +33,6 @@ var app = builder
 
 
 app.MapServerEndpoints();
-
 app.MapGameEndpoints();
 app.MapGameRoundEndpoints();
 app.MapGameStatisticsEndpoints();
