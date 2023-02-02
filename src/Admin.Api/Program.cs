@@ -1,6 +1,7 @@
 using Admin.Api;
 using Admin.Api.Contexts;
 using Admin.Api.Extensions;
+using EasyNetQ.ConnectionString;
 using JasperFx.Core;
 using Lasertag.Messages;
 using Marten;
@@ -21,8 +22,7 @@ using Wolverine.RabbitMQ;
 
 var builder = WebApplication
     .CreateBuilder(args)
-    .UseDefaultInfrastructure()
-    .UseSwaggerGeneratorHack(args);
+    .UseDefaultInfrastructure();
 
 builder.Host
     .UseWolverine(opts =>

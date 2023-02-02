@@ -8,7 +8,7 @@ exporters:
   logging:
     loglevel: debug
 
-  otlp/traces:
+  otlp:
     endpoint: tempo:4317
     tls:
       insecure: true
@@ -27,7 +27,6 @@ exporters:
     endpoint: http://loki:3100/loki/api/v1/push
 
 processors:
-  batch:
   resource:
     attributes:
       - action: insert
@@ -63,12 +62,10 @@ service:
   pipelines:
     metrics:
       receivers: [otlp]
-      processors: [batch]
-      exporters: [logging,prometheus]
+      exporters: [logging, prometheus]
     traces:
       receivers: [otlp]
-      processors: [batch]
-      exporters: [logging, otlp/traces]
+      exporters: [logging, otlp]
     logs:
       receivers: [otlp]
       processors: [resource, attributes]

@@ -4,7 +4,6 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Reflection;
-using OpenTelemetry;
 
 namespace Admin.Api.Extensions;
 
@@ -37,54 +36,48 @@ public static class OpenTelemetryExtensions
         builder.Services.AddOptions();
         builder.Services.Configure<OtlpExporterOptions>(builder.Configuration.GetSection("OtlpExporter"));
 
-        var endpoint = builder.Configuration.GetSection("OtlpExporter")["Endpoint"]!;
-
         builder.Logging.ClearProviders();
         builder.Logging
-            //.AddFilter("Microsoft", LogLevel.Warning) // generic host lifecycle messages
-            //.AddFilter("Orleans", LogLevel.Information) // suppress status dumps
-            //.AddFilter("Runtime", LogLevel.Warning) // also an Orleans prefix
-            .AddOpenTelemetry(logging =>
+            .AddFilter("Microsoft", LogLevel.Warning) // generic host lifecycle messages
+            .AddFilter("Orleans", LogLevel.Information) // suppress status dumps
+            .AddFilter("Runtime", LogLevel.Warning) // also an Orleans prefix
+            .AddFilter("Wolverine", LogLevel.Warning)
+            .AddOpenTelemetry(options =>
             {
-                logging.AddProcessor(new SimpleLogRecordExportProcessor(new ConsoleLogRecordExporter(
-                    new ConsoleExporterOptions
-                    {
-                        Targets = ConsoleExporterOutputTargets.Console
-                    })));
-
-                logging
-                    .SetResourceBuilder(resourceBuilder)
-                    .AddConsoleExporter()
-                    .AddOtlpExporter(options =>
-                    {
-                        options.Endpoint = new Uri(endpoint);
-                    });
+                options.SetResourceBuilder(resourceBuilder);
+                options.AddConsoleExporter();
+                options.AddOtlpExporter(configure =>
+                {
+                    var endpoint = builder.Configuration.GetSection("OtlpExporter")["Endpoint"]!;
+                    configure.Endpoint = new Uri(endpoint);
+                });
             });
 
+
         builder.Services.AddOpenTelemetryMetrics(metrics =>
-        {
-            metrics.SetResourceBuilder(resourceBuilder)
-                .AddPrometheusExporter()
-                .AddMeter("Microsoft.Orleans")
-                .AddAspNetCoreInstrumentation()
-                .AddRuntimeInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddEventCountersInstrumentation(c =>
-                {
-                    // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
-                    c.AddEventSources(
-                        "Microsoft.AspNetCore.Hosting",
-                        "Microsoft-AspNetCore-Server-Kestrel",
-                        "System.Net.Http",
-                        "System.Net.Sockets",
-                        "System.Net.NameResolution",
-                        "System.Net.Security",
-                        "Wolverine");
-                });
-            //.AddConsoleExporter();
-            //.AddOtlpExporter();
-        }
-);
+            {
+                metrics.SetResourceBuilder(resourceBuilder)
+                    .AddPrometheusExporter()
+                    .AddMeter("Microsoft.Orleans")
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddEventCountersInstrumentation(c =>
+                    {
+                        // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
+                        c.AddEventSources(
+                            "Microsoft.AspNetCore.Hosting",
+                            "Microsoft-AspNetCore-Server-Kestrel",
+                            "System.Net.Http",
+                            "System.Net.Sockets",
+                            "System.Net.NameResolution",
+                            "System.Net.Security",
+                            "Wolverine");
+                    })
+                    .AddConsoleExporter()
+                    .AddOtlpExporter();
+            }
+        );
 
         builder.Services.AddOpenTelemetryTracing(tracing =>
         {
@@ -93,9 +86,9 @@ public static class OpenTelemetryExtensions
                 .AddSource("Microsoft.Orleans.Application")
                 .AddSource("Wolverine")
                 .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation();
-            //.AddConsoleExporter();
-            //.AddOtlpExporter();
+                .AddHttpClientInstrumentation()
+                .AddConsoleExporter()
+                .AddOtlpExporter();
         });
 
         return builder;
