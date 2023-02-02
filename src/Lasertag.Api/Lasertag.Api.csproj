@@ -1,8 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-	<ItemGroup>
-	  <ProjectReference Include="..\Lasertag.DomainModel\Lasertag.DomainModel.csproj" />
-	  <ProjectReference Include="..\Lasertag.Manager\Lasertag.Manager.csproj" />
-	</ItemGroup>
-
-</Project>
