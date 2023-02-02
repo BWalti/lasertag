@@ -2,7 +2,7 @@
 
 namespace Lasertag.Api;
 
-public interface IGameCommands : IGrainWithIntegerKey
+public interface IGameCommands
 {
     Task<ApiResult<Game>> InitializeGame(Guid gameId);
     Task<ApiResult<Game>> RegisterGameSet(Guid gameId, GameSetConfiguration configuration);
@@ -13,7 +13,7 @@ public interface IGameCommands : IGrainWithIntegerKey
     Task<(ApiResult<Game>, ApiResult<GameRound>)> StartGameRound(Guid gameId);
 }
 
-public interface IServerCommands : IGrainWithIntegerKey
+public interface IServerCommands
 {
     Task<ApiResult<Server>> Configure(ServerConfiguration configuration);
     Task<ApiResult<Server>> RegisterGameSet(GameSetConfiguration gameSetConfiguration);

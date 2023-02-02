@@ -7,12 +7,14 @@ receivers:
 exporters:
   logging:
     loglevel: debug
-  otlp:
+
+  otlp/traces:
     endpoint: tempo:4317
     tls:
       insecure: true
+
   prometheus:
-    endpoint: '0.0.0.0:8765'
+    endpoint: 0.0.0.0:8765
     namespace: test-space
     const_labels:
       app: lasertag
@@ -20,20 +22,36 @@ exporters:
     metric_expiration: 10m
     resource_to_telemetry_conversion:
       enabled: true
+
   loki:
-    endpoint: "http://loki:3100/loki/api/v1/push"
-    tenant_id: "tenant1"
-    labels:
-      attributes:
-        container_name: "localhost"
-        container_id: "myid"
+    endpoint: http://loki:3100/loki/api/v1/push
 
 processors:
   batch:
+  resource:
+    attributes:
+      - action: insert
+        key: service_name
+        from_attribute: service.name
+      - action: insert
+        key: service_namespace
+        from_attribute: service.namespace
+      - action: insert
+        key: loki.resource.labels
+        value: service_name, service_namespace
+  attributes:
+    actions:
+      - action: insert
+        key: log_file_name
+        from_attribute: log.file.name
+      - action: insert
+        key: loki.attribute.labels
+        value: log_file_name
+
   # Data sources: traces
-  probabilistic_sampler:
-    hash_seed: 22
-    sampling_percentage: 80
+  #probabilistic_sampler:
+  #  hash_seed: 22
+  #  sampling_percentage: 80
 
 extensions:
   health_check:
@@ -41,7 +59,7 @@ extensions:
   zpages:
 
 service:
-  extensions: [health_check, pprof, zpages]
+  #extensions: [health_check, pprof, zpages]
   pipelines:
     metrics:
       receivers: [otlp]
@@ -49,8 +67,9 @@ service:
       exporters: [logging,prometheus]
     traces:
       receivers: [otlp]
-      exporters: [logging, otlp]
+      processors: [batch]
+      exporters: [logging, otlp/traces]
     logs:
       receivers: [otlp]
-      processors: [batch]
-      exporters: [otlp, loki]
+      processors: [resource, attributes]
+      exporters: [logging, loki]

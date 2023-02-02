@@ -37,7 +37,7 @@ frontend:
   log_queries_longer_than: 5s
   compress_responses: true
   max_outstanding_per_tenant: 2048
-  tail_proxy_url: http://localhost:3100
+  # tail_proxy_url: http://localhost:3100
 
 #ruler:
 #  alertmanager_url: http://localhost:9093
@@ -52,5 +52,5 @@ frontend:
 # Refer to the buildReport method to see what goes into a report.
 #
 # If you would like to disable reporting, uncomment the following lines:
-#analytics:
-#  reporting_enabled: false
+analytics:
+  reporting_enabled: false

@@ -30,14 +30,20 @@
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Bogus" Version="34.0.2" />
+    <PackageVersion Include="EasyNetQ.Logging.Microsoft" Version="7.4.0" />
+    <PackageVersion Include="EasyNetQ.Serialization.NewtonsoftJson" Version="7.4.0" />
+    <PackageVersion Include="EasyNetQ.Serialization.SystemTextJson" Version="7.4.0" />
     <PackageVersion Include="LightBDD.Extensions.DependencyInjection" Version="3.5.0" />
     <PackageVersion Include="LightBDD.XUnit2" Version="3.5.0" />
     <PackageVersion Include="Machine.Specifications.Runner.VisualStudio" Version="2.10.2" />
     <PackageVersion Include="Machine.Specifications.Should" Version="1.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.2" />
     <PackageVersion Include="Meziantou.Analyzer" Version="1.0.756" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageVersion Include="MQTTnet" Version="4.1.4.563" />
     <PackageVersion Include="NetEscapades.AspNetCore.SecurityHeaders" Version="0.17.0" />
     <PackageVersion Include="Npgsql.OpenTelemetry" Version="6.0.7" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.3.2" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.4.0-beta.3" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs" Version="1.4.0-beta.3" />
     <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.4.0-beta.3" />
@@ -47,16 +53,16 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9.9" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Process" Version="1.0.0-alpha.2" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.1.0-beta.1" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageVersion Include="coverlet.collector" Version="3.2.0" />
-    <PackageVersion Include="EasyNetQ.DI.Microsoft" Version="7.3.5" />
-    <PackageVersion Include="FluentAssertions" Version="6.8.0" />
+    <PackageVersion Include="EasyNetQ.DI.Microsoft" Version="7.4.1" />
+    <PackageVersion Include="FluentAssertions" Version="6.9.0" />
     <PackageVersion Include="JetBrains.Annotations" Version="2022.3.1" />
     <PackageVersion Include="Marten" Version="5.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
     <PackageVersion Include="Microsoft.Orleans.Analyzers" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Orleans.Client" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Orleans.EventSourcing" Version="7.0.0" />
@@ -65,11 +71,13 @@
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageVersion Include="Orleans.EventSourcing" Version="1.0.3.2" />
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="8.50.0.58025" />
-    <PackageVersion Include="WolverineFx" Version="0.9.5" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="8.52.0.60960" />
+    <PackageVersion Include="WolverineFx" Version="0.9.8" />
+    <PackageVersion Include="WolverineFx.Marten" Version="0.9.8" />
+    <PackageVersion Include="WolverineFx.RabbitMQ" Version="0.9.8" />
     <PackageVersion Include="xunit" Version="2.4.2" />
-    <PackageVersion Include="xunit.analyzers" Version="1.0.0" />
+    <PackageVersion Include="xunit.analyzers" Version="1.1.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
-    <PackageVersion Include="Nuke.Common" Version="6.2.1" />
+    <PackageVersion Include="Nuke.Common" Version="6.3.0" />
   </ItemGroup>
 </Project>

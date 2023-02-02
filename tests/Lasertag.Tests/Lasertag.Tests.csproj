@@ -2,8 +2,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Marten" />
-		<PackageReference Include="Microsoft.Orleans.Sdk" />
-		<PackageReference Include="Microsoft.Orleans.EventSourcing" />
 
 		<PackageReference Include="coverlet.collector">
 			<PrivateAssets>all</PrivateAssets>
@@ -18,7 +16,6 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Orleans.Server" />
 	</ItemGroup>
 
 	<ItemGroup>

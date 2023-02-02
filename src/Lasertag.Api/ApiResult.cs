@@ -1,6 +1,5 @@
 ﻿namespace Lasertag.Api;
 
-[GenerateSerializer]
 public record ApiResult<T>
 {
     public ApiResult()
@@ -28,9 +27,9 @@ public record ApiResult<T>
         Success = false;
     }
 
-    [Id(0)] public T? Output { get; }
+    public T? Output { get; }
 
-    [Id(1)] public bool Success { get; }
+    public bool Success { get; }
 
-    [Id(2)] public string? Message { get; }
+    public string? Message { get; }
 }

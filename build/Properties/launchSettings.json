@@ -2,7 +2,7 @@
   "profiles": {
     "build": {
       "commandName": "Project",
-      "commandLineArgs": "RunLoki"
+      "commandLineArgs": "CollectPeFiles"
     }
   }
 }

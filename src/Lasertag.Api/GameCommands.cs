@@ -2,160 +2,150 @@
 using Lasertag.DomainModel.DomainEvents;
 using Lasertag.Manager.Game;
 using Microsoft.Extensions.Logging;
-using Orleans.Concurrency;
 using static Lasertag.DomainModel.DomainEvents.GameRoundEvents;
 using static Lasertag.DomainModel.DomainEvents.InfrastructureEvents;
 
 namespace Lasertag.Api;
 
-[Reentrant]
-[StatelessWorker]
-public class GameCommands : Grain, IGameCommands
-{
-    public GameCommands(ILogger<GameCommands> logger)
-    {
-        EventRaiser = new EventRaiser<IGameManager, Game, GameState, IDomainEventBase>(logger, GrainFactory);
-    }
+//public class GameCommands : IGameCommands
+//{
+//    public async Task<ApiResult<Game>> InitializeGame(Guid gameId)
+//    {
+//        var result = await EventRaiser.RaiseEventWithChecks(gameId, game =>
+//        {
+//            if (game.Status != GameStatus.None)
+//            {
+//                throw new InvalidStateException("Can only Initialize game once after application start!");
+//            }
 
-    public EventRaiser<IGameManager, Game, GameState, IDomainEventBase> EventRaiser { get; }
+//            return new GameServerInitialized(gameId);
+//        });
 
-    public async Task<ApiResult<Game>> InitializeGame(Guid gameId)
-    {
-        var result = await EventRaiser.RaiseEventWithChecks(gameId, game =>
-        {
-            if (game.Status != GameStatus.None)
-            {
-                throw new InvalidStateException("Can only Initialize game once after application start!");
-            }
+//        return result;
+//    }
 
-            return new GameServerInitialized(gameId);
-        });
+//    public async Task<ApiResult<Game>> RegisterGameSet(Guid gameId, GameSetConfiguration configuration)
+//    {
+//        return await EventRaiser.RaiseEvent(gameId, () => new GameSetRegistered(configuration));
+//    }
 
-        return result;
-    }
+//    public async Task<ApiResult<Game>> UnregisterGameSet(Guid gameId, Guid gameSetId)
+//    {
+//        return await EventRaiser.RaiseEvent(gameId, () => new GameSetUnregistered(gameSetId));
+//    }
 
-    public async Task<ApiResult<Game>> RegisterGameSet(Guid gameId, GameSetConfiguration configuration)
-    {
-        return await EventRaiser.RaiseEvent(gameId, () => new GameSetRegistered(configuration));
-    }
+//    public async Task<ApiResult<Game>> ConnectGameSet(Guid gameId, Guid gameSetId)
+//    {
+//        return await EventRaiser.RaiseEventWithChecks(gameId, game =>
+//        {
+//            if (game.Status != GameStatus.Initialized)
+//            {
+//                throw new InvalidStateException("Connecting GameSets is only possible when Game is initialized!");
+//            }
 
-    public async Task<ApiResult<Game>> UnregisterGameSet(Guid gameId, Guid gameSetId)
-    {
-        return await EventRaiser.RaiseEvent(gameId, () => new GameSetUnregistered(gameSetId));
-    }
+//            if (game.GameSets.All(gs => gs.Id != gameSetId))
+//            {
+//#pragma warning disable S3928
+//                throw new ArgumentException("Invalid GameSetId provided!", nameof(gameSetId));
+//#pragma warning restore S3928
+//            }
 
-    public async Task<ApiResult<Game>> ConnectGameSet(Guid gameId, Guid gameSetId)
-    {
-        return await EventRaiser.RaiseEventWithChecks(gameId, game =>
-        {
-            if (game.Status != GameStatus.Initialized)
-            {
-                throw new InvalidStateException("Connecting GameSets is only possible when Game is initialized!");
-            }
+//            return new GameSetConnected(gameSetId);
+//        });
+//    }
 
-            if (game.GameSets.All(gs => gs.Id != gameSetId))
-            {
-#pragma warning disable S3928
-                throw new ArgumentException("Invalid GameSetId provided!", nameof(gameSetId));
-#pragma warning restore S3928
-            }
+//    public async Task<ApiResult<Game>> DisconnectGameSet(Guid gameId, Guid gameSetId)
+//    {
+//        return await EventRaiser.RaiseEventWithChecks(gameId, game =>
+//        {
+//            if (game.Status != GameStatus.Initialized)
+//            {
+//                throw new InvalidStateException("Disconnecting GameSets is only possible when Game is initialized!");
+//            }
 
-            return new GameSetConnected(gameSetId);
-        });
-    }
+//            if (game.GameSets.All(gs => gs.Id != gameSetId))
+//            {
+//#pragma warning disable S3928
+//                throw new ArgumentException("Invalid GameSetId provided!", nameof(gameSetId));
+//#pragma warning restore S3928
+//            }
 
-    public async Task<ApiResult<Game>> DisconnectGameSet(Guid gameId, Guid gameSetId)
-    {
-        return await EventRaiser.RaiseEventWithChecks(gameId, game =>
-        {
-            if (game.Status != GameStatus.Initialized)
-            {
-                throw new InvalidStateException("Disconnecting GameSets is only possible when Game is initialized!");
-            }
+//            return new GameSetDisconnected(gameSetId);
+//        });
+//    }
 
-            if (game.GameSets.All(gs => gs.Id != gameSetId))
-            {
-#pragma warning disable S3928
-                throw new ArgumentException("Invalid GameSetId provided!", nameof(gameSetId));
-#pragma warning restore S3928
-            }
+//    public async Task<ApiResult<Game>> CreateLobby(Guid gameId, int numberOfGroups)
+//    {
+//        var gameRoundId = Guid.NewGuid();
+//        GameGroup[]? groups = null;
 
-            return new GameSetDisconnected(gameSetId);
-        });
-    }
+//        var task = await EventRaiser.RaiseEventWithChecks(gameId, game =>
+//        {
+//            if (game.Status != GameStatus.Initialized && game.Status != GameStatus.GameFinished)
+//            {
+//                throw new InvalidStateException("Lobby cannot be created currently!");
+//            }
 
-    public async Task<ApiResult<Game>> CreateLobby(Guid gameId, int numberOfGroups)
-    {
-        var gameRoundId = Guid.NewGuid();
-        GameGroup[]? groups = null;
+//            groups = game.GameSets
+//                .Where(set => set.IsOnline)
+//                .Select((s, i) => new { s, i })
+//                .GroupBy(x => x.i % numberOfGroups)
+//                .Select((g, i) => new GameGroup(
+//                    Guid.NewGuid(),
+//                    g.Select(x => x.s).ToArray(),
+//                    GetGameColor(i)
+//                ))
+//                .ToArray();
 
-        var task = await EventRaiser.RaiseEventWithChecks(gameId, game =>
-        {
-            if (game.Status != GameStatus.Initialized && game.Status != GameStatus.GameFinished)
-            {
-                throw new InvalidStateException("Lobby cannot be created currently!");
-            }
+//            return new LobbyCreated(gameRoundId, groups);
+//        });
 
-            groups = game.GameSets
-                .Where(set => set.IsOnline)
-                .Select((s, i) => new { s, i })
-                .GroupBy(x => x.i % numberOfGroups)
-                .Select((g, i) => new GameGroup(
-                    Guid.NewGuid(),
-                    g.Select(x => x.s).ToArray(),
-                    GetGameColor(i)
-                ))
-                .ToArray();
+//        if (groups != null)
+//        {
+//            var gameRoundCommands = GrainFactory.GetGrain<IGameRoundCommands>(0);
+//            await gameRoundCommands.CreateLobby(gameRoundId, groups);
+//        }
 
-            return new LobbyCreated(gameRoundId, groups);
-        });
+//        return task;
+//    }
 
-        if (groups != null)
-        {
-            var gameRoundCommands = GrainFactory.GetGrain<IGameRoundCommands>(0);
-            await gameRoundCommands.CreateLobby(gameRoundId, groups);
-        }
+//    public async Task<(ApiResult<Game>, ApiResult<GameRound>)> StartGameRound(Guid gameId)
+//    {
+//        var gameRoundId = Guid.NewGuid();
 
-        return task;
-    }
+//        var game = await EventRaiser.RaiseEventWithChecks(gameId, game => new Started(gameRoundId))
+//            ;
+//        var gameRoundCommands = GrainFactory.GetGrain<IGameRoundCommands>(0);
 
-    public async Task<(ApiResult<Game>, ApiResult<GameRound>)> StartGameRound(Guid gameId)
-    {
-        var gameRoundId = Guid.NewGuid();
+//        try
+//        {
+//            if (game.Output == null)
+//            {
+//                throw new InvalidOperationException("GameRound ID not found!");
+//            }
 
-        var game = await EventRaiser.RaiseEventWithChecks(gameId, game => new Started(gameRoundId))
-            ;
-        var gameRoundCommands = GrainFactory.GetGrain<IGameRoundCommands>(0);
+//            var gameRound = await gameRoundCommands.Start(gameRoundId);
 
-        try
-        {
-            if (game.Output == null)
-            {
-                throw new InvalidOperationException("GameRound ID not found!");
-            }
+//            if (gameRound.Output == null)
+//            {
+//                throw new InvalidOperationException("GameRound not correctly initialized");
+//            }
 
-            var gameRound = await gameRoundCommands.Start(gameRoundId);
+//            return (game, gameRound);
+//        }
+//        catch (Exception e)
+//        {
+//            return (game, new ApiResult<GameRound>(e));
+//        }
+//    }
 
-            if (gameRound.Output == null)
-            {
-                throw new InvalidOperationException("GameRound not correctly initialized");
-            }
+//    static GroupColor GetGameColor(int index)
+//    {
+//        if (index > 7)
+//        {
+//            throw new InvalidOperationException("We do only support up to 8 groups (colors)");
+//        }
 
-            return (game, gameRound);
-        }
-        catch (Exception e)
-        {
-            return (game, new ApiResult<GameRound>(e));
-        }
-    }
-
-    static GroupColor GetGameColor(int index)
-    {
-        if (index > 7)
-        {
-            throw new InvalidOperationException("We do only support up to 8 groups (colors)");
-        }
-
-        return (GroupColor)index;
-    }
-}
+//        return (GroupColor)index;
+//    }
+//}

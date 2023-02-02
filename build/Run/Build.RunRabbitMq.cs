@@ -17,7 +17,7 @@ partial class Build
             if (!TryDockerStartIfStopped(RabbitMqContainerName))
             {
                 var settings = new DockerRunSettings()
-                    .SetImage("rabbitmq:3.9-management")
+                    .SetImage("rabbitmq:3-management")
                     .SetName(RabbitMqContainerName)
                     .SetEnv("RABBITMQ_DEFAULT_USER=demo", "RABBITMQ_DEFAULT_PASS=demo")
                     .AddPublish("5672:5672", "15672:15672")

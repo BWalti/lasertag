@@ -27,9 +27,8 @@ partial class Build
                         "3100:3100",
                         "9096:9096")
                     .SetArgs("-config.file=/mnt/config/loki-config.yaml")
-                    .AddVolume(
-                        $"{RootDirectory}/o11y-backend/loki-config.yaml:/mnt/config/loki-config.yaml",
-                        $"{RootDirectory}/loki-data:/loki")
+                    .AddVolume($"{RootDirectory}/o11y-backend/loki-config.yaml:/mnt/config/loki-config.yaml")
+                    // , $"{RootDirectory}/loki-data:/loki"
                     .SetHealthInterval("5s")
                     .SetHealthRetries(10)
                     .SetHealthCmd("wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1")

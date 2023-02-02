@@ -1,5 +1,5 @@
 ﻿namespace Lasertag.Api;
 
-public interface IGameQueries : IGrainWithIntegerKey
+public interface IGameQueries
 {
 }

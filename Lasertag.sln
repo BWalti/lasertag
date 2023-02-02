@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32505.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "src\Server\Server.csproj", "{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C2D040C6-3015-4CE8-95C1-B193223A21A5}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -18,14 +16,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{38E3CDCD-A89A-47C0-ADFD-726E4A9955AB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Tests", "tests\Lasertag.Tests\Lasertag.Tests.csproj", "{A5CF61FF-4F3F-4767-9DF8-173F943D62CB}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.EventSourcing.CustomStorage.Marten", "src\Orleans.EventSourcing.CustomStorage.Marten\Orleans.EventSourcing.CustomStorage.Marten.csproj", "{921CE2EA-9463-4227-83AF-9C783D2B7101}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.DomainModel", "src\Lasertag.DomainModel\Lasertag.DomainModel.csproj", "{B5E3E2CB-F732-4F62-8A19-5CE4E89B5015}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Api", "src\Lasertag.Api\Lasertag.Api.csproj", "{46D1248C-E72D-49C3-AEE4-E110E23F12DE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Manager", "src\Lasertag.Manager\Lasertag.Manager.csproj", "{644A9D9D-B64D-4474-9C1C-5941F02AA16D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "build", "build\build.csproj", "{51045D5F-198C-4076-B219-AD8923C81B74}"
 EndProject
@@ -44,7 +34,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "o11y-backend", "o11y-backen
 		o11y-backend\tempo-overrides.yaml = o11y-backend\tempo-overrides.yaml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Specifications", "tests\Lasertag.Specifications\Lasertag.Specifications.csproj", "{A7F6164B-4AC4-44A7-B845-E66FAEC3430D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.IoT.Simulator", "src\Lasertag.IoT.Simulator\Lasertag.IoT.Simulator.csproj", "{AF7B2275-DE7B-4070-AC30-293529909CFC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Messages", "src\Lasertag.Messages\Lasertag.Messages.csproj", "{6C62EF3A-599F-4C2F-ACA8-80478D2F3931}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtelTest", "src\OtelTest\OtelTest.csproj", "{EA87D04F-6837-423C-9D14-044A6A995774}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,55 +46,40 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A5CF61FF-4F3F-4767-9DF8-173F943D62CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5CF61FF-4F3F-4767-9DF8-173F943D62CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5CF61FF-4F3F-4767-9DF8-173F943D62CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5CF61FF-4F3F-4767-9DF8-173F943D62CB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{921CE2EA-9463-4227-83AF-9C783D2B7101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{921CE2EA-9463-4227-83AF-9C783D2B7101}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{921CE2EA-9463-4227-83AF-9C783D2B7101}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{921CE2EA-9463-4227-83AF-9C783D2B7101}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5E3E2CB-F732-4F62-8A19-5CE4E89B5015}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5E3E2CB-F732-4F62-8A19-5CE4E89B5015}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5E3E2CB-F732-4F62-8A19-5CE4E89B5015}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5E3E2CB-F732-4F62-8A19-5CE4E89B5015}.Release|Any CPU.Build.0 = Release|Any CPU
-		{46D1248C-E72D-49C3-AEE4-E110E23F12DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46D1248C-E72D-49C3-AEE4-E110E23F12DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46D1248C-E72D-49C3-AEE4-E110E23F12DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46D1248C-E72D-49C3-AEE4-E110E23F12DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{644A9D9D-B64D-4474-9C1C-5941F02AA16D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{644A9D9D-B64D-4474-9C1C-5941F02AA16D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{644A9D9D-B64D-4474-9C1C-5941F02AA16D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{644A9D9D-B64D-4474-9C1C-5941F02AA16D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{51045D5F-198C-4076-B219-AD8923C81B74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{51045D5F-198C-4076-B219-AD8923C81B74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{389AF1CA-5D62-40DE-95EA-D0EEF7BD2364}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{389AF1CA-5D62-40DE-95EA-D0EEF7BD2364}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{389AF1CA-5D62-40DE-95EA-D0EEF7BD2364}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{389AF1CA-5D62-40DE-95EA-D0EEF7BD2364}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A7F6164B-4AC4-44A7-B845-E66FAEC3430D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7F6164B-4AC4-44A7-B845-E66FAEC3430D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A7F6164B-4AC4-44A7-B845-E66FAEC3430D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A7F6164B-4AC4-44A7-B845-E66FAEC3430D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF7B2275-DE7B-4070-AC30-293529909CFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF7B2275-DE7B-4070-AC30-293529909CFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF7B2275-DE7B-4070-AC30-293529909CFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF7B2275-DE7B-4070-AC30-293529909CFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C62EF3A-599F-4C2F-ACA8-80478D2F3931}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C62EF3A-599F-4C2F-ACA8-80478D2F3931}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C62EF3A-599F-4C2F-ACA8-80478D2F3931}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C62EF3A-599F-4C2F-ACA8-80478D2F3931}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA87D04F-6837-423C-9D14-044A6A995774}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA87D04F-6837-423C-9D14-044A6A995774}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA87D04F-6837-423C-9D14-044A6A995774}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA87D04F-6837-423C-9D14-044A6A995774}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{2E50B4AD-7DD5-4796-8C88-E7FC7A86BE19} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 		{A5CF61FF-4F3F-4767-9DF8-173F943D62CB} = {38E3CDCD-A89A-47C0-ADFD-726E4A9955AB}
-		{921CE2EA-9463-4227-83AF-9C783D2B7101} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
-		{B5E3E2CB-F732-4F62-8A19-5CE4E89B5015} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
-		{46D1248C-E72D-49C3-AEE4-E110E23F12DE} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
-		{644A9D9D-B64D-4474-9C1C-5941F02AA16D} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 		{51045D5F-198C-4076-B219-AD8923C81B74} = {BE0FD097-E00E-4D2E-9D99-53008CCA3E11}
 		{389AF1CA-5D62-40DE-95EA-D0EEF7BD2364} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 		{5B978752-EA8F-496F-B520-B64716B8A68A} = {C2D040C6-3015-4CE8-95C1-B193223A21A5}
-		{A7F6164B-4AC4-44A7-B845-E66FAEC3430D} = {38E3CDCD-A89A-47C0-ADFD-726E4A9955AB}
+		{AF7B2275-DE7B-4070-AC30-293529909CFC} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
+		{6C62EF3A-599F-4C2F-ACA8-80478D2F3931} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
+		{EA87D04F-6837-423C-9D14-044A6A995774} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2CB5560A-7F9B-4A01-85A3-F95B4DC96810}

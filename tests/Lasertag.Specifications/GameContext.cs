@@ -6,12 +6,12 @@ using LightBDD.Framework.Scenarios;
 
 namespace Lasertag.Specifications;
 #pragma warning disable S101
+#pragma warning disable S125
 
 public class GameContext
 {
-    readonly IGameCommands _gameCommands;
-    readonly IGameRoundCommands _gameRoundCommands;
-    readonly IGameRoundQueries _gameRoundQueries;
+    readonly IGameCommands _gameCommands = default!;
+    readonly IGameRoundQueries _gameRoundQueries = default!;
     ApiResult<Game>? _game;
 
     Guid _gameId = Guid.Empty;
@@ -19,12 +19,12 @@ public class GameContext
 
     Guid[]? _gameSetIds;
 
-    public GameContext(IClusterClient client)
-    {
-        _gameCommands = client.GetGrain<IGameCommands>(0);
-        _gameRoundCommands = client.GetGrain<IGameRoundCommands>(0);
-        _gameRoundQueries = client.GetGrain<IGameRoundQueries>(0);
-    }
+    //public GameContext()
+    //{
+    //    _gameCommands = client.GetGrain<IGameCommands>(0);
+    //    _gameRoundCommands = client.GetGrain<IGameRoundCommands>(0);
+    //    _gameRoundQueries = client.GetGrain<IGameRoundQueries>(0);
+    //}
 
     public Task Given_gameId_is_set()
     {

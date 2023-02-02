@@ -13,12 +13,7 @@ public static class WebAppBuilderExtensions
     /// <returns>The configured <see cref="WebApplicationBuilder" /></returns>
     public static WebApplicationBuilder UseDefaultInfrastructure(this WebApplicationBuilder builder)
     {
-        builder.Logging
-            .AddFilter("Microsoft", LogLevel.Warning) // generic host lifecycle messages
-            .AddFilter("Orleans", LogLevel.Information) // suppress status dumps
-            .AddFilter("Runtime", LogLevel.Warning) // also an Orleans prefix
-            .AddDebug() // VS Debug window
-            .AddConsole();
+
 
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -36,33 +31,20 @@ public static class WebAppBuilderExtensions
     /// <summary>
     ///     Swagger generation tries to run the application, therefore we skip some parts of the "startup".
     ///     Namely the Orleans ClusterClient and Queueing connectivity.
-    /// </summary>
+    /// </summary> 
     /// <param name="builder">The <see cref="WebApplicationBuilder" /> to configure.</param>
     /// <param name="args">The command line arguments - if includes "start", the actual connectivity will be built up.</param>
     /// <returns>The configured <see cref="WebApplicationBuilder" /></returns>
     public static WebApplicationBuilder UseSwaggerGeneratorHack(this WebApplicationBuilder builder, string[] args)
     {
-        if (args.Contains("start", StringComparer.CurrentCulture))
+        builder.Services.RegisterEasyNetQ(resolver =>
         {
-            builder.Services.AddOrleansClient(clientBuilder =>
-            {
-                clientBuilder.UseLocalhostClustering();
-                clientBuilder.AddActivityPropagation();
-            });
+            var parser = resolver.Resolve<IConnectionStringParser>();
+            var configuration = resolver.Resolve<IConfiguration>();
 
-            builder.Services.RegisterEasyNetQ(resolver =>
-            {
-                var parser = resolver.Resolve<IConnectionStringParser>();
-                var configuration = resolver.Resolve<IConfiguration>();
-
-                var connectionString = configuration["Mq:Host"];
-                return parser.Parse(connectionString);
-            });
-        }
-        else
-        {
-            builder.Services.AddSingleton<IClusterClient>(provider => new MockClusterClient(provider));
-        }
+            var connectionString = configuration["Mq:Host"];
+            return parser.Parse(connectionString);
+        });
 
         return builder;
     }

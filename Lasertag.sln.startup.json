@@ -52,45 +52,23 @@
         }
     */
   "MultiProjectConfigurations": {
-    "Admin API + Server": {
+    "API": {
       "Projects": {
-        "Server": {
-          "StartProject": true
-        },
         "Admin.Api": {
-          "StartProject": true,
-          "CommandLineArguments": "start"
-        }
-      }
-    },
-    "AdminApp + Server": {
-      "Projects": {
-        "Server": {
-          "StartProject": true
-        },
-        "AdminApp": {
           "StartProject": true
         }
       }
     },
-    "Server + Client": {
+
+    "API + Simulator": {
       "Projects": {
-        "Server": {
+        "Admin.Api": {
           "StartProject": true
         },
-        "Client": {
+        "Lasertag.IoT.Simulator": {
           "StartProject": true
         }
-      },
-      "SolutionConfiguration": "Debug"
-    },
-    "Server": {
-      "Projects": {
-        "Server": {
-          "StartProject": true
-        }
-      },
-      "SolutionConfiguration": "Debug"
+      }
     }
   }
 }

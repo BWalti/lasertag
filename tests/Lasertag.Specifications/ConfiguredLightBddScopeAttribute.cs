@@ -70,14 +70,6 @@ class ConfiguredLightBddScopeAttribute : LightBddScopeAttribute
         services.AddLogging();
         services.AddLasertagServer();
         services.AddMartenBackend("Host=localhost;Database=demo;Username=demo;Password=demo", true);
-        services.AddOrleans(builder =>
-        {
-            builder.UseLocalhostClustering();
-            builder.AddLogStorageBasedLogConsistencyProviderAsDefault();
-            builder.AddCustomStorageBasedLogConsistencyProviderAsDefault();
-
-            builder.ConfigureLogging(logging => logging.AddConsole());
-        });
 
         services.AddTransient<GameContext>();
 

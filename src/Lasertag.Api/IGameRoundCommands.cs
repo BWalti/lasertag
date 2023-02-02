@@ -2,7 +2,7 @@
 
 namespace Lasertag.Api;
 
-public interface IGameRoundCommands : IGrainWithIntegerKey
+public interface IGameRoundCommands
 {
     Task<ApiResult<GameRound>> CreateLobby(Guid gameRoundId, GameGroup[] gameSetGroups);
 

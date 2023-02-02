@@ -27,11 +27,11 @@ partial class Build
                         "3200:3200",
                         "4317:4317",
                         "4318:4318")
-                    .SetArgs("-search.enabled=true", "-config.file=/etc/tempo.yaml")
+                    .SetArgs("-config.file=/etc/tempo.yaml")
                     .AddVolume(
                         $"{RootDirectory}/o11y-backend/tempo-config.yaml:/etc/tempo.yaml",
-                        $"{RootDirectory}/o11y-backend/tempo-overrides.yaml:/etc/overrides.yaml",
-                        $"{RootDirectory}/tempo-data:/tmp/tempo")
+                        $"{RootDirectory}/o11y-backend/tempo-overrides.yaml:/etc/overrides.yaml")
+                    // $"{RootDirectory}/tempo-data:/tmp/tempo"
                     .SetHealthInterval("5s")
                     .SetHealthRetries(10)
                     .SetHealthCmd("wget --no-verbose --tries=1 --spider http://localhost:3200/status || exit 1")

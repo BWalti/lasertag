@@ -3,6 +3,9 @@
 	<ItemGroup>
 		<PackageReference Include="EasyNetQ.DI.Microsoft" />
 		<PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" />
+		<PackageReference Include="MQTTnet" />
+		<PackageReference Include="OpenTelemetry.Exporter.Console" />
 		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
 		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs" />
 		<PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" />
@@ -14,17 +17,18 @@
 		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
 		<PackageReference Include="Swashbuckle.AspNetCore" />
 		<PackageReference Include="Newtonsoft.Json" />
-		<PackageReference Include="Microsoft.Orleans.Analyzers" />
-		<PackageReference Include="Microsoft.Orleans.Client" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Lasertag.Api\Lasertag.Api.csproj" />
-		<ProjectReference Include="..\Lasertag.DomainModel\Lasertag.DomainModel.csproj" />
+		<PackageReference Include="WolverineFx" />
+		<PackageReference Include="WolverineFx.Marten" />
+		<PackageReference Include="WolverineFx.RabbitMQ" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="Actions\" />
+	  <Folder Include="Contexts\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Lasertag.Messages\Lasertag.Messages.csproj" />
 	</ItemGroup>
 
 	<ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="https://json.schemastore.org/license-report-config.json" /></VisualStudio></ProjectExtensions>

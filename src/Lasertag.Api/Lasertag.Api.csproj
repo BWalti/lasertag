@@ -1,11 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Orleans.Analyzers" />
-		<PackageReference Include="Microsoft.Orleans.Sdk" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <ProjectReference Include="..\Lasertag.DomainModel\Lasertag.DomainModel.csproj" />
 	  <ProjectReference Include="..\Lasertag.Manager\Lasertag.Manager.csproj" />
 	</ItemGroup>
