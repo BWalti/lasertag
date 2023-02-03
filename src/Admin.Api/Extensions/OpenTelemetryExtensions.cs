@@ -7,8 +7,6 @@ using System.Reflection;
 
 namespace Admin.Api.Extensions;
 
-#pragma warning disable S125 // Sections of code should not be commented out
-
 public static class OpenTelemetryExtensions
 {
     /// <summary>
@@ -34,7 +32,9 @@ public static class OpenTelemetryExtensions
                 serviceInstanceId: Environment.MachineName);
 
         builder.Services.AddOptions();
-        builder.Services.Configure<OtlpExporterOptions>(builder.Configuration.GetSection("OtlpExporter"));
+
+        var otlpExporterConfig = builder.Configuration.GetSection("OtlpExporter");
+        builder.Services.Configure<OtlpExporterOptions>(otlpExporterConfig);
 
         builder.Logging.ClearProviders();
         builder.Logging
@@ -48,11 +48,15 @@ public static class OpenTelemetryExtensions
                 options.AddConsoleExporter();
                 options.AddOtlpExporter(configure =>
                 {
-                    var endpoint = builder.Configuration.GetSection("OtlpExporter")["Endpoint"]!;
-                    configure.Endpoint = new Uri(endpoint);
+                    var uriString = otlpExporterConfig["Endpoint"];
+                    if (string.IsNullOrEmpty(uriString))
+                    {
+                        return;
+                    }
+
+                    configure.Endpoint = new Uri(uriString);
                 });
             });
-
 
         builder.Services.AddOpenTelemetryMetrics(metrics =>
             {
@@ -94,5 +98,3 @@ public static class OpenTelemetryExtensions
         return builder;
     }
 }
-
-#pragma warning restore S125 // Sections of code should not be commented out

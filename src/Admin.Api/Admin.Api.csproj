@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<ItemGroup>
-		<PackageReference Include="EasyNetQ.DI.Microsoft" />
 		<PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" />
 		<PackageReference Include="MQTTnet" />

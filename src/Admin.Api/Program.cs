@@ -1,7 +1,6 @@
 using Admin.Api;
 using Admin.Api.Contexts;
 using Admin.Api.Extensions;
-using EasyNetQ.ConnectionString;
 using JasperFx.Core;
 using Lasertag.Messages;
 using Marten;
