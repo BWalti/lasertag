@@ -22,12 +22,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Actions\" />
-	  <Folder Include="Contexts\" />
+	  <ProjectReference Include="..\Lasertag.Messages\Lasertag.Messages.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Lasertag.Messages\Lasertag.Messages.csproj" />
+		<InternalsVisibleTo Include="Lasertag.Tests" />
 	</ItemGroup>
 
 	<ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="https://json.schemastore.org/license-report-config.json" /></VisualStudio></ProjectExtensions>

@@ -1,13 +1,13 @@
 using Admin.Api;
-using Admin.Api.Contexts;
+using Admin.Api.Domain.Account;
+using Admin.Api.Domain.Lasertag;
 using Admin.Api.Extensions;
 using JasperFx.Core;
 using Lasertag.Messages;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
 using Marten.Exceptions;
-using MQTTnet;
-using MQTTnet.Client;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using Oakton;
 using Oakton.Resources;
@@ -21,13 +21,13 @@ using Wolverine.RabbitMQ;
 
 var builder = WebApplication
     .CreateBuilder(args)
-    .UseDefaultInfrastructure();
+    .UseDefaultInfrastructure()
+    .AddOpenTelemetry();
 
 builder.Host
+    .ApplyOaktonExtensions()
     .UseWolverine(opts =>
     {
-        opts.ListenToRabbitQueue("gamesets");
-
         var rabbitSettings = new RabbitMqSettings();
         builder.Configuration.GetSection("RabbitMq").Bind(rabbitSettings);
         opts.UseRabbitMq(rabbit =>
@@ -39,8 +39,8 @@ builder.Host
             // Just do the routing off of conventions, more or less
             // queue and/or exchange based on the Wolverine message type name
             .UseConventionalRouting()
-            // Directs Wolverine to build any declared queues, exchanges, or
-            // bindings with the Rabbit MQ broker as part of bootstrapping time
+            // build any declared queues, exchanges, or bindings with the
+            // Rabbit MQ broker as part of bootstrapping time
             .AutoProvision()
             .ConfigureSenders(x => x.UseDurableOutbox());
 
@@ -50,34 +50,18 @@ builder.Host
         //    .ToLocalQueue("charting")
         //    .UseDurableInbox();
 
-        // If we encounter a concurrency exception, just try it immediately
-        // up to 3 times total
         opts.Handlers.OnException<ConcurrencyException>().RetryTimes(3);
-
-        // It's an imperfect world, and sometimes transient connectivity errors
-        // to the database happen
         opts.Handlers.OnException<NpgsqlException>()
             .RetryWithCooldown(50.Milliseconds(), 100.Milliseconds(), 250.Milliseconds());
+
+        opts.Handlers.AddMiddlewareByMessageType(typeof(AccountLookupMiddleware));
     });
 
 builder.Services.AddResourceSetupOnStartup();
 builder.Services.AddHostedService<InitializeServerService>();
 
-builder.Services.AddSingleton<MqttFactory>();
-builder.Services.AddTransient(provider => provider.GetRequiredService<MqttFactory>().CreateMqttClient());
-builder.Services.AddTransient(_ =>
-{
-    var section = builder.Configuration.GetSection("Mqtt");
-    var options = new MqttClientOptionsBuilder()
-        .WithWebSocketServer(section["Server"])
-        .Build();
-
-    return options;
-});
+builder.Services.AddMqttClient(builder.Configuration.GetSection("Mqtt"));
 builder.Services.AddHostedService<MqttAdapterService>();
-
-builder.AddOpenTelemetry();
-builder.Host.ApplyOaktonExtensions();
 
 builder.Services.AddMarten(opts =>
     {
@@ -100,9 +84,9 @@ builder.Services.AddMarten(opts =>
     .ApplyAllDatabaseChangesOnStartup()
     .EventForwardingToWolverine();
 
-var app = builder
-    .Build()
-    .UseDevelopmentDefaults();
+var app = builder.Build();
+
+app.UseDevelopmentDefaults();
 
 app.MapPost("/api/doSomething", (IMessageBus bus, ILogger<ClientConnected> logger) =>
 {
@@ -112,4 +96,30 @@ app.MapPost("/api/doSomething", (IMessageBus bus, ILogger<ClientConnected> logge
 
 app.MapGet("/api/server", (IQuerySession session) => session.Load<Server>(Guid.Empty));
 
+app.MapGet("/accounts/create",
+    async (IDocumentSession session) =>
+    {
+        var id = Guid.NewGuid();
+
+        // Drive in a known data, so the "Arrange"
+        var account = new Account
+        {
+            Balance = 0,
+            MinimumThreshold = 100,
+            Id = id
+        };
+
+        session.Store(account);
+        await session.SaveChangesAsync();
+
+        return account;
+    });
+
+app.MapPost("/accounts/deposit",
+    (IMessageBus bus, [FromBody] AccountMessages.DepositToAccount deposit) => bus.PublishAsync(deposit));
+
+app.MapPost("/accounts/debit",
+    (IMessageBus bus, [FromBody] AccountMessages.WithdrawFromAccount withdraw) => bus.PublishAsync(withdraw));
+
 return await app.RunOaktonCommands(args);
+
