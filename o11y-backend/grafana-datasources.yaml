@@ -29,6 +29,8 @@ datasources:
       tags: ['service.instance.id', 'service.name'] # default: 'job', 'instance', 'pod', 'namespace'
       mappedTags: [{ key: 'service.name', value: 'service_name' }, { key: 'service.instance.id', value: 'service_instance' }]
       mapTagNamesEnabled: true
+      spanStartTimeShift: '-1m'
+      spanEndTimeShift: '1m'
       filterByTraceID: true
       filterBySpanID: false
     tracesToMetrics:
