@@ -34,7 +34,7 @@ public class WhenDebitingAnAccount : IntegrationContext
         {
             // Send a JSON post with the DebitAccount command through the HTTP endpoint
             // BUT, it's all running in process
-            x.Post.Json(new AccountMessages.WithdrawFromAccount(account.Id, 1200)).ToUrl("/accounts/debit");
+            x.Post.Json(new AccountCommands.WithdrawFromAccount(account.Id, 1200)).ToUrl("/api/accounts/debit");
 
             // This is the default behavior anyway, but still good to show it here
             x.StatusCodeShouldBeOk();
@@ -49,7 +49,7 @@ public class WhenDebitingAnAccount : IntegrationContext
         }
 
         // And also assert that an AccountUpdated message was published as well
-        var updated = tracked.Sent.SingleMessage<AccountMessages.AccountUpdated>();
+        var updated = tracked.Sent.SingleMessage<AccountEvents.AccountUpdated>();
         updated.AccountId.Should().Be(account.Id);
         updated.Balance.Should().Be(1300);
     }

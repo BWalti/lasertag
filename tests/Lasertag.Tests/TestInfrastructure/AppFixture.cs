@@ -9,7 +9,7 @@ namespace Lasertag.Tests.TestInfrastructure;
 
 public class AppFixture : IAsyncLifetime
 {
-    public IAlbaHost Host { get; private set; } = default!;
+    public IAlbaHost? Host { get; private set; }
 
     public async Task InitializeAsync()
     {
@@ -41,6 +41,8 @@ public class AppFixture : IAsyncLifetime
 #pragma warning restore S3220
     }
 
-    public Task DisposeAsync() =>
-        Host.DisposeAsync().AsTask();
+    public Task DisposeAsync()
+    {
+        return Host == null ? Task.CompletedTask : Host.DisposeAsync().AsTask();
+    }
 }

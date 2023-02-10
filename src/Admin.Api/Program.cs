@@ -3,11 +3,9 @@ using Admin.Api.Domain.Account;
 using Admin.Api.Domain.Lasertag;
 using Admin.Api.Extensions;
 using JasperFx.Core;
-using Lasertag.Messages;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
 using Marten.Exceptions;
-using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using Oakton;
 using Oakton.Resources;
@@ -55,10 +53,10 @@ builder.Host
             .RetryWithCooldown(50.Milliseconds(), 100.Milliseconds(), 250.Milliseconds());
 
         opts.Handlers.AddMiddlewareByMessageType(typeof(AccountLookupMiddleware));
+        opts.Handlers.AddMiddlewareByMessageType(typeof(ServerLookupMiddleware));
     });
 
 builder.Services.AddResourceSetupOnStartup();
-builder.Services.AddHostedService<InitializeServerService>();
 
 builder.Services.AddMqttClient(builder.Configuration.GetSection("Mqtt"));
 builder.Services.AddHostedService<MqttAdapterService>();
@@ -88,38 +86,12 @@ var app = builder.Build();
 
 app.UseDevelopmentDefaults();
 
-app.MapPost("/api/doSomething", (IMessageBus bus, ILogger<ClientConnected> logger) =>
-{
-    logger.LogError("Something is wrong!");
-    return bus.PublishAsync(new ClientConnected(1));
-});
+app.MapGroup("/api/lasertag")
+    .MapLasertagApi()
+    .WithTags("Lasertag");
 
-app.MapGet("/api/server", (IQuerySession session) => session.Load<Server>(Guid.Empty));
-
-app.MapGet("/accounts/create",
-    async (IDocumentSession session) =>
-    {
-        var id = Guid.NewGuid();
-
-        // Drive in a known data, so the "Arrange"
-        var account = new Account
-        {
-            Balance = 0,
-            MinimumThreshold = 100,
-            Id = id
-        };
-
-        session.Store(account);
-        await session.SaveChangesAsync();
-
-        return account;
-    });
-
-app.MapPost("/accounts/deposit",
-    (IMessageBus bus, [FromBody] AccountMessages.DepositToAccount deposit) => bus.PublishAsync(deposit));
-
-app.MapPost("/accounts/debit",
-    (IMessageBus bus, [FromBody] AccountMessages.WithdrawFromAccount withdraw) => bus.PublishAsync(withdraw));
+app.MapGroup("/api/accounts")
+    .MapAccountApi()
+    .WithTags("Account");
 
 return await app.RunOaktonCommands(args);
-

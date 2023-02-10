@@ -10,7 +10,7 @@ public abstract class IntegrationContext : IAsyncLifetime
 {
     protected IntegrationContext(AppFixture fixture)
     {
-        Host = fixture.Host;
+        Host = fixture.Host!;
         Store = Host.Services.GetRequiredService<IDocumentStore>();
     }
 
@@ -30,23 +30,29 @@ public abstract class IntegrationContext : IAsyncLifetime
     public Task DisposeAsync() =>
         Task.CompletedTask;
 
+    protected Task<(ITrackedSession, IScenarioResult?)> TrackedHttpCall(Action<Scenario> configuration)
+    {
+        return TrackedHttpCall(configuration, TimeSpan.FromSeconds(5));
+    }
+
     // This method allows us to make HTTP calls into our system
     // in memory with Alba, but do so within Wolverine's test support
     // for message tracking to both record outgoing messages and to ensure
     // that any cascaded work spawned by the initial command is completed
     // before passing control back to the calling test
-    protected async Task<(ITrackedSession, IScenarioResult?)> TrackedHttpCall(Action<Scenario> configuration)
+    protected async Task<(ITrackedSession, IScenarioResult?)> TrackedHttpCall(Action<Scenario> configuration, TimeSpan timeout)
     {
         IScenarioResult? result = null;
 
         // The outer part is tying into Wolverine's test support
         // to "wait" for all detected message activity to complete
         var tracked = await Host.ExecuteAndWaitAsync(async () =>
-        {
-            // The inner part here is actually making an HTTP request
-            // to the system under test with Alba
-            result = await Host.Scenario(configuration);
-        });
+            {
+                // The inner part here is actually making an HTTP request
+                // to the system under test with Alba
+                result = await Host.Scenario(configuration);
+            },
+            timeoutInMilliseconds: (int)timeout.TotalMilliseconds);
 
         return (tracked, result);
     }
