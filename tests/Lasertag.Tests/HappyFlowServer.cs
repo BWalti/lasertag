@@ -2,6 +2,7 @@
 using Alba;
 using FluentAssertions;
 using Lasertag.Tests.TestInfrastructure;
+using MQTTnet;
 using Wolverine;
 using Wolverine.Tracking;
 using Xunit;
@@ -63,22 +64,43 @@ public class HappyFlowServer : IntegrationContext
             game.Lobby.Teams[1].GameSets.Should().HaveCount(1);
         }
 
+        await ActivateGameSet(gameSetRegistered1);
+        await ActivateGameSet(gameSetRegistered2);
+
         var gameDuration = TimeSpan.FromSeconds(10);
         await StartGame(game, gameDuration);
-
         await using (var session = Store.LightweightSession())
         {
             game = await session.LoadAsync<Game>(gamePrepared.GameId);
             game.Should().NotBeNull();
         }
 
-        await DeleteGame(game!);
+        await Shoot(gameSetRegistered1);
 
+        await DeleteGame(game!);
         await using (var session = Store.LightweightSession())
         {
             game = await session.LoadAsync<Game>(gamePrepared.GameId);
             game.Should().BeNull();
         }
+    }
+
+    async Task ActivateGameSet(GameSetRegistered gameSet)
+    {
+        var message = new MqttApplicationMessageBuilder()
+            .WithTopic($"client/{gameSet.GameSetId}/connected")
+            .Build();
+
+        await MqttClient.PublishAsync(message);
+    }
+
+    async Task Shoot(GameSetRegistered gameSet)
+    {
+        var message = new MqttApplicationMessageBuilder()
+            .WithTopic($"client/{gameSet.GameSetId}/shotFired")
+            .Build();
+
+        await MqttClient.PublishAsync(message);
     }
 
     async Task<GameSetRegistered> RegisterGameSet(Server server)

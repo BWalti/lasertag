@@ -48,12 +48,13 @@ builder.Host
         //    .ToLocalQueue("charting")
         //    .UseDurableInbox();
 
-        opts.Handlers.OnException<ConcurrencyException>().RetryTimes(3);
-        opts.Handlers.OnException<NpgsqlException>()
+
+        opts.OnException<ConcurrencyException>().RetryTimes(3);
+        opts.OnException<NpgsqlException>()
             .RetryWithCooldown(50.Milliseconds(), 100.Milliseconds(), 250.Milliseconds());
 
-        opts.Handlers.AddMiddlewareByMessageType(typeof(AccountLookupMiddleware));
-        opts.Handlers.AddMiddlewareByMessageType(typeof(ServerLookupMiddleware));
+        opts.Policies.AddMiddlewareByMessageType(typeof(AccountLookupMiddleware));
+        opts.Policies.AddMiddlewareByMessageType(typeof(ServerLookupMiddleware));
     });
 
 builder.Services.AddResourceSetupOnStartup();

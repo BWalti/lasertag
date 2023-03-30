@@ -38,7 +38,7 @@ public class MqttAdapterService : IHostedService
         var subscribeOptions = new MqttClientSubscribeOptionsBuilder()
             .WithTopicFilter(builder => builder
                 .WithExactlyOnceQoS()
-                .WithTopic("client/+/connected"))
+                .WithTopic("client/*"))
             .Build();
 
         await _client.SubscribeAsync(subscribeOptions);
@@ -54,8 +54,12 @@ public class MqttAdapterService : IHostedService
         return Task.CompletedTask;
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
-        return Task.CompletedTask;
+        _client.ApplicationMessageReceivedAsync -= ClientOnApplicationMessageReceivedAsync;
+        _client.ConnectedAsync -= ClientOnConnectedAsync;
+        _client.DisconnectedAsync -= ClientOnDisconnectedAsync;
+
+        await _client.DisconnectAsync();
     }
 }

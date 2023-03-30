@@ -16,9 +16,13 @@ public class IotSimulator : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Starting IoT Simulator...");
         await _stateMachine.Initialize();
     }
 
-    public Task StopAsync(CancellationToken cancellationToken) =>
-        Task.CompletedTask;
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Stopping IoT Simulator...");
+        return Task.CompletedTask;
+    }
 }

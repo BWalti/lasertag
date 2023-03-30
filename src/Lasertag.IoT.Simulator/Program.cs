@@ -25,8 +25,9 @@ var host = Host.CreateDefaultBuilder()
         services.Configure<OtlpExporterOptions>(context.Configuration.GetSection("OtlpExporter"));
         services.Configure<SimulatorOptions>(context.Configuration.GetSection("Simulator"));
 
-        services.AddOpenTelemetryTracing();
-        services.AddOpenTelemetryMetrics();
+        services.AddOpenTelemetry()
+            .WithMetrics()
+            .WithTracing();
 
         services.AddSingleton<MqttFactory>();
         services.AddTransient(provider => provider.GetRequiredService<MqttFactory>().CreateMqttClient());

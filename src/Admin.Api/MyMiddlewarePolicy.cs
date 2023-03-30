@@ -7,9 +7,8 @@ namespace Admin.Api;
 
 public class MyMiddlewarePolicy : IHandlerPolicy
 {
-    public void Apply(HandlerGraph graph, GenerationRules rules, IContainer container)
+    public void Apply(IReadOnlyList<HandlerChain> chains, GenerationRules rules, IContainer container)
     {
-
-        // do something!
+        // do something ?
     }
 }

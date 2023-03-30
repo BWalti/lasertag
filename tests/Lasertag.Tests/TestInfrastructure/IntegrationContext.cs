@@ -1,6 +1,7 @@
 ﻿using Alba;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
+using MQTTnet.Client;
 using Wolverine.Tracking;
 using Xunit;
 
@@ -12,16 +13,25 @@ public abstract class IntegrationContext : IAsyncLifetime
     {
         Host = fixture.Host!;
         Store = Host.Services.GetRequiredService<IDocumentStore>();
+        MqttClient = Host.Services.GetRequiredService<IMqttClient>();
     }
 
     public IAlbaHost Host { get; }
     public IDocumentStore Store { get; }
+    public IMqttClient MqttClient { get; }
 
     public async Task InitializeAsync()
     {
         // Using Marten, wipe out all data and reset the state
         // back to exactly what we described in InitialAccountData
         await Store.Advanced.ResetAllData();
+        await ConnectMqttClient();
+    }
+
+    async Task ConnectMqttClient()
+    {
+        var options = Host.Services.GetRequiredService<MqttClientOptions>();
+        await MqttClient.ConnectAsync(options);
     }
 
     // This is required because of the IAsyncLifetime 

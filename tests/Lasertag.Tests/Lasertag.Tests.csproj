@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+	<PropertyGroup>
+		<NoWarn>NU1608</NoWarn>
+	</PropertyGroup>
+
 	<ItemGroup>
 
 		<PackageReference Include="Alba" />
@@ -9,6 +13,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 
+		<PackageReference Include="OpenTelemetry.Api" />
 		<PackageReference Include="FakeItEasy" />
 		<PackageReference Include="FluentAssertions" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" />

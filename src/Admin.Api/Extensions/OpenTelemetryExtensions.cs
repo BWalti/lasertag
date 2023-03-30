@@ -58,42 +58,42 @@ public static class OpenTelemetryExtensions
                 });
             });
 
-        builder.Services.AddOpenTelemetryMetrics(metrics =>
+        builder.Services.AddOpenTelemetry()
+            .WithMetrics(metrics =>
+                {
+                    metrics.SetResourceBuilder(resourceBuilder)
+                        .AddPrometheusExporter()
+                        .AddMeter("Microsoft.Orleans")
+                        .AddAspNetCoreInstrumentation()
+                        .AddRuntimeInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddEventCountersInstrumentation(c =>
+                        {
+                            // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
+                            c.AddEventSources(
+                                "Microsoft.AspNetCore.Hosting",
+                                "Microsoft-AspNetCore-Server-Kestrel",
+                                "System.Net.Http",
+                                "System.Net.Sockets",
+                                "System.Net.NameResolution",
+                                "System.Net.Security",
+                                "Wolverine");
+                        })
+                        .AddConsoleExporter()
+                        .AddOtlpExporter();
+                }
+            )
+            .WithTracing(tracing =>
             {
-                metrics.SetResourceBuilder(resourceBuilder)
-                    .AddPrometheusExporter()
-                    .AddMeter("Microsoft.Orleans")
+                tracing.SetResourceBuilder(resourceBuilder)
+                    .AddSource("Microsoft.Orleans.Runtime")
+                    .AddSource("Microsoft.Orleans.Application")
+                    .AddSource("Wolverine")
                     .AddAspNetCoreInstrumentation()
-                    .AddRuntimeInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddEventCountersInstrumentation(c =>
-                    {
-                        // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
-                        c.AddEventSources(
-                            "Microsoft.AspNetCore.Hosting",
-                            "Microsoft-AspNetCore-Server-Kestrel",
-                            "System.Net.Http",
-                            "System.Net.Sockets",
-                            "System.Net.NameResolution",
-                            "System.Net.Security",
-                            "Wolverine");
-                    })
                     .AddConsoleExporter()
                     .AddOtlpExporter();
-            }
-        );
-
-        builder.Services.AddOpenTelemetryTracing(tracing =>
-        {
-            tracing.SetResourceBuilder(resourceBuilder)
-                .AddSource("Microsoft.Orleans.Runtime")
-                .AddSource("Microsoft.Orleans.Application")
-                .AddSource("Wolverine")
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddConsoleExporter()
-                .AddOtlpExporter();
-        });
+            });
 
         return builder;
     }
