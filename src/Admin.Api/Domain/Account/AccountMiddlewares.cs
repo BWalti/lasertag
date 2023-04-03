@@ -1,4 +1,5 @@
-﻿using Marten;
+﻿using Admin.Api.Extensions;
+using Marten;
 using Wolverine;
 
 // ReSharper disable UnusedMember.Global
@@ -16,6 +17,8 @@ public class AccountLookupMiddleware
         IDocumentSession session,
         CancellationToken cancellation)
     {
+        using var activity = OpenTelemetryExtensions.ActivitySource.StartActivity(nameof(AccountLookupMiddleware));
+
         var account = await session.LoadAsync<Account>(command.AccountId, cancellation);
         if (account == null)
         {

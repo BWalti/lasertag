@@ -11,8 +11,11 @@ public static class MqttServiceCollectionExtensions
         services.AddTransient(provider => provider.GetRequiredService<MqttFactory>().CreateMqttClient());
         services.AddTransient(_ =>
         {
+            var keepAlivePeriod = configurationSection["KeepAlivePeriod"] ?? TimeSpan.FromSeconds(15).ToString();
+
             var options = new MqttClientOptionsBuilder()
                 .WithWebSocketServer(configurationSection["Server"])
+                .WithKeepAlivePeriod(TimeSpan.Parse(keepAlivePeriod))
                 .Build();
 
             return options;

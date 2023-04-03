@@ -1,4 +1,5 @@
-﻿using OpenTelemetry.Exporter;
+﻿using System.Diagnostics;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -9,6 +10,8 @@ namespace Admin.Api.Extensions;
 
 public static class OpenTelemetryExtensions
 {
+    internal static readonly ActivitySource ActivitySource = new("Admin.Api");
+
     /// <summary>
     ///     Configures logging, distributed tracing, and metrics
     ///     <list type="bullet">
@@ -42,10 +45,10 @@ public static class OpenTelemetryExtensions
             .AddFilter("Orleans", LogLevel.Information) // suppress status dumps
             .AddFilter("Runtime", LogLevel.Warning) // also an Orleans prefix
             .AddFilter("Wolverine", LogLevel.Warning)
+            .AddConsole()
             .AddOpenTelemetry(options =>
             {
                 options.SetResourceBuilder(resourceBuilder);
-                options.AddConsoleExporter();
                 options.AddOtlpExporter(configure =>
                 {
                     var uriString = otlpExporterConfig["Endpoint"];
@@ -79,7 +82,6 @@ public static class OpenTelemetryExtensions
                                 "System.Net.Security",
                                 "Wolverine");
                         })
-                        .AddConsoleExporter()
                         .AddOtlpExporter();
                 }
             )
@@ -89,9 +91,9 @@ public static class OpenTelemetryExtensions
                     .AddSource("Microsoft.Orleans.Runtime")
                     .AddSource("Microsoft.Orleans.Application")
                     .AddSource("Wolverine")
+                    .AddSource(ActivitySource.Name)
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddConsoleExporter()
                     .AddOtlpExporter();
             });
 

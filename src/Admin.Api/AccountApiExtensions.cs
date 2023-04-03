@@ -1,4 +1,6 @@
-﻿using Admin.Api.Domain.Account;
+﻿using System.Diagnostics;
+using Admin.Api.Domain.Account;
+using Admin.Api.Extensions;
 using Marten;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
@@ -10,8 +12,11 @@ public static class AccountApiExtensions
     public static RouteGroupBuilder MapAccountApi(this RouteGroupBuilder group)
     {
         group.MapGet("/create",
-            async (IDocumentSession session) =>
+            async (IDocumentSession session, ILogger<Account> logger) =>
             {
+                using var outerActivity = OpenTelemetryExtensions.ActivitySource.StartActivity();
+                logger.LogInformation("I'm going to create a new account!");
+
                 var account = new Account
                 {
                     Balance = 0,
@@ -20,7 +25,10 @@ public static class AccountApiExtensions
                 };
 
                 session.Store(account);
+
+                using var saveActivity = OpenTelemetryExtensions.ActivitySource.StartActivity(nameof(session.SaveChangesAsync), ActivityKind.Client);
                 await session.SaveChangesAsync();
+                saveActivity?.Dispose();
 
                 return account;
             });

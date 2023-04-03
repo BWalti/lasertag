@@ -1,4 +1,6 @@
-﻿using Marten;
+﻿using Admin.Api.Domain.Account;
+using Admin.Api.Extensions;
+using Marten;
 using Wolverine;
 
 namespace Admin.Api.Domain.Lasertag;
@@ -16,6 +18,8 @@ public class ServerLookupMiddleware
         IDocumentSession session,
         CancellationToken cancellation)
     {
+        using var activity = OpenTelemetryExtensions.ActivitySource.StartActivity(nameof(ServerLookupMiddleware));
+
         var server = await session.LoadAsync<Server>(command.ServerId, cancellation);
         if (server == null)
         {
