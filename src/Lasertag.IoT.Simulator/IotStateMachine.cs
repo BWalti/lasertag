@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Admin.Api;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Lasertag.IoT.Simulator;
@@ -20,8 +21,8 @@ public class IotStateMachine : IHandleMessages
     {
         var clientId = _simulatorOptions.Value.ClientId;
 
-        await _bus.RegisterListener(this, new[] { $"client/{clientId}/hit", "allClients" });
-        await _bus.SendMessageAsync($"client/{clientId}/connected", string.Empty);
+        await _bus.RegisterListener(this, new[] { $"server/{clientId}/shotHit", "allClients" });
+        await _bus.SendMessageAsync(MqttTopics.GameSetConnected, string.Empty);
     }
 
     public void ProcessMessage(string topic, string payload)

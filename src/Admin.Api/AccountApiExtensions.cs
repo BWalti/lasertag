@@ -34,10 +34,10 @@ public static class AccountApiExtensions
             });
 
         group.MapPost("/deposit",
-            (IMessageBus bus, [FromBody] AccountCommands.DepositToAccount deposit) => bus.PublishAsync(deposit));
+            (IMessageBus bus, [FromBody] AccountCommands.DepositToAccount deposit) => bus.InvokeAsync(deposit));
 
         group.MapPost("/debit",
-            (IMessageBus bus, [FromBody] AccountCommands.WithdrawFromAccount withdraw) => bus.PublishAsync(withdraw));
+            (IMessageBus bus, [FromBody] AccountCommands.WithdrawFromAccount withdraw) => bus.InvokeAsync(withdraw));
 
         return group;
     }

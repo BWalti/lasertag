@@ -1,57 +1,97 @@
-﻿using Wolverine;
+﻿using Marten.Events.Aggregation;
 
 namespace Admin.Api.Domain.Lasertag;
 
-public class Game : Saga
+public class GameStatistics
 {
-    public int Id { get; set; }
-    public bool IsGameRunning { get; set; }
+    public Guid Id { get; set; }
+    public int Version { get; set; }
 
-    public Lobby Lobby { get; set; } = new();
+    public int ShotsFired { get; set; } = 0;
+}
 
-    public void Start(LasertagEvents.GamePrepared prepared)
+public class GameStatisticsProjection : SingleStreamAggregation<GameStatistics>
+{
+    public GameStatistics Create(LasertagEvents.GamePrepared @event) =>
+        new()
+        {
+            Id = @event.GameId
+        };
+
+    public void Apply(LasertagEvents.GameSetFiredShot @event, GameStatistics statistics)
     {
-        Id = prepared.GameId;
-        Lobby = prepared.Lobby;
+        statistics.ShotsFired++;
     }
+}
 
-    public async Task<LasertagEvents.GameStarted> Handle(LasertagCommands.StartGame @event, IMessageBus bus)
+public class DummyGameEventsHandler
+{
+    public void Handle(LasertagEvents.GamePrepared prepared)
     {
-        IsGameRunning = true;
-
-        var finished = new LasertagEvents.GameFinished(Id, @event.GameDuration);
-        await bus.PublishAsync(finished);
-
-        return new LasertagEvents.GameStarted(Id);
+        // do nothing
     }
 
     public void Handle(LasertagEvents.GameSetActivated @event)
     {
-        // multiple times for each player
+        // do nothing
     }
 
     public void Handle(LasertagEvents.GameStarted @event)
     {
-        // do something with this!
+        // do nothing
     }
 
-    public void Handle(LasertagEvents.PlayerFiredShot @event)
+    public void Handle(LasertagEvents.GameSetFiredShot @event)
     {
-        // do something with this!
+        // do nothing
     }
 
-    public void Handle(LasertagEvents.PlayerGotHit @event)
+    public void Handle(LasertagEvents.GameSetGotHit @event)
     {
-        // do something with this!
+        // do nothing
     }
 
     public void Handle(LasertagEvents.GameFinished @event)
     {
-        IsGameRunning = false;
+        // do nothing
+    }
+}
+public class Game
+{
+    public Guid Id { get; set; }
+    public bool IsGameRunning { get; set; }
+
+    public Lobby Lobby { get; set; } = new();
+
+    public static Game Create(LasertagEvents.GamePrepared prepared) =>
+        new()
+        {
+            Id = prepared.GameId,
+            Lobby = prepared.Lobby
+        };
+
+    public void Apply(LasertagEvents.GameSetActivated @event)
+    {
+        // multiple times for each player
     }
 
-    public void Handle(LasertagCommands.DeleteGame _)
+    public void Apply(LasertagEvents.GameStarted @event)
     {
-        MarkCompleted();
+        IsGameRunning = true;
+    }
+
+    public void Apply(LasertagEvents.GameSetFiredShot @event)
+    {
+        // do something with this!
+    }
+
+    public void Apply(LasertagEvents.GameSetGotHit @event)
+    {
+        // do something with this!
+    }
+
+    public void Apply(LasertagEvents.GameFinished @event)
+    {
+        IsGameRunning = false;
     }
 }

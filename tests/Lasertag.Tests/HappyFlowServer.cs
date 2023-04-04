@@ -1,11 +1,12 @@
-﻿using Admin.Api.Domain.Lasertag;
+﻿using Admin.Api;
+using Admin.Api.Domain.Lasertag;
 using Alba;
 using FluentAssertions;
 using Lasertag.Tests.TestInfrastructure;
 using MQTTnet;
-using Wolverine;
-using Wolverine.Tracking;
+using Newtonsoft.Json;
 using Xunit;
+using Xunit.Abstractions;
 using static Admin.Api.Domain.Lasertag.LasertagEvents;
 
 namespace Lasertag.Tests;
@@ -13,91 +14,161 @@ namespace Lasertag.Tests;
 [Collection("integration")]
 public class HappyFlowServer : IntegrationContext
 {
-    public HappyFlowServer(AppFixture fixture) : base(fixture)
+    readonly ITestOutputHelper _outputHelper;
+
+    public HappyFlowServer(AppFixture fixture, ITestOutputHelper outputHelper) : base(fixture)
     {
+        _outputHelper = outputHelper;
     }
 
     [Fact]
     public async Task HappyFlow()
     {
-        // Arrange:
-        var server = new Server
-        {
-            Name = "Test Server",
-            Id = 42
-        };
+        var numberOfGameSets = 2;
+        var gameDuration = TimeSpan.FromSeconds(3);
 
-        await using (var session = Store.LightweightSession())
-        {
-            session.Store(server);
-            await session.SaveChangesAsync();
-        }
+        // Arrange:
+        var server = await PrepareServer();
 
         // Register GameSets:
-        var gameSetRegistered1 = await RegisterGameSet(server);
-        gameSetRegistered1.GameSetId.Should().Be(1);
-
-        var gameSetRegistered2 = await RegisterGameSet(server);
-        gameSetRegistered2.GameSetId.Should().Be(2);
-
-        await using (var session = Store.LightweightSession())
-        {
-            var persisted = await session.LoadAsync<Server>(server.Id);
-            persisted.Should().NotBeNull();
-            persisted!.GameSets.Should().HaveCount(2);
-        }
+        var gameSetRegistered = await RegisterGameSets(server, numberOfGameSets);
+        await EnsureGameSetsRegistered(server, numberOfGameSets);
+        await ConnectGameSets(gameSetRegistered);
 
         var gamePrepared = await PrepareGame(server, new LobbyConfiguration
         {
             NumberOfTeams = 2
         });
 
-        Game? game;
-        await using (var session = Store.LightweightSession())
+        var game = await ReloadGame(gamePrepared, g =>
         {
-            game = await session.LoadAsync<Game>(gamePrepared.GameId);
-            game.Should().NotBeNull();
-            game!.Lobby.Teams.Should().HaveCount(2);
-            game.Lobby.Teams[0].Should().NotBeNull();
-            game.Lobby.Teams[1].Should().NotBeNull();
-            game.Lobby.Teams[0].GameSets.Should().HaveCount(1);
-            game.Lobby.Teams[1].GameSets.Should().HaveCount(1);
-        }
+            g.Lobby.Teams.Should().HaveCount(2);
+            g.Lobby.Teams[0].Should().NotBeNull();
+            g.Lobby.Teams[1].Should().NotBeNull();
+            g.Lobby.Teams[0].GameSets.Should().HaveCount(1);
+            g.Lobby.Teams[1].GameSets.Should().HaveCount(1);
+        });
 
-        await ActivateGameSet(gameSetRegistered1);
-        await ActivateGameSet(gameSetRegistered2);
+        await ActivateGameSet(gameSetRegistered[0], gamePrepared.GameId, 1);
+        await ActivateGameSet(gameSetRegistered[1], gamePrepared.GameId, 2);
 
-        var gameDuration = TimeSpan.FromSeconds(10);
-        await StartGame(game, gameDuration);
-        await using (var session = Store.LightweightSession())
-        {
-            game = await session.LoadAsync<Game>(gamePrepared.GameId);
-            game.Should().NotBeNull();
-        }
+        await StartGame(game!, gameDuration);
+        await ReloadGame(gamePrepared, g => g.IsGameRunning.Should().BeTrue());
 
-        await Shoot(gameSetRegistered1);
+        await Shoot(game!.Id, gameSetRegistered[0]);
+
+        // await end of game:
+        await Task.Delay(gameDuration);
+        game = await ReloadGame(gamePrepared, g => g.IsGameRunning.Should().BeFalse());
 
         await DeleteGame(game!);
-        await using (var session = Store.LightweightSession())
+
+        // now as the game got deleted, we shouldn't be able to load it anymore:
+        game = await ReloadGame(gamePrepared, mustExist: false);
+        game.Should().BeNull();
+    }
+
+    async Task ConnectGameSets(GameSetRegistered[] gameSetRegistered)
+    {
+        foreach (var gameSet in gameSetRegistered)
         {
-            game = await session.LoadAsync<Game>(gamePrepared.GameId);
-            game.Should().BeNull();
+            var gameSetActivated = new GameSetConnected(gameSet.ServerId, gameSet.GameSetId);
+            var serialized = JsonConvert.SerializeObject(gameSetActivated);
+
+            var message = new MqttApplicationMessageBuilder()
+                .WithTopic(MqttTopics.GameSetConnected)
+                .WithPayload(serialized)
+                .Build();
+
+            await MqttClient.PublishAsync(message);
         }
     }
 
-    async Task ActivateGameSet(GameSetRegistered gameSet)
+    async Task EnsureGameSetsRegistered(Server server, int numberOfGameSets)
     {
+        await using var session = Store.LightweightSession();
+
+        var persisted = await session.LoadAsync<Server>(server.Id);
+        persisted.Should().NotBeNull();
+        persisted!.GameSets.Should().HaveCount(numberOfGameSets);
+    }
+
+    async Task<Server> PrepareServer()
+    {
+        var id = Guid.NewGuid();
+        _outputHelper.WriteLine($"Created Server with ID: {id}");
+
+        var server = new Server
+        {
+            Name = "Test Server",
+            Id = id
+        };
+
+        await using var session = Store.LightweightSession();
+
+        session.Store(server);
+        await session.SaveChangesAsync();
+
+        return server;
+    }
+
+    async Task<GameSetRegistered[]> RegisterGameSets(Server server, int numberOfGameSets = 2)
+    {
+        if (numberOfGameSets < 2)
+        {
+            throw new ArgumentOutOfRangeException(nameof(numberOfGameSets), "There needs to be at least 2 GameSets!");
+        }
+
+        var registeredGameSets = new GameSetRegistered[numberOfGameSets];
+
+        for (var i = 0; i < registeredGameSets.Length; i++)
+        {
+            var gameSetRegistered = await RegisterGameSet(server);
+            gameSetRegistered.GameSetId.Should().Be(i + 1);
+
+            registeredGameSets[i] = gameSetRegistered;
+        }
+
+        return registeredGameSets;
+    }
+
+    async Task<Game?> ReloadGame(GamePrepared gamePrepared, Action<Game>? validateGame = null, bool mustExist = true)
+    {
+        await using var session = Store.LightweightSession();
+
+        var game = await session.Events.AggregateStreamAsync<Game>(gamePrepared.GameId);
+        if (!mustExist)
+        {
+            return game;
+        }
+
+        game.Should().NotBeNull();
+        validateGame?.Invoke(game!);
+
+        return game!;
+    }
+
+    async Task ActivateGameSet(GameSetRegistered gameSet, Guid gameId, int playerId)
+    {
+        var gameSetActivated = new GameSetActivated(gameId, gameSet.GameSetId, playerId);
+        var serialized = JsonConvert.SerializeObject(gameSetActivated);
+
         var message = new MqttApplicationMessageBuilder()
-            .WithTopic($"client/{gameSet.GameSetId}/connected")
+            .WithTopic(MqttTopics.GameSetActivated)
+            .WithPayload(serialized)
             .Build();
 
         await MqttClient.PublishAsync(message);
     }
 
-    async Task Shoot(GameSetRegistered gameSet)
+    async Task Shoot(Guid gameId, GameSetRegistered gameSet)
     {
+        var shot = new GameSetFiredShot(gameId, gameSet.GameSetId);
+        var serialized = JsonConvert.SerializeObject(shot);
+
         var message = new MqttApplicationMessageBuilder()
-            .WithTopic($"client/{gameSet.GameSetId}/shotFired")
+            .WithTopic(MqttTopics.ShotFired)
+            .WithPayload(serialized)
             .Build();
 
         await MqttClient.PublishAsync(message);
@@ -105,13 +176,12 @@ public class HappyFlowServer : IntegrationContext
 
     async Task<GameSetRegistered> RegisterGameSet(Server server)
     {
-        var (tracked, scenarioResult) = await TrackedHttpCall(x =>
+        var (_, scenarioResult) = await TrackedHttpCall(x =>
         {
             x.Post.Url($"/api/lasertag/server/{server.Id}/registerGameSet");
             x.StatusCodeShouldBeOk();
         });
 
-        tracked.Status.Should().Be(TrackingStatus.Completed);
         scenarioResult.Should().NotBeNull();
         var gameSetRegistered = await scenarioResult!.ReadAsJsonAsync<GameSetRegistered>();
         gameSetRegistered.Should().NotBeNull();
@@ -122,29 +192,33 @@ public class HappyFlowServer : IntegrationContext
 
     async Task<GamePrepared> PrepareGame(Server server, LobbyConfiguration lobbyConfiguration)
     {
-        var (tracked, _) = await TrackedHttpCall(x =>
+        var (tracked, result) = await TrackedHttpCall(x =>
         {
             x.Post.Json(lobbyConfiguration).ToUrl($"/api/lasertag/server/{server.Id}/prepareGame");
             x.StatusCodeShouldBeOk();
         });
 
-        var gamePrepared = tracked.Sent.SingleMessage<GamePrepared>();
-        return gamePrepared;
+        result.Should().NotBeNull();
+        result!.Context.Response.StatusCode.Should().Be(200);
+        return tracked.Sent.SingleMessage<GamePrepared>();
     }
 
     async Task StartGame(Game game, TimeSpan gameDuration)
     {
-        var (tracked, _) = await TrackedHttpCall(x =>
+        var (tracked, result) = await TrackedHttpCall(x =>
         {
             x.Post.Url($"/api/lasertag/game/{game.Id}/start?gameDuration={gameDuration}");
             x.StatusCodeShouldBeOk();
-        }, TimeSpan.FromMinutes(3));
+        });
+
+        result.Should().NotBeNull();
+        result!.Context.Response.StatusCode.Should().Be(200);
 
         var gameStarted = tracked.Sent.SingleMessage<GameStarted>();
         gameStarted.Should().NotBeNull();
 
-        var envelope = tracked.Sent.SingleEnvelope<GameFinished>();
-        envelope.Message.Should().BeAssignableTo<GameFinished>();
+        var envelope = tracked.Sent.SingleEnvelope<LasertagCommands.EndGame>();
+        envelope.Message.Should().BeAssignableTo<LasertagCommands.EndGame>();
         envelope.ScheduleDelayed(gameDuration);
     }
 

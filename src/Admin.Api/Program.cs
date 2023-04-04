@@ -5,6 +5,7 @@ using Admin.Api.Extensions;
 using JasperFx.Core;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
+using Marten.Events.Projections;
 using Marten.Exceptions;
 using Npgsql;
 using Oakton;
@@ -13,7 +14,6 @@ using Weasel.Core;
 using Wolverine;
 using Wolverine.ErrorHandling;
 using Wolverine.Marten;
-using Wolverine.RabbitMQ;
 
 #pragma warning disable S125
 
@@ -21,46 +21,6 @@ var builder = WebApplication
     .CreateBuilder(args)
     .UseDefaultInfrastructure()
     .AddOpenTelemetry();
-
-builder.Host
-    .ApplyOaktonExtensions()
-    .UseWolverine(opts =>
-    {
-        var rabbitSettings = new RabbitMqSettings();
-        builder.Configuration.GetSection("RabbitMq").Bind(rabbitSettings);
-        opts.UseRabbitMq(rabbit =>
-            {
-                rabbit.HostName = rabbitSettings.HostName;
-                rabbit.UserName = rabbitSettings.UserName;
-                rabbit.Password = rabbitSettings.Password;
-            })
-            // Just do the routing off of conventions, more or less
-            // queue and/or exchange based on the Wolverine message type name
-            .UseConventionalRouting()
-            // build any declared queues, exchanges, or bindings with the
-            // Rabbit MQ broker as part of bootstrapping time
-            .AutoProvision()
-            .ConfigureSenders(x => x.UseDurableOutbox());
-
-        //// I'm choosing to process any ChartingFinished event messages
-        //// in a separate, local queue with persistent messages for the inbox/outbox
-        //opts.PublishMessage<ChartingFinished>()
-        //    .ToLocalQueue("charting")
-        //    .UseDurableInbox();
-
-
-        opts.OnException<ConcurrencyException>().RetryTimes(3);
-        opts.OnException<NpgsqlException>()
-            .RetryWithCooldown(50.Milliseconds(), 100.Milliseconds(), 250.Milliseconds());
-
-        opts.Policies.AddMiddlewareByMessageType(typeof(AccountLookupMiddleware));
-        opts.Policies.AddMiddlewareByMessageType(typeof(ServerLookupMiddleware));
-    });
-
-builder.Services.AddResourceSetupOnStartup();
-
-builder.Services.AddMqttClient(builder.Configuration.GetSection("Mqtt"));
-builder.Services.AddHostedService<MqttAdapterService>();
 
 builder.Services.AddMarten(opts =>
     {
@@ -76,12 +36,35 @@ builder.Services.AddMarten(opts =>
             opts.AutoCreateSchemaObjects = AutoCreate.All;
         }
 
-        //opts.Projections.Add<AppointmentDurationProjection>(ProjectionLifecycle.Async)
+        opts.Projections.SelfAggregate<Game>();
+        opts.Projections.Add<GameStatisticsProjection>(ProjectionLifecycle.Inline);
     })
     .AddAsyncDaemon(DaemonMode.HotCold)
     .IntegrateWithWolverine()
     .ApplyAllDatabaseChangesOnStartup()
     .EventForwardingToWolverine();
+
+builder.Host
+    .ApplyOaktonExtensions()
+    .UseWolverine(opts =>
+    {
+        opts.Policies.AutoApplyTransactions();
+
+        opts.LocalQueue("important")
+            .UseDurableInbox();
+
+        opts.OnException<ConcurrencyException>().RetryTimes(3);
+        opts.OnException<NpgsqlException>()
+            .RetryWithCooldown(50.Milliseconds(), 100.Milliseconds(), 250.Milliseconds());
+
+        opts.Policies.AddMiddlewareByMessageType(typeof(AccountLookupMiddleware));
+        opts.Policies.AddMiddlewareByMessageType(typeof(ServerLookupMiddleware));
+    });
+
+builder.Services.AddResourceSetupOnStartup();
+
+builder.Services.AddMqttClient(builder.Configuration.GetSection("Mqtt"));
+builder.Services.AddHostedService<MqttAdapterService>();
 
 var app = builder.Build();
 

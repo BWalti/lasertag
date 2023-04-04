@@ -6,18 +6,19 @@ public static class LasertagCommands
 {
     public interface IServerCommands
     {
-        public int ServerId { get; }
+        public Guid ServerId { get; }
     }
 
     public interface IGameCommands
     {
-        public int GameId { get; }
+        public Guid GameId { get; }
     }
 
-    public record RegisterGameSet(int ServerId) : IServerCommands;
-    public record PrepareGame(int ServerId, LobbyConfiguration Configuration) : IServerCommands;
+    public record CreateServer;
+    public record RegisterGameSet(Guid ServerId) : IServerCommands;
+    public record PrepareGame(Guid ServerId, LobbyConfiguration Configuration) : IServerCommands;
 
-    public record StartGame([property: SagaIdentity] int GameId, TimeSpan GameDuration) : IGameCommands;
-    public record EndGame([property: SagaIdentity] int GameId) : IGameCommands;
-    public record DeleteGame([property: SagaIdentity] int GameId) : IGameCommands;
+    public record StartGame([property: SagaIdentity] Guid GameId, TimeSpan GameDuration) : IGameCommands;
+    public record EndGame([property: SagaIdentity] Guid GameId) : IGameCommands;
+    public record DeleteGame([property: SagaIdentity] Guid GameId) : IGameCommands;
 }

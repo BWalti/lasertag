@@ -1,5 +1,4 @@
-﻿using Admin.Api.Domain.Account;
-using Admin.Api.Extensions;
+﻿using Admin.Api.Extensions;
 using Marten;
 using Wolverine;
 
@@ -29,6 +28,30 @@ public class ServerLookupMiddleware
         else
         {
             logger.LogInformation("Loaded Server for {ServerId}", command.ServerId);
+        }
+
+        return (server == null ? HandlerContinuation.Stop : HandlerContinuation.Continue, server);
+    }
+
+    // The message *has* to be first in the parameter list
+    // Before or BeforeAsync tells Wolverine this method should be called before the actual action
+    public static async Task<(HandlerContinuation, Server?)> LoadAsync(
+        LasertagEvents.IServerEvents @event,
+        ILogger<ServerLookupMiddleware> logger,
+        IDocumentSession session,
+        CancellationToken cancellation)
+    {
+        using var activity = OpenTelemetryExtensions.ActivitySource.StartActivity(nameof(ServerLookupMiddleware));
+
+        var server = await session.LoadAsync<Server>(@event.ServerId, cancellation);
+        if (server == null)
+        {
+            logger.LogWarning("Unable to find a Server for {ServerId}, aborting the requested operation",
+                @event.ServerId);
+        }
+        else
+        {
+            logger.LogInformation("Loaded Server for {ServerId}", @event.ServerId);
         }
 
         return (server == null ? HandlerContinuation.Stop : HandlerContinuation.Continue, server);
