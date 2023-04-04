@@ -69,6 +69,14 @@ public static class AccountHandlers
             yield return new AccountEvents.AccountUpdated(account.Id, account.Balance);
         }
     }
+
+    public class DummyAccountHandler
+    {
+        public void Handle(AccountEvents.AccountUpdated _)
+        {
+            // do nothing!
+        }
+    }
 }
 
 #pragma warning restore S1118
