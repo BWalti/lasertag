@@ -25,7 +25,7 @@ public class HappyFlowServer : IntegrationContext
     public async Task HappyFlow()
     {
         var numberOfGameSets = 2;
-        var gameDuration = TimeSpan.FromSeconds(3);
+        var gameDuration = TimeSpan.FromSeconds(1);
 
         // Arrange:
         var server = await PrepareServer();
@@ -58,7 +58,7 @@ public class HappyFlowServer : IntegrationContext
         await _simulator.Shoot(game!.Id, gameSets[0]);
 
         // await end of game:
-        await Task.Delay(gameDuration);
+        await Task.Delay(1.2 * gameDuration);
         game = await ReloadGame(gamePrepared, g => g.IsGameRunning.Should().BeFalse());
 
         await DeleteGame(game!);
