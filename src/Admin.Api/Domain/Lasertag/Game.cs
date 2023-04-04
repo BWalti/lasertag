@@ -7,7 +7,7 @@ public class GameStatistics
     public Guid Id { get; set; }
     public int Version { get; set; }
 
-    public int ShotsFired { get; set; } = 0;
+    public int ShotsFired { get; set; }
 }
 
 public class GameStatisticsProjection : SingleStreamAggregation<GameStatistics>
@@ -56,6 +56,7 @@ public class DummyGameEventsHandler
         // do nothing
     }
 }
+
 public class Game
 {
     public Guid Id { get; set; }

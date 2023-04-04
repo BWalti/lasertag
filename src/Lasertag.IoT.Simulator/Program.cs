@@ -43,7 +43,7 @@ var host = Host.CreateDefaultBuilder()
 
         services.AddSingleton<IMessageBus, MqttNetMessageBus>();
         services.AddSingleton<IotStateMachine>();
-        services.AddHostedService<IotSimulator>();
+        services.AddHostedService<IotSimulatorHostedService>();
     })
     .Build();
 

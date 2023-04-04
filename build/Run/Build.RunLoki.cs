@@ -10,9 +10,8 @@ namespace Lasertag.Builder;
 
 partial class Build
 {
-    AbsolutePath LokiData = RootDirectory / "loki-data";
-
     const string LokiContainerName = "loki";
+    readonly AbsolutePath LokiData = RootDirectory / "loki-data";
 
     public Target RunLoki => _ => _
         .OnlyWhenDynamic(() => !DockerIsRunning(LokiContainerName))

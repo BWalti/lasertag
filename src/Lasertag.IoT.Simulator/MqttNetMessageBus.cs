@@ -24,12 +24,6 @@ public class MqttNetMessageBus : IMessageBus, IAsyncDisposable
         _client.ConnectedAsync += ClientOnConnectedAsync;
     }
 
-    async Task ClientOnConnectedAsync(MqttClientConnectedEventArgs arg)
-    {
-        _logger.LogInformation("Connected to Mqtt!");
-        await EnsureTopicSubscription();
-    }
-
     public async ValueTask DisposeAsync()
     {
         await _client.DisconnectAsync();
@@ -62,6 +56,12 @@ public class MqttNetMessageBus : IMessageBus, IAsyncDisposable
         await EnsureTopicSubscription();
     }
 
+    async Task ClientOnConnectedAsync(MqttClientConnectedEventArgs arg)
+    {
+        _logger.LogInformation("Connected to Mqtt!");
+        await EnsureTopicSubscription();
+    }
+
     async Task EnsureTopicSubscription()
     {
         if (_topics == null)
@@ -83,7 +83,8 @@ public class MqttNetMessageBus : IMessageBus, IAsyncDisposable
 
     async Task ClientOnApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
     {
-        _messageHandler?.ProcessMessage(arg.ApplicationMessage.Topic, Encoding.UTF8.GetString(arg.ApplicationMessage.Payload));
+        _messageHandler?.ProcessMessage(arg.ApplicationMessage.Topic,
+            Encoding.UTF8.GetString(arg.ApplicationMessage.Payload));
         await arg.AcknowledgeAsync(CancellationToken.None);
     }
 

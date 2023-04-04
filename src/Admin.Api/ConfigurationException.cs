@@ -26,7 +26,6 @@ public sealed class ConfigurationException : Exception
         : base(info, context)
     {
     }
-
 }
 
 #pragma warning restore CS0628

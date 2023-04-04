@@ -13,15 +13,16 @@ public static class LasertagApiExtensions
             (IMessageBus bus) => { return bus.InvokeAsync<Server>(new LasertagCommands.CreateServer()); });
 
         group.MapPost("/server/{serverId}/registerGameSet",
-            (IMessageBus bus, [FromRoute] Guid serverId) => bus.InvokeAsync<GameSetRegistered>(new LasertagCommands.RegisterGameSet(serverId)));
+            (IMessageBus bus, [FromRoute] Guid serverId) =>
+                bus.InvokeAsync<GameSetRegistered>(new LasertagCommands.RegisterGameSet(serverId)));
 
         group.MapPost("/server/{serverId}/prepareGame",
             (IMessageBus bus, [FromRoute] Guid serverId, [FromBody] LobbyConfiguration lobbyConfiguration) =>
-            bus.InvokeAsync(new LasertagCommands.PrepareGame(serverId, lobbyConfiguration)));
+                bus.InvokeAsync(new LasertagCommands.PrepareGame(serverId, lobbyConfiguration)));
 
         group.MapPost("/game/{gameId}/start",
             (IMessageBus bus, [FromRoute] Guid gameId, [FromQuery] TimeSpan ? gameDuration) =>
-            bus.InvokeAsync(new LasertagCommands.StartGame(gameId, gameDuration ?? TimeSpan.FromMinutes(10))));
+                bus.InvokeAsync(new LasertagCommands.StartGame(gameId, gameDuration ?? TimeSpan.FromMinutes(10))));
 
         group.MapPost("/game/{gameId}/end",
             (IMessageBus bus, [FromRoute] Guid gameId) =>

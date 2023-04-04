@@ -26,7 +26,9 @@ public static class AccountApiExtensions
 
                 session.Store(account);
 
-                using var saveActivity = OpenTelemetryExtensions.ActivitySource.StartActivity(nameof(session.SaveChangesAsync), ActivityKind.Client);
+                using var saveActivity =
+                    OpenTelemetryExtensions.ActivitySource.StartActivity(nameof(session.SaveChangesAsync),
+                        ActivityKind.Client);
                 await session.SaveChangesAsync();
                 saveActivity?.Dispose();
 

@@ -10,9 +10,8 @@ namespace Lasertag.Builder;
 
 partial class Build
 {
-    AbsolutePath TempoData = RootDirectory / "tempo-data";
-
     const string TempoContainerName = "tempo";
+    readonly AbsolutePath TempoData = RootDirectory / "tempo-data";
 
     public Target RunTempo => _ => _
         .OnlyWhenDynamic(() => !DockerIsRunning(TempoContainerName))

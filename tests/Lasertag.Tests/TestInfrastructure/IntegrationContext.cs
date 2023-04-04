@@ -28,29 +28,28 @@ public abstract class IntegrationContext : IAsyncLifetime
         await ConnectMqttClient();
     }
 
-    async Task ConnectMqttClient()
-    {
-        var options = Host.Services.GetRequiredService<MqttClientOptions>();
-        await MqttClient.ConnectAsync(options);
-    }
-
     // This is required because of the IAsyncLifetime 
     // interface. Note that I do *not* tear down database
     // state after the test. That's purposeful
     public Task DisposeAsync() =>
         Task.CompletedTask;
 
-    protected Task<(ITrackedSession, IScenarioResult?)> TrackedHttpCall(Action<Scenario> configuration)
+    async Task ConnectMqttClient()
     {
-        return TrackedHttpCall(configuration, TimeSpan.FromSeconds(5));
+        var options = Host.Services.GetRequiredService<MqttClientOptions>();
+        await MqttClient.ConnectAsync(options);
     }
+
+    protected Task<(ITrackedSession, IScenarioResult?)> TrackedHttpCall(Action<Scenario> configuration) =>
+        TrackedHttpCall(configuration, TimeSpan.FromSeconds(5));
 
     // This method allows us to make HTTP calls into our system
     // in memory with Alba, but do so within Wolverine's test support
     // for message tracking to both record outgoing messages and to ensure
     // that any cascaded work spawned by the initial command is completed
     // before passing control back to the calling test
-    protected async Task<(ITrackedSession, IScenarioResult?)> TrackedHttpCall(Action<Scenario> configuration, TimeSpan timeout)
+    protected async Task<(ITrackedSession, IScenarioResult?)> TrackedHttpCall(Action<Scenario> configuration,
+        TimeSpan timeout)
     {
         IScenarioResult? result = null;
 
@@ -62,7 +61,7 @@ public abstract class IntegrationContext : IAsyncLifetime
                 // to the system under test with Alba
                 result = await Host.Scenario(configuration);
             },
-            timeoutInMilliseconds: (int)timeout.TotalMilliseconds);
+            (int)timeout.TotalMilliseconds);
 
         return (tracked, result);
     }

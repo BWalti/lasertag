@@ -41,8 +41,6 @@ public class AppFixture : IAsyncLifetime
 #pragma warning restore S3220
     }
 
-    public Task DisposeAsync()
-    {
-        return Host == null ? Task.CompletedTask : Host.DisposeAsync().AsTask();
-    }
+    public Task DisposeAsync() =>
+        Host == null ? Task.CompletedTask : Host.DisposeAsync().AsTask();
 }

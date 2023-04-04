@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using System.Reflection;
 
 namespace Admin.Api.Extensions;
 
@@ -30,7 +30,7 @@ public static class OpenTelemetryExtensions
         var resourceBuilder = ResourceBuilder
             .CreateDefault()
             .AddService(
-                serviceName: builder.Environment.ApplicationName,
+                builder.Environment.ApplicationName,
                 serviceVersion: Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown",
                 serviceInstanceId: Environment.MachineName);
 

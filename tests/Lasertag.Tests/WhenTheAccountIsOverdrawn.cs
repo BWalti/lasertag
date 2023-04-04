@@ -10,6 +10,9 @@ namespace Lasertag.Tests;
 
 public class WhenTheAccountIsOverdrawn
 {
+    readonly IDocumentSession _documentSession = A.Fake<IDocumentSession>();
+    readonly object[]? _outboundMessages;
+
     readonly Account _theAccount = new()
     {
         Balance = 1000,
@@ -17,13 +20,11 @@ public class WhenTheAccountIsOverdrawn
         Id = Guid.NewGuid()
     };
 
-    readonly IDocumentSession _documentSession = A.Fake<IDocumentSession>();
-    readonly object[]? _outboundMessages;
-
     public WhenTheAccountIsOverdrawn()
     {
         var command = new AccountCommands.WithdrawFromAccount(_theAccount.Id, 1200);
-        _outboundMessages = AccountHandlers.WithdrawFromAccountHandler.Handle(command, _theAccount, _documentSession, A.Fake<ILogger<AccountHandlers.WithdrawFromAccountHandler>>()).ToArray();
+        _outboundMessages = AccountHandlers.WithdrawFromAccountHandler.Handle(command, _theAccount, _documentSession,
+            A.Fake<ILogger<AccountHandlers.WithdrawFromAccountHandler>>()).ToArray();
     }
 
     [Fact]

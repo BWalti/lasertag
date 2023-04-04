@@ -1,5 +1,6 @@
 ﻿using Marten;
 using Wolverine.Attributes;
+
 // ReSharper disable UnusedMember.Global
 
 namespace Admin.Api.Domain.Account;
@@ -28,7 +29,8 @@ public static class AccountHandlers
             IDocumentSession session,
             ILogger<DepositToAccountHandler> logger)
         {
-            logger.LogInformation("Depositing money to Account with ID {AccountId}, Amount: {Amount}", account.Id, command.Amount);
+            logger.LogInformation("Depositing money to Account with ID {AccountId}, Amount: {Amount}", account.Id,
+                command.Amount);
             account.Balance += command.Amount;
             session.Store(account);
         }
@@ -43,7 +45,8 @@ public static class AccountHandlers
             IDocumentSession session,
             ILogger<WithdrawFromAccountHandler> logger)
         {
-            logger.LogInformation("Decreasing balance of Account with ID {AccountId} by {Amount}", account.Id, command.Amount);
+            logger.LogInformation("Decreasing balance of Account with ID {AccountId} by {Amount}", account.Id,
+                command.Amount);
             account.Balance -= command.Amount;
 
             // This just marks the account as changed, but
@@ -53,12 +56,14 @@ public static class AccountHandlers
 
             if (account.Balance > 0 && account.Balance < account.MinimumThreshold)
             {
-                logger.LogInformation("Minimum Threshold detected on Account with ID {AccountId} and Balance {Balance}", account.Id, account.Balance);
+                logger.LogInformation("Minimum Threshold detected on Account with ID {AccountId} and Balance {Balance}",
+                    account.Id, account.Balance);
                 yield return new AccountEvents.LowBalanceDetected(account.Id);
             }
             else if (account.Balance < 0)
             {
-                logger.LogInformation("Account with ID {AccountId} Overdrawn! Balance: {Balance}", account.Id, account.Balance);
+                logger.LogInformation("Account with ID {AccountId} Overdrawn! Balance: {Balance}", account.Id,
+                    account.Balance);
 
                 yield return new AccountEvents.AccountOverdrawn(account.Id);
 

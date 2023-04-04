@@ -9,17 +9,35 @@ namespace Admin.Api;
 
 public class MqttAdapterService : IHostedService
 {
-    readonly IMqttClient _client;
-    readonly MqttClientOptions _options;
-    readonly ILogger<MqttAdapterService> _logger;
     readonly IMessageContext _bus;
+    readonly IMqttClient _client;
+    readonly ILogger<MqttAdapterService> _logger;
+    readonly MqttClientOptions _options;
 
-    public MqttAdapterService(IMqttClient client, MqttClientOptions options, ILogger<MqttAdapterService> logger, IMessageContext bus)
+    public MqttAdapterService(IMqttClient client, MqttClientOptions options, ILogger<MqttAdapterService> logger,
+        IMessageContext bus)
     {
         _client = client;
         _options = options;
         _logger = logger;
         _bus = bus;
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        _client.ApplicationMessageReceivedAsync += ClientOnApplicationMessageReceivedAsync;
+        _client.ConnectedAsync += ClientOnConnectedAsync;
+        _client.DisconnectedAsync += ClientOnDisconnectedAsync;
+        await _client.ConnectAsync(_options, cancellationToken);
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _client.ApplicationMessageReceivedAsync -= ClientOnApplicationMessageReceivedAsync;
+        _client.ConnectedAsync -= ClientOnConnectedAsync;
+        _client.DisconnectedAsync -= ClientOnDisconnectedAsync;
+
+        await _client.DisconnectAsync();
     }
 
     public async Task Handle(LasertagEvents.ServerCreated @event)
@@ -33,14 +51,6 @@ public class MqttAdapterService : IHostedService
             .Build();
 
         await _client.PublishAsync(message);
-    }
-
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {
-        _client.ApplicationMessageReceivedAsync += ClientOnApplicationMessageReceivedAsync;
-        _client.ConnectedAsync += ClientOnConnectedAsync;
-        _client.DisconnectedAsync += ClientOnDisconnectedAsync;
-        await _client.ConnectAsync(_options, cancellationToken);
     }
 
     async Task ClientOnDisconnectedAsync(MqttClientDisconnectedEventArgs arg)
@@ -92,14 +102,5 @@ public class MqttAdapterService : IHostedService
                 await ProcessMessage<LasertagEvents.GameSetFiredShot>(content);
                 break;
         }
-    }
-
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-        _client.ApplicationMessageReceivedAsync -= ClientOnApplicationMessageReceivedAsync;
-        _client.ConnectedAsync -= ClientOnConnectedAsync;
-        _client.DisconnectedAsync -= ClientOnDisconnectedAsync;
-
-        await _client.DisconnectAsync();
     }
 }

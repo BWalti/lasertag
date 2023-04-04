@@ -1,10 +1,8 @@
-﻿using Admin.Api;
-using Admin.Api.Domain.Lasertag;
+﻿using Admin.Api.Domain.Lasertag;
 using Alba;
 using FluentAssertions;
+using Lasertag.IoT.Simulator;
 using Lasertag.Tests.TestInfrastructure;
-using MQTTnet;
-using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 using static Admin.Api.Domain.Lasertag.LasertagEvents;
@@ -15,10 +13,12 @@ namespace Lasertag.Tests;
 public class HappyFlowServer : IntegrationContext
 {
     readonly ITestOutputHelper _outputHelper;
+    readonly IotSimulator _simulator;
 
     public HappyFlowServer(AppFixture fixture, ITestOutputHelper outputHelper) : base(fixture)
     {
         _outputHelper = outputHelper;
+        _simulator = new IotSimulator(MqttClient);
     }
 
     [Fact]
@@ -31,9 +31,9 @@ public class HappyFlowServer : IntegrationContext
         var server = await PrepareServer();
 
         // Register GameSets:
-        var gameSetRegistered = await RegisterGameSets(server, numberOfGameSets);
+        var gameSets = await RegisterGameSets(server, numberOfGameSets);
         await EnsureGameSetsRegistered(server, numberOfGameSets);
-        await ConnectGameSets(gameSetRegistered);
+        await _simulator.ConnectGameSets(gameSets);
 
         var gamePrepared = await PrepareGame(server, new LobbyConfiguration
         {
@@ -49,13 +49,13 @@ public class HappyFlowServer : IntegrationContext
             g.Lobby.Teams[1].GameSets.Should().HaveCount(1);
         });
 
-        await ActivateGameSet(gameSetRegistered[0], gamePrepared.GameId, 1);
-        await ActivateGameSet(gameSetRegistered[1], gamePrepared.GameId, 2);
+        await _simulator.ActivateGameSet(gameSets[0], gamePrepared.GameId, 1);
+        await _simulator.ActivateGameSet(gameSets[1], gamePrepared.GameId, 2);
 
         await StartGame(game!, gameDuration);
         await ReloadGame(gamePrepared, g => g.IsGameRunning.Should().BeTrue());
 
-        await Shoot(game!.Id, gameSetRegistered[0]);
+        await _simulator.Shoot(game!.Id, gameSets[0]);
 
         // await end of game:
         await Task.Delay(gameDuration);
@@ -66,22 +66,6 @@ public class HappyFlowServer : IntegrationContext
         // now as the game got deleted, we shouldn't be able to load it anymore:
         game = await ReloadGame(gamePrepared, mustExist: false);
         game.Should().BeNull();
-    }
-
-    async Task ConnectGameSets(GameSetRegistered[] gameSetRegistered)
-    {
-        foreach (var gameSet in gameSetRegistered)
-        {
-            var gameSetActivated = new GameSetConnected(gameSet.ServerId, gameSet.GameSetId);
-            var serialized = JsonConvert.SerializeObject(gameSetActivated);
-
-            var message = new MqttApplicationMessageBuilder()
-                .WithTopic(MqttTopics.GameSetConnected)
-                .WithPayload(serialized)
-                .Build();
-
-            await MqttClient.PublishAsync(message);
-        }
     }
 
     async Task EnsureGameSetsRegistered(Server server, int numberOfGameSets)
@@ -148,37 +132,11 @@ public class HappyFlowServer : IntegrationContext
         return game!;
     }
 
-    async Task ActivateGameSet(GameSetRegistered gameSet, Guid gameId, int playerId)
-    {
-        var gameSetActivated = new GameSetActivated(gameId, gameSet.GameSetId, playerId);
-        var serialized = JsonConvert.SerializeObject(gameSetActivated);
-
-        var message = new MqttApplicationMessageBuilder()
-            .WithTopic(MqttTopics.GameSetActivated)
-            .WithPayload(serialized)
-            .Build();
-
-        await MqttClient.PublishAsync(message);
-    }
-
-    async Task Shoot(Guid gameId, GameSetRegistered gameSet)
-    {
-        var shot = new GameSetFiredShot(gameId, gameSet.GameSetId);
-        var serialized = JsonConvert.SerializeObject(shot);
-
-        var message = new MqttApplicationMessageBuilder()
-            .WithTopic(MqttTopics.ShotFired)
-            .WithPayload(serialized)
-            .Build();
-
-        await MqttClient.PublishAsync(message);
-    }
-
     async Task<GameSetRegistered> RegisterGameSet(Server server)
     {
         var (_, scenarioResult) = await TrackedHttpCall(x =>
         {
-            x.Post.Url($"/api/lasertag/server/{server.Id}/registerGameSet");
+            x.Post.Url(ApiRouteBuilder.RegisterGameSet(server));
             x.StatusCodeShouldBeOk();
         });
 
@@ -194,7 +152,7 @@ public class HappyFlowServer : IntegrationContext
     {
         var (tracked, result) = await TrackedHttpCall(x =>
         {
-            x.Post.Json(lobbyConfiguration).ToUrl($"/api/lasertag/server/{server.Id}/prepareGame");
+            x.Post.Json(lobbyConfiguration).ToUrl(ApiRouteBuilder.PrepareGame(server));
             x.StatusCodeShouldBeOk();
         });
 
@@ -207,7 +165,7 @@ public class HappyFlowServer : IntegrationContext
     {
         var (tracked, result) = await TrackedHttpCall(x =>
         {
-            x.Post.Url($"/api/lasertag/game/{game.Id}/start?gameDuration={gameDuration}");
+            x.Post.Url(ApiRouteBuilder.StartGame(game, gameDuration));
             x.StatusCodeShouldBeOk();
         });
 
@@ -226,7 +184,7 @@ public class HappyFlowServer : IntegrationContext
     {
         await TrackedHttpCall(x =>
         {
-            x.Delete.Url($"/api/lasertag/game/{game.Id}");
+            x.Delete.Url(ApiRouteBuilder.DeleteGame(game));
             x.StatusCodeShouldBeOk();
         });
     }

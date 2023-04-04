@@ -58,5 +58,4 @@ public class ServerLookupMiddleware
     }
 }
 
-
 #pragma warning restore S1118

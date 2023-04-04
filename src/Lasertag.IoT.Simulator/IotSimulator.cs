@@ -1,28 +1,59 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+﻿using Admin.Api;
+using MQTTnet;
+using MQTTnet.Client;
+using Newtonsoft.Json;
+using static Admin.Api.Domain.Lasertag.LasertagEvents;
 
 namespace Lasertag.IoT.Simulator;
 
-public class IotSimulator : IHostedService
+public class IotSimulator
 {
-    readonly IotStateMachine _stateMachine;
-    readonly ILogger<IotSimulator> _logger;
-
-    public IotSimulator(IotStateMachine stateMachine, ILogger<IotSimulator> logger)
+    public IotSimulator(IMqttClient client)
     {
-        _stateMachine = stateMachine;
-        _logger = logger;
+        MqttClient = client;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public IMqttClient MqttClient { get; }
+
+    public async Task ConnectGameSets(GameSetRegistered[] gameSets)
     {
-        _logger.LogInformation("Starting IoT Simulator...");
-        await _stateMachine.Initialize();
+        foreach (var gameSet in gameSets)
+        {
+            var gameSetActivated = new GameSetConnected(gameSet.ServerId, gameSet.GameSetId);
+            var serialized = JsonConvert.SerializeObject(gameSetActivated);
+
+            var message = new MqttApplicationMessageBuilder()
+                .WithTopic(MqttTopics.GameSetConnected)
+                .WithPayload(serialized)
+                .Build();
+
+            await MqttClient.PublishAsync(message);
+        }
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task ActivateGameSet(GameSetRegistered gameSet, Guid gameId, int playerId)
     {
-        _logger.LogInformation("Stopping IoT Simulator...");
-        return Task.CompletedTask;
+        var gameSetActivated = new GameSetActivated(gameId, gameSet.GameSetId, playerId);
+        var serialized = JsonConvert.SerializeObject(gameSetActivated);
+
+        var message = new MqttApplicationMessageBuilder()
+            .WithTopic(MqttTopics.GameSetActivated)
+            .WithPayload(serialized)
+            .Build();
+
+        await MqttClient.PublishAsync(message);
+    }
+
+    public async Task Shoot(Guid gameId, GameSetRegistered gameSet)
+    {
+        var shot = new GameSetFiredShot(gameId, gameSet.GameSetId);
+        var serialized = JsonConvert.SerializeObject(shot);
+
+        var message = new MqttApplicationMessageBuilder()
+            .WithTopic(MqttTopics.ShotFired)
+            .WithPayload(serialized)
+            .Build();
+
+        await MqttClient.PublishAsync(message);
     }
 }

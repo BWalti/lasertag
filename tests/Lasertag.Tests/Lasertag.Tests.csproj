@@ -29,6 +29,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\src\Admin.Api\Admin.Api.csproj" />
+	  <ProjectReference Include="..\..\src\Lasertag.IoT.Simulator\Lasertag.IoT.Simulator.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

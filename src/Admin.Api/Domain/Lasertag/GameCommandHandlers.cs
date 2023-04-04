@@ -1,6 +1,5 @@
 ﻿using Marten;
 using Wolverine;
-using Wolverine.Marten;
 
 // ReSharper disable UnusedMember.Global
 
@@ -30,10 +29,7 @@ public static class GameCommandHandlers
             });
 
             var gameStarted = new LasertagEvents.GameStarted(@event.GameId);
-            await session.Events.WriteToAggregate<Game>(@event.GameId, stream =>
-            {
-                stream.AppendOne(gameStarted);
-            });
+            await session.Events.WriteToAggregate<Game>(@event.GameId, stream => { stream.AppendOne(gameStarted); });
         }
     }
 
