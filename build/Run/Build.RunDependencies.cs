@@ -16,13 +16,13 @@ partial class Build
         .DependsOn(CleanOtelCollector, CleanPrometheus, CleanTempo, CleanGrafana, CleanLoki);
 
     public Target RunApplicationDependencies => _ => _
-        .DependsOn(RunMq, RunPostgres, RunEmqx);
+        .DependsOn(RunPostgres, RunEmqx);
 
     public Target StopApplicationDependencies => _ => _
-        .DependsOn(StopMq, StopPostgres, StopEmqx);
+        .DependsOn(StopPostgres, StopEmqx);
 
     public Target CleanApplicationDependencies => _ => _
-        .DependsOn(CleanMq, CleanPostgres, CleanEmqx);
+        .DependsOn(CleanPostgres, CleanEmqx);
 
     public Target RunDependencies => _ => _
         .DependsOn(RunMonitoring, RunApplicationDependencies);

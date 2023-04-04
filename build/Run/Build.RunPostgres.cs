@@ -17,7 +17,7 @@ partial class Build
             if (!TryDockerStartIfStopped(PostgresContainerName))
             {
                 var settings = new DockerRunSettings()
-                    .SetImage("timescale/timescaledb:latest-pg13")
+                    .SetImage("postgres:alpine")
                     .SetName(PostgresContainerName)
                     .SetEnv("POSTGRES_PASSWORD=demo", "POSTGRES_DB=demo", "POSTGRES_USER=demo")
                     .AddPublish("5432:5432")

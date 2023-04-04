@@ -10,7 +10,7 @@ partial class Build
 {
     const string RabbitMqContainerName = "rabbitmq";
 
-    public Target RunMq => _ => _
+    public Target RunRabbitMq => _ => _
         .OnlyWhenDynamic(() => !DockerIsRunning(RabbitMqContainerName))
         .Executes(() =>
         {
@@ -28,7 +28,7 @@ partial class Build
         });
 
 
-    public Target StopMq => _ => _
+    public Target StopRabbitMq => _ => _
         .OnlyWhenDynamic(() => DockerIsRunning(RabbitMqContainerName))
         .Executes(() =>
         {
@@ -38,8 +38,8 @@ partial class Build
             TryDockerStop(settings);
         });
 
-    public Target CleanMq => _ => _
-        .DependsOn(StopMq)
+    public Target CleanRabbitMq => _ => _
+        .DependsOn(StopRabbitMq)
         .Executes(() =>
         {
             var settings = new DockerRmSettings()

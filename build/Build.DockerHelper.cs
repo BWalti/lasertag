@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Text;
+﻿using System.Text;
 using Lasertag.Builder.DockerModels;
 using Newtonsoft.Json;
 using Nuke.Common.Tooling;
@@ -11,17 +10,6 @@ namespace Lasertag.Builder;
 
 public partial class Build
 {
-    string GetImageTag(string projectName) =>
-        $"{projectName.Replace("Lasertag.", string.Empty, StringComparison.CurrentCulture).Replace(".", "-", StringComparison.CurrentCulture).ToLower(CultureInfo.CurrentCulture)}:{ImageTag}";
-
-    void ProcessDockerTemplate(string projectName, string template)
-    {
-        var rendered = template
-            .Replace("{APPNAME}", projectName, StringComparison.CurrentCulture);
-
-        File.WriteAllText(Path.Combine(OutputDirectory, projectName, "Dockerfile"), rendered);
-    }
-
     void TryDockerRm(DockerRmSettings settings)
     {
         try
