@@ -1,5 +1,5 @@
 ﻿using Marten;
-using Wolverine.Marten;
+using System.Diagnostics.Metrics;
 
 // ReSharper disable UnusedMember.Global
 
@@ -11,10 +11,9 @@ public static class ServerCommandHandlers
 {
     public class CreateServerHandler
     {
-        public static async Task<Server> Handle(
+        public static LasertagEvents.ServerCreated Handle(
             LasertagCommands.CreateServer _,
-            IDocumentSession session,
-            IMartenOutbox outbox)
+            IDocumentSession session)
         {
             var server = new Server
             {
@@ -23,10 +22,7 @@ public static class ServerCommandHandlers
 
             session.Store(server);
 
-            await outbox.PublishAsync(new LasertagEvents.ServerCreated(server.Id));
-            await session.SaveChangesAsync();
-
-            return server;
+            return new LasertagEvents.ServerCreated(server.Id);
         }
     }
 

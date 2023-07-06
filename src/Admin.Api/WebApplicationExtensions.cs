@@ -36,6 +36,8 @@ public static class WebApplicationExtensions
             app.UseSwagger();
             app.UseSwaggerUI();
 
+            app.UseOpenTelemetryPrometheusScrapingEndpoint();
+
 #pragma warning disable ASP0014
             app.UseEndpoints(_ => { });
 #pragma warning restore ASP0014

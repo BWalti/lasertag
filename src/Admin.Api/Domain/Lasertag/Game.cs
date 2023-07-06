@@ -1,9 +1,16 @@
-﻿namespace Admin.Api.Domain.Lasertag;
+﻿using Marten.Metadata;
 
-public class Game
+namespace Admin.Api.Domain.Lasertag;
+
+public class Game : IVersioned, ITracked
 {
     public Guid Id { get; set; }
     public bool IsGameRunning { get; set; }
+
+    public Guid Version { get; set; }
+    public string CorrelationId { get; set; } = string.Empty;
+    public string CausationId { get; set; } = string.Empty;
+    public string LastModifiedBy { get; set; } = string.Empty;
 
     public Lobby Lobby { get; set; } = new();
 

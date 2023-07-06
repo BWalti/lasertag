@@ -46,7 +46,7 @@ public class MqttAdapterService : IHostedService
 
         _logger.LogInformation("Going to publish a message...");
         var message = new MqttApplicationMessageBuilder()
-            .WithTopic("server")
+            .WithTopic(MqttTopics.ServerMessages)
             .WithPayload(serialized)
             .Build();
 
@@ -67,7 +67,7 @@ public class MqttAdapterService : IHostedService
         var subscribeOptions = new MqttClientSubscribeOptionsBuilder()
             .WithTopicFilter(builder => builder
                 .WithExactlyOnceQoS()
-                .WithTopic("client/#"))
+                .WithTopic(MqttTopics.EverythingFromAnyClient))
             .Build();
 
         await _client.SubscribeAsync(subscribeOptions);
@@ -79,6 +79,7 @@ public class MqttAdapterService : IHostedService
         {
             var message = JsonConvert.DeserializeObject<T>(serializedContent);
             _logger.LogInformation($"Got something: {message}");
+
             await _bus.SendAsync(message);
         }
 

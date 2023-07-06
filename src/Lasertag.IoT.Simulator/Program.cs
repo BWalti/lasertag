@@ -1,9 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using Lasertag.IoT.Simulator;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MQTTnet;
 using MQTTnet.Client;
 using OpenTelemetry.Exporter;
@@ -25,6 +27,12 @@ var host = Host.CreateDefaultBuilder()
         services.Configure<OtlpExporterOptions>(context.Configuration.GetSection("OtlpExporter"));
         services.Configure<SimulatorOptions>(context.Configuration.GetSection("Simulator"));
 
+        services.AddHttpClient<IotInfrastructureCalls>((provider, client) =>
+        {
+            var options = provider.GetRequiredService<IOptions<SimulatorOptions>>();
+            client.BaseAddress = options.Value.ApiBaseAddress;
+        });
+
         services.AddOpenTelemetry()
             .WithMetrics()
             .WithTracing();
@@ -41,7 +49,7 @@ var host = Host.CreateDefaultBuilder()
             return options;
         });
 
-        services.AddSingleton<IMessageBus, MqttNetMessageBus>();
+        services.AddSingleton<IMqttAdapter, MqttAdapter>();
         services.AddSingleton<IotStateMachine>();
         services.AddHostedService<IotSimulatorHostedService>();
     })

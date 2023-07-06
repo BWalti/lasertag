@@ -40,9 +40,8 @@ builder.Services.AddMarten(opts =>
         opts.Projections.Add<GameStatisticsProjection>(ProjectionLifecycle.Inline);
     })
     .AddAsyncDaemon(DaemonMode.HotCold)
-    .IntegrateWithWolverine()
     .ApplyAllDatabaseChangesOnStartup()
-    .EventForwardingToWolverine();
+    .EventForwardingToWolverine(); // includes ".IntegrateWithWolverine()"
 
 builder.Host
     .ApplyOaktonExtensions()
@@ -57,8 +56,13 @@ builder.Host
         opts.OnException<NpgsqlException>()
             .RetryWithCooldown(50.Milliseconds(), 100.Milliseconds(), 250.Milliseconds());
 
-        opts.Policies.AddMiddlewareByMessageType(typeof(AccountLookupMiddleware));
-        opts.Policies.AddMiddlewareByMessageType(typeof(ServerLookupMiddleware));
+        opts.Policies
+            .ForMessagesOfType<AccountCommands.IAccountCommand>()
+            .AddMiddleware<AccountLookupMiddleware>();
+
+        opts.Policies
+            .ForMessagesOfType<LasertagCommands.IServerCommands>()
+            .AddMiddleware<ServerLookupMiddleware>();
     });
 
 builder.Services.AddResourceSetupOnStartup();

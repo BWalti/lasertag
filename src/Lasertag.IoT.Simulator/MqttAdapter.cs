@@ -5,15 +5,15 @@ using MQTTnet.Client;
 
 namespace Lasertag.IoT.Simulator;
 
-public class MqttNetMessageBus : IMessageBus, IAsyncDisposable
+public class MqttAdapter : IMqttAdapter, IAsyncDisposable
 {
     readonly IMqttClient _client;
-    readonly ILogger<MqttNetMessageBus> _logger;
+    readonly ILogger<MqttAdapter> _logger;
     readonly MqttClientOptions _options;
     IHandleMessages? _messageHandler;
     string[]? _topics;
 
-    public MqttNetMessageBus(MqttClientOptions options, IMqttClient client, ILogger<MqttNetMessageBus> logger)
+    public MqttAdapter(MqttClientOptions options, IMqttClient client, ILogger<MqttAdapter> logger)
     {
         _options = options;
         _client = client;

@@ -1,5 +1,7 @@
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +15,6 @@ builder.Services.AddSwaggerGen();
 builder.Logging.ClearProviders();
 builder.Logging.AddOpenTelemetry(options =>
 {
-    options.AddConsoleExporter();
-#pragma warning disable S1075
 #pragma warning disable S1075
     options.AddOtlpExporter(configure =>
     {
@@ -22,8 +22,22 @@ builder.Logging.AddOpenTelemetry(options =>
         configure.Protocol = OtlpExportProtocol.Grpc;
     });
 #pragma warning restore S1075
-#pragma warning restore S1075
 });
+
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(providerBuilder =>
+        providerBuilder
+            .SetResourceBuilder(ResourceBuilder.CreateDefault())
+            .AddRuntimeInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddAspNetCoreInstrumentation()
+            .AddPrometheusExporter()
+            .AddOtlpExporter(c =>
+            {
+#pragma warning disable S1075
+                c.Endpoint = new Uri("http://localhost:4312");
+#pragma warning restore S1075
+            }));
 
 var app = builder.Build();
 

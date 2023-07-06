@@ -6,14 +6,16 @@ namespace Lasertag.IoT.Simulator;
 
 public class IotStateMachine : IHandleMessages
 {
-    readonly IMessageBus _bus;
+    readonly IMqttAdapter _mqttAdapter;
     readonly ILogger<IotStateMachine> _logger;
     readonly IOptions<SimulatorOptions> _simulatorOptions;
 
-    public IotStateMachine(IMessageBus bus, ILogger<IotStateMachine> logger,
+    public IotStateMachine(
+        IMqttAdapter mqttAdapter,
+        ILogger<IotStateMachine> logger,
         IOptions<SimulatorOptions> simulatorOptions)
     {
-        _bus = bus;
+        _mqttAdapter = mqttAdapter;
         _logger = logger;
         _simulatorOptions = simulatorOptions;
     }
@@ -28,7 +30,7 @@ public class IotStateMachine : IHandleMessages
     {
         var clientId = _simulatorOptions.Value.ClientId;
 
-        await _bus.RegisterListener(this, new[] { $"server/{clientId}/shotHit", "allClients" });
-        await _bus.SendMessageAsync(MqttTopics.GameSetConnected, string.Empty);
+        await _mqttAdapter.RegisterListener(this, new[] { MqttTopics.AllMessagesForClient(clientId), MqttTopics.ToAllClients });
+        await _mqttAdapter.SendMessageAsync(MqttTopics.GameSetConnected, string.Empty);
     }
 }

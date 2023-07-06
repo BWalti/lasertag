@@ -67,6 +67,8 @@ public static class OpenTelemetryExtensions
                     metrics.SetResourceBuilder(resourceBuilder)
                         .AddPrometheusExporter()
                         .AddMeter("Microsoft.Orleans")
+                        .AddMeter("Wolverine")
+                        .AddMeter("Marten")
                         .AddAspNetCoreInstrumentation()
                         .AddRuntimeInstrumentation()
                         .AddHttpClientInstrumentation()
