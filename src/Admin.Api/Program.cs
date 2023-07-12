@@ -13,6 +13,7 @@ using Oakton.Resources;
 using Weasel.Core;
 using Wolverine;
 using Wolverine.ErrorHandling;
+using Wolverine.Http;
 using Wolverine.Marten;
 
 #pragma warning disable S125
@@ -36,9 +37,11 @@ builder.Services.AddMarten(opts =>
             opts.AutoCreateSchemaObjects = AutoCreate.All;
         }
 
-        opts.Projections.SelfAggregate<Game>();
-        opts.Projections.Add<GameStatisticsProjection>(ProjectionLifecycle.Inline);
+        opts.Projections.Snapshot<Server>(SnapshotLifecycle.Inline);
+        opts.Projections.Snapshot<Game>(SnapshotLifecycle.Inline);
+        opts.Projections.Add<GameStatisticsProjection>(ProjectionLifecycle.Async);
     })
+    .UseLightweightSessions()
     .AddAsyncDaemon(DaemonMode.HotCold)
     .ApplyAllDatabaseChangesOnStartup()
     .EventForwardingToWolverine(); // includes ".IntegrateWithWolverine()"
@@ -63,6 +66,10 @@ builder.Host
         opts.Policies
             .ForMessagesOfType<LasertagCommands.IServerCommands>()
             .AddMiddleware<ServerLookupMiddleware>();
+
+        opts.Policies
+            .ForMessagesOfType<LasertagEvents.IServerEvents>()
+            .AddMiddleware<ServerLookupMiddleware>();
     });
 
 builder.Services.AddResourceSetupOnStartup();
@@ -73,13 +80,6 @@ builder.Services.AddHostedService<MqttAdapterService>();
 var app = builder.Build();
 
 app.UseDevelopmentDefaults();
-
-app.MapGroup("/api/lasertag")
-    .MapLasertagApi()
-    .WithTags("Lasertag");
-
-app.MapGroup("/api/accounts")
-    .MapAccountApi()
-    .WithTags("Account");
+app.MapWolverineEndpoints();
 
 return await app.RunOaktonCommands(args);

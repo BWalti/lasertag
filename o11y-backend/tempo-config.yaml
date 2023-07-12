@@ -2,9 +2,9 @@ server:
   http_listen_port: 3200
 
 distributor:
-  search_tags_deny_list:
-    - "instance"
-    - "version"
+  #search_tags_deny_list:
+  #  - "instance"
+  #  - "version"
   receivers:
     jaeger:
       protocols:

@@ -1,5 +1,6 @@
 using Nuke.Common;
 using Nuke.Common.IO;
+using Nuke.Common.Tooling;
 using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 
 
@@ -15,6 +16,6 @@ partial class Build
         .DependsOn(Compile)
         .Executes(() =>
         {
-            MSBuild(IotOtaEngineDirectory);
+            MSBuild(new ArgumentStringHandler(), IotOtaEngineDirectory);
         });
 }

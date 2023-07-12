@@ -9,7 +9,7 @@ namespace Lasertag.Builder;
 
 partial class Build
 {
-    [PathExecutable] Tool Yarn = default!;
+    [PathVariable] Tool Yarn = default!;
 
     AbsolutePath ClientDirectory => RootDirectory / "Client";
 

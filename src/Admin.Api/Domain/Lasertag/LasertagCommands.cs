@@ -14,11 +14,12 @@ public static class LasertagCommands
         public Guid GameId { get; }
     }
 
-    public record CreateServer;
+    public record CreateServer(string Name);
+
     public record RegisterGameSet(Guid ServerId) : IServerCommands;
     public record PrepareGame(Guid ServerId, LobbyConfiguration Configuration) : IServerCommands;
 
-    public record StartGame([property: SagaIdentity] Guid GameId, TimeSpan GameDuration) : IGameCommands;
-    public record EndGame([property: SagaIdentity] Guid GameId) : IGameCommands;
+    public record StartGame(Guid ServerId, [property: SagaIdentity] Guid GameId, TimeSpan GameDuration) : IServerCommands, IGameCommands;
+    public record EndGame(Guid ServerId, [property: SagaIdentity] Guid GameId) : IServerCommands, IGameCommands;
     public record DeleteGame([property: SagaIdentity] Guid GameId) : IGameCommands;
 }

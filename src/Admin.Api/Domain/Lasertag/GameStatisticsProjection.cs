@@ -2,7 +2,7 @@
 
 namespace Admin.Api.Domain.Lasertag;
 
-public class GameStatisticsProjection : SingleStreamAggregation<GameStatistics>
+public class GameStatisticsProjection : SingleStreamProjection<GameStatistics>
 {
     public GameStatistics Create(LasertagEvents.GamePrepared @event) =>
         new()

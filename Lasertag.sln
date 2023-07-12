@@ -38,7 +38,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.IoT.Simulator", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Messages", "src\Lasertag.Messages\Lasertag.Messages.csproj", "{6C62EF3A-599F-4C2F-ACA8-80478D2F3931}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtelTest", "src\OtelTest\OtelTest.csproj", "{EA87D04F-6837-423C-9D14-044A6A995774}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OtelTest", "src\OtelTest\OtelTest.csproj", "{EA87D04F-6837-423C-9D14-044A6A995774}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lasertag.Core", "src\Lasertag.Core\Lasertag.Core.csproj", "{F341B8F3-AC08-491D-ADE4-47E27FC662D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +70,10 @@ Global
 		{EA87D04F-6837-423C-9D14-044A6A995774}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA87D04F-6837-423C-9D14-044A6A995774}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA87D04F-6837-423C-9D14-044A6A995774}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F341B8F3-AC08-491D-ADE4-47E27FC662D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F341B8F3-AC08-491D-ADE4-47E27FC662D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F341B8F3-AC08-491D-ADE4-47E27FC662D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F341B8F3-AC08-491D-ADE4-47E27FC662D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +86,7 @@ Global
 		{AF7B2275-DE7B-4070-AC30-293529909CFC} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 		{6C62EF3A-599F-4C2F-ACA8-80478D2F3931} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 		{EA87D04F-6837-423C-9D14-044A6A995774} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
+		{F341B8F3-AC08-491D-ADE4-47E27FC662D1} = {52FD4493-DF38-4B7C-A94F-F5B5EE3EBB81}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2CB5560A-7F9B-4A01-85A3-F95B4DC96810}

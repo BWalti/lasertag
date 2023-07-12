@@ -1,11 +1,20 @@
-﻿using Marten.Metadata;
+﻿using JasperFx.Core;
+using Marten.Metadata;
 
 namespace Admin.Api.Domain.Lasertag;
+
+public enum GameStatus
+{
+    Created,
+    ReadyToStart,
+    Started,
+    Finished
+}
 
 public class Game : IVersioned, ITracked
 {
     public Guid Id { get; set; }
-    public bool IsGameRunning { get; set; }
+    public GameStatus Status { get; set; }
 
     public Guid Version { get; set; }
     public string CorrelationId { get; set; } = string.Empty;
@@ -18,17 +27,32 @@ public class Game : IVersioned, ITracked
         new()
         {
             Id = prepared.GameId,
-            Lobby = prepared.Lobby
+            Lobby = prepared.Lobby,
+            Status = GameStatus.Created
         };
 
     public void Apply(LasertagEvents.GameSetActivated @event)
     {
-        // multiple times for each player
+        var team = Lobby.Teams.FindFirst(t => t.GameSets.Any(gs => gs.Id == @event.GameSetId));
+        if (team != null)
+        {
+            var gameSet = team.GameSets.First(gs => gs.Id == @event.GameSetId);
+            gameSet.IsActive = true;
+        }
+
+        if (Status != GameStatus.ReadyToStart)
+        {
+            var atLeastTwoTeamsHaveActivePlayers = Lobby.Teams.Count(t => t.GameSets.Any(gs => gs.IsActive)) >= 2;
+            if (atLeastTwoTeamsHaveActivePlayers)
+            {
+                Status = GameStatus.ReadyToStart;
+            }
+        }
     }
 
     public void Apply(LasertagEvents.GameStarted @event)
     {
-        IsGameRunning = true;
+        Status = GameStatus.Started;
     }
 
     public void Apply(LasertagEvents.GameSetFiredShot @event)
@@ -43,6 +67,6 @@ public class Game : IVersioned, ITracked
 
     public void Apply(LasertagEvents.GameFinished @event)
     {
-        IsGameRunning = false;
+        Status = GameStatus.Finished;
     }
 }

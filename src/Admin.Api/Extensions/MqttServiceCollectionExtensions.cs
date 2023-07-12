@@ -1,4 +1,5 @@
-﻿using MQTTnet;
+﻿using System.Globalization;
+using MQTTnet;
 using MQTTnet.Client;
 
 namespace Admin.Api.Extensions;
@@ -16,7 +17,7 @@ public static class MqttServiceCollectionExtensions
 
             var options = new MqttClientOptionsBuilder()
                 .WithWebSocketServer(configurationSection["Server"])
-                .WithKeepAlivePeriod(TimeSpan.Parse(keepAlivePeriod))
+                .WithKeepAlivePeriod(TimeSpan.Parse(keepAlivePeriod, CultureInfo.InvariantCulture))
                 .Build();
 
             return options;

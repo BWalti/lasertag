@@ -21,6 +21,7 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" />
 		<PackageReference Include="Newtonsoft.Json" />
 		<PackageReference Include="WolverineFx" />
+		<PackageReference Include="WolverineFx.Http" />
 		<PackageReference Include="WolverineFx.Marten" />
 		<PackageReference Include="WolverineFx.RabbitMQ" />
 	</ItemGroup>

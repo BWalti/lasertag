@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging.Console;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
@@ -45,7 +47,12 @@ public static class OpenTelemetryExtensions
             .AddFilter("Orleans", LogLevel.Information) // suppress status dumps
             .AddFilter("Runtime", LogLevel.Warning) // also an Orleans prefix
             .AddFilter("Wolverine", LogLevel.Warning)
-            .AddConsole()
+            .AddSimpleConsole(configure =>
+            {
+                configure.IncludeScopes = true;
+                configure.SingleLine = true;
+                configure.TimestampFormat = "HH:mm:ss.fffffff";
+            })
             .AddOpenTelemetry(options =>
             {
                 options.SetResourceBuilder(resourceBuilder);

@@ -15,11 +15,11 @@ public class IotSimulator
 
     public IMqttClient MqttClient { get; }
 
-    public async Task ConnectGameSets(GameSetRegistered[] gameSets)
+    public async Task ConnectGameSets(RegisterGameSetResponse[] gameSets)
     {
         foreach (var gameSet in gameSets)
         {
-            var gameSetActivated = new GameSetConnected(gameSet.ServerId, gameSet.GameSetId);
+            var gameSetActivated = new GameSetConnected(gameSet.ServerId, gameSet.Id);
             var serialized = JsonConvert.SerializeObject(gameSetActivated);
 
             var message = new MqttApplicationMessageBuilder()
@@ -31,9 +31,9 @@ public class IotSimulator
         }
     }
 
-    public async Task ActivateGameSet(GameSetRegistered gameSet, Guid gameId, int playerId)
+    public async Task ActivateGameSet(RegisterGameSetResponse gameSet, Guid gameId, int playerId)
     {
-        var gameSetActivated = new GameSetActivated(gameId, gameSet.GameSetId, playerId);
+        var gameSetActivated = new GameSetActivated(gameId, gameSet.Id, playerId);
         var serialized = JsonConvert.SerializeObject(gameSetActivated);
 
         var message = new MqttApplicationMessageBuilder()
@@ -44,9 +44,9 @@ public class IotSimulator
         await MqttClient.PublishAsync(message);
     }
 
-    public async Task Shoot(Guid gameId, GameSetRegistered gameSet)
+    public async Task Shoot(Guid gameId, RegisterGameSetResponse gameSet)
     {
-        var shot = new GameSetFiredShot(gameId, gameSet.GameSetId);
+        var shot = new GameSetFiredShot(gameId, gameSet.Id);
         var serialized = JsonConvert.SerializeObject(shot);
 
         var message = new MqttApplicationMessageBuilder()

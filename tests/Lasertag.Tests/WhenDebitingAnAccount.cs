@@ -2,6 +2,7 @@
 using Alba;
 using FluentAssertions;
 using Lasertag.Tests.TestInfrastructure;
+using Wolverine.Tracking;
 using Xunit;
 
 namespace Lasertag.Tests;

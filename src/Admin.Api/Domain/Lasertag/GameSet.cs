@@ -2,6 +2,7 @@
 
 public class GameSet
 {
+
     public GameSet(int id)
     {
         Id = id;
@@ -10,4 +11,6 @@ public class GameSet
     public int Id { get; init; }
 
     public bool IsConnected { get; set; }
+
+    public bool IsActive { get; set; }
 }

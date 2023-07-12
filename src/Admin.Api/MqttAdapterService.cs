@@ -83,8 +83,8 @@ public class MqttAdapterService : IHostedService
             await _bus.SendAsync(message);
         }
 
-        var content = arg.ApplicationMessage.Payload != null
-            ? Encoding.UTF8.GetString(arg.ApplicationMessage.Payload)
+        var content = arg.ApplicationMessage.PayloadSegment.Count > 0
+            ? Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment)
             : string.Empty;
 
         _logger.LogInformation($"Got a message from Mqtt: {arg.ApplicationMessage.Topic} -> '{content}'");
@@ -103,5 +103,7 @@ public class MqttAdapterService : IHostedService
                 await ProcessMessage<LasertagEvents.GameSetFiredShot>(content);
                 break;
         }
+
+        await arg.AcknowledgeAsync(CancellationToken.None);
     }
 }

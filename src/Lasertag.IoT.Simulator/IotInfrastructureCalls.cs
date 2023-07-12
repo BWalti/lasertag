@@ -19,7 +19,7 @@ public class IotInfrastructureCalls
     {
         _logger.LogInformation("Going to register game set on Server: {ServerId}", server.Id);
 
-        var result = await _httpClient.PostAsync(ApiRouteBuilder.RegisterGameSet(server), null);
+        var result = await _httpClient.PostAsync(ApiRouteBuilder.RegisterGameSetPath, null);
         result.EnsureSuccessStatusCode();
 
         return await result.Content.ReadFromJsonAsync<LasertagEvents.GameSetRegistered>();
@@ -30,7 +30,7 @@ public class IotInfrastructureCalls
         _logger.LogInformation("Preparing Game on Server: {ServerId} with LobbyConfiguration: {Lobby}", server.Id,
             lobbyConfiguration);
 
-        var result = await _httpClient.PostAsJsonAsync(ApiRouteBuilder.PrepareGame(server), lobbyConfiguration);
+        var result = await _httpClient.PostAsJsonAsync(ApiRouteBuilder.PrepareGamePath, lobbyConfiguration);
         result.EnsureSuccessStatusCode();
 
         return await result.Content.ReadFromJsonAsync<LasertagEvents.GamePrepared>();
@@ -40,7 +40,7 @@ public class IotInfrastructureCalls
     {
         _logger.LogInformation("Starting Game: {GameId} for Duration: {Duration}", game.Id, gameDuration);
 
-        var result = await _httpClient.PostAsync(ApiRouteBuilder.StartGame(game, gameDuration), null);
+        var result = await _httpClient.PostAsync(ApiRouteBuilder.StartGamePath, null);
         result.EnsureSuccessStatusCode();
     }
 
@@ -48,7 +48,7 @@ public class IotInfrastructureCalls
     {
         _logger.LogInformation("Deleting Game: {GameId}", game.Id);
 
-        var result = await _httpClient.DeleteAsync(ApiRouteBuilder.DeleteGame(game));
+        var result = await _httpClient.DeleteAsync(ApiRouteBuilder.DeleteGamePath);
         result.EnsureSuccessStatusCode();
     }
 }

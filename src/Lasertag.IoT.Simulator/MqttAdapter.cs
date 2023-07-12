@@ -84,7 +84,7 @@ public class MqttAdapter : IMqttAdapter, IAsyncDisposable
     async Task ClientOnApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
     {
         _messageHandler?.ProcessMessage(arg.ApplicationMessage.Topic,
-            Encoding.UTF8.GetString(arg.ApplicationMessage.Payload));
+            Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment));
         await arg.AcknowledgeAsync(CancellationToken.None);
     }
 
