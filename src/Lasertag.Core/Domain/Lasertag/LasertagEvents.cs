@@ -1,12 +1,11 @@
 ﻿using Wolverine.Persistence.Sagas;
 
-namespace Admin.Api.Domain.Lasertag;
+namespace Lasertag.Core.Domain.Lasertag;
 
 public static class LasertagEvents
 {
-    public interface IServerEvents
+    public interface IServerEvents : IHasServerId
     {
-        public Guid ServerId { get; }
     }
 
     public interface IGameEvents

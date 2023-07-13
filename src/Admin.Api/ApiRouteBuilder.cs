@@ -1,4 +1,4 @@
-﻿namespace Lasertag.IoT.Simulator;
+﻿namespace Admin.Api;
 
 public static class ApiRouteBuilder
 {

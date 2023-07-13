@@ -1,11 +1,11 @@
 ﻿using Admin.Api;
-using Admin.Api.Domain.Lasertag;
 using Alba;
 using FluentAssertions;
+using Lasertag.Core.Domain.Lasertag;
 using Lasertag.IoT.Simulator;
 using Lasertag.Tests.TestInfrastructure;
 using Xunit;
-using static Admin.Api.Domain.Lasertag.LasertagEvents;
+using static Lasertag.Core.Domain.Lasertag.LasertagEvents;
 
 namespace Lasertag.Tests;
 

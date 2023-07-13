@@ -1,6 +1,5 @@
-﻿using Admin.Api.Domain.Lasertag;
-using JetBrains.Annotations;
-using Lasertag.IoT.Simulator;
+﻿using JetBrains.Annotations;
+using Lasertag.Core.Domain.Lasertag;
 using Marten;
 using Marten.Events;
 using Microsoft.AspNetCore.Mvc;
@@ -9,15 +8,9 @@ using Wolverine.Attributes;
 using Wolverine.Http;
 using Wolverine.Marten;
 
-using static Admin.Api.Domain.Lasertag.LasertagEvents;
+using static Lasertag.Core.Domain.Lasertag.LasertagEvents;
 
 namespace Admin.Api;
-
-public record ServerCreatedResponse(Guid Id, string Name) : CreationResponse(ApiRouteBuilder.GetServerById(Id.ToString()));
-public record GameCreatedResponse(Guid Id) : CreationResponse(ApiRouteBuilder.GetGameById(Id.ToString()));
-public record GameStartedResponse(Guid Id, Guid ServerId);
-
-public record RegisterGameSetResponse(Guid ServerId, int Id);
 
 [UsedImplicitly]
 public class LasertagEndpoints

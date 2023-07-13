@@ -2,7 +2,7 @@
 using MQTTnet;
 using MQTTnet.Client;
 using Newtonsoft.Json;
-using static Admin.Api.Domain.Lasertag.LasertagEvents;
+using static Lasertag.Core.Domain.Lasertag.LasertagEvents;
 
 namespace Lasertag.IoT.Simulator;
 

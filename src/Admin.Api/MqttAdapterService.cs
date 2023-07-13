@@ -1,5 +1,5 @@
 using System.Text;
-using Admin.Api.Domain.Lasertag;
+using Lasertag.Core.Domain.Lasertag;
 using MQTTnet;
 using MQTTnet.Client;
 using Newtonsoft.Json;

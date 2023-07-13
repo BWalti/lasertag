@@ -1,7 +1,7 @@
 using Admin.Api;
-using Admin.Api.Domain.Lasertag;
 using Admin.Api.Extensions;
 using JasperFx.Core;
+using Lasertag.Core.Domain.Lasertag;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
 using Marten.Events.Projections;

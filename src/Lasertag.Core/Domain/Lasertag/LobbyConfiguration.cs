@@ -1,4 +1,4 @@
-﻿namespace Admin.Api.Domain.Lasertag;
+﻿namespace Lasertag.Core.Domain.Lasertag;
 
 public class LobbyConfiguration
 {

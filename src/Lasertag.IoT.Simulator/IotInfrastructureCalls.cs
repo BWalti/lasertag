@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
-using Admin.Api.Domain.Lasertag;
+using Admin.Api;
+using Lasertag.Core.Domain.Lasertag;
 using Microsoft.Extensions.Logging;
 
 namespace Lasertag.IoT.Simulator;

@@ -1,8 +1,9 @@
 ﻿using Marten;
+using Microsoft.Extensions.Logging;
 
 // ReSharper disable UnusedMember.Global
 
-namespace Admin.Api.Domain.Lasertag;
+namespace Lasertag.Core.Domain.Lasertag;
 
 #pragma warning disable S1118
 

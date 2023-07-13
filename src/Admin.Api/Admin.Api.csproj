@@ -27,6 +27,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Lasertag.Core\Lasertag.Core.csproj" />
 	  <ProjectReference Include="..\Lasertag.Messages\Lasertag.Messages.csproj" />
 	</ItemGroup>
 

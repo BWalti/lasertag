@@ -1,0 +1,1 @@
+﻿[assembly: Wolverine.Attributes.WolverineModule]

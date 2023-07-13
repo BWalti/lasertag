@@ -1,6 +1,6 @@
 ﻿using Marten.Events.Aggregation;
 
-namespace Admin.Api.Domain.Lasertag;
+namespace Lasertag.Core.Domain.Lasertag;
 
 public class GameStatisticsProjection : SingleStreamProjection<GameStatistics>
 {

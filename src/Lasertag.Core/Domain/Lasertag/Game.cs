@@ -1,25 +1,10 @@
-﻿using JasperFx.Core;
-using Marten.Metadata;
+﻿namespace Lasertag.Core.Domain.Lasertag;
 
-namespace Admin.Api.Domain.Lasertag;
-
-public enum GameStatus
-{
-    Created,
-    ReadyToStart,
-    Started,
-    Finished
-}
-
-public class Game : IVersioned, ITracked
+public class Game
 {
     public Guid Id { get; set; }
     public GameStatus Status { get; set; }
-
     public Guid Version { get; set; }
-    public string CorrelationId { get; set; } = string.Empty;
-    public string CausationId { get; set; } = string.Empty;
-    public string LastModifiedBy { get; set; } = string.Empty;
 
     public Lobby Lobby { get; set; } = new();
 
@@ -33,7 +18,9 @@ public class Game : IVersioned, ITracked
 
     public void Apply(LasertagEvents.GameSetActivated @event)
     {
-        var team = Lobby.Teams.FindFirst(t => t.GameSets.Any(gs => gs.Id == @event.GameSetId));
+#pragma warning disable S6602
+        var team = Lobby.Teams.FirstOrDefault(t => t.GameSets.Any(gs => gs.Id == @event.GameSetId));
+#pragma warning restore S6602
         if (team != null)
         {
             var gameSet = team.GameSets.First(gs => gs.Id == @event.GameSetId);

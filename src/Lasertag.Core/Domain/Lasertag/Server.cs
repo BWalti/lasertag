@@ -1,39 +1,9 @@
-﻿using Marten.Metadata;
+﻿namespace Lasertag.Core.Domain.Lasertag;
 
-namespace Admin.Api.Domain.Lasertag;
-
-public enum ServerStatus
-{
-    /// <summary>
-    /// Server created
-    /// </summary>
-    Created,
-
-    /// <summary>
-    /// Marks that this server would be ready for games,
-    /// meaning it has at least two GameSets registered
-    /// and currently no game is prepared / running.
-    /// </summary>
-    ReadyForLobby,
-
-    /// <summary>
-    /// Lobby created.
-    /// </summary>
-    GamePrepared,
-
-    /// <summary>
-    /// After the game is finished, the server state switches back to ReadyForLobby.
-    /// </summary>
-    GameRunning,
-}
-
-public class Server : IVersioned, ITracked
+public class Server
 {
     public Guid Id { get; set; }
     public Guid Version { get; set; }
-    public string CorrelationId { get; set; } = string.Empty;
-    public string CausationId { get; set; } = string.Empty;
-    public string LastModifiedBy { get; set; } = string.Empty;
     public ServerStatus Status { get; set; }
     public Guid? CurrentGameId { get; set; }
 
