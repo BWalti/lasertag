@@ -1,6 +1,4 @@
-﻿using Wolverine.Persistence.Sagas;
-
-namespace Lasertag.Core.Domain.Lasertag;
+﻿namespace Lasertag.Core.Domain.Lasertag;
 
 public static class LasertagCommands
 {
@@ -8,17 +6,14 @@ public static class LasertagCommands
     {
     }
 
-    public interface IGameCommands
+    public interface IGameCommands : IHasGameId
     {
-        public Guid GameId { get; }
     }
 
     public record CreateServer(string Name);
-
     public record RegisterGameSet(Guid ServerId) : IServerCommands;
     public record PrepareGame(Guid ServerId, LobbyConfiguration Configuration) : IServerCommands;
-
-    public record StartGame(Guid ServerId, [property: SagaIdentity] Guid GameId, TimeSpan GameDuration) : IServerCommands, IGameCommands;
-    public record EndGame(Guid ServerId, [property: SagaIdentity] Guid GameId) : IServerCommands, IGameCommands;
-    public record DeleteGame([property: SagaIdentity] Guid GameId) : IGameCommands;
+    public record StartGame(Guid ServerId, Guid GameId, TimeSpan GameDuration) : IServerCommands, IGameCommands;
+    public record EndGame(Guid ServerId, Guid GameId) : IServerCommands, IGameCommands;
+    public record DeleteGame(Guid GameId) : IGameCommands;
 }

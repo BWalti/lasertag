@@ -1,5 +1,5 @@
-﻿using Marten;
-using Microsoft.Extensions.Logging;
+﻿ using Marten.Events;
+ using Wolverine.Marten;
 
 // ReSharper disable UnusedMember.Global
 
@@ -7,18 +7,14 @@ namespace Lasertag.Core.Domain.Lasertag;
 
 #pragma warning disable S1118
 
-public static class ServerEventHandlers
+public static class CommandHandlers
 {
     public class PrepareGameHandler
     {
-        public static async Task<LasertagEvents.GamePrepared> Handle(
+        public static (LasertagEvents.GamePrepared, IMartenOp) Handle(
             LasertagCommands.PrepareGame prepare,
-            Server server,
-            ILogger<PrepareGameHandler> logger,
-            IDocumentSession session)
+            Server server)
         {
-            logger.LogInformation("Preparing game");
-
             var inputConfig = prepare.Configuration;
 
             var lobby = new Lobby
@@ -34,10 +30,9 @@ public static class ServerEventHandlers
             var gameId = Guid.NewGuid();
             var gamePrepared = new LasertagEvents.GamePrepared(prepare.ServerId, gameId, lobby);
 
-            session.Events.StartStream<Game>(gameId, gamePrepared);
-            await session.SaveChangesAsync();
-
-            return gamePrepared;
+            var o = MartenOps.StartStream<Game>(gameId, gamePrepared);
+            
+            return (gamePrepared, o);
         }
 
         static Team ConvertGroupingToTeam(IGrouping<int, (GameSet gameSet, int i)> groupings)
@@ -50,6 +45,24 @@ public static class ServerEventHandlers
             }
 
             return team;
+        }
+    }
+
+    public class EndGameHandler
+    {
+        [AggregateHandler]
+        public static LasertagEvents.GameFinished Handle(
+            LasertagCommands.EndGame @event,
+            IEventStream<Game> gameStream)
+        {
+            var gameFinished = new LasertagEvents.GameFinished(@event.ServerId, @event.GameId);
+            
+            if (gameStream.Aggregate.Status == GameStatus.Started)
+            {
+                gameStream.AppendOne(gameFinished);
+            }
+            
+            return gameFinished;
         }
     }
 }

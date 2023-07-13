@@ -1,6 +1,4 @@
-﻿using Wolverine.Persistence.Sagas;
-
-namespace Lasertag.Core.Domain.Lasertag;
+﻿namespace Lasertag.Core.Domain.Lasertag;
 
 public static class LasertagEvents
 {
@@ -8,9 +6,8 @@ public static class LasertagEvents
     {
     }
 
-    public interface IGameEvents
+    public interface IGameEvents : IHasGameId
     {
-        [SagaIdentity] public Guid GameId { get; }
     }
 
     public record ServerCreated(string Name);

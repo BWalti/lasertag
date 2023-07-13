@@ -7,7 +7,6 @@ using Wolverine;
 using Wolverine.Attributes;
 using Wolverine.Http;
 using Wolverine.Marten;
-
 using static Lasertag.Core.Domain.Lasertag.LasertagEvents;
 
 namespace Admin.Api;
@@ -16,10 +15,8 @@ namespace Admin.Api;
 public class LasertagEndpoints
 {
     [WolverineGet(ApiRouteBuilder.GetServerByIdPathTemplate)]
-    public async Task<Server?> Get([FromRoute] Guid id, IDocumentSession session)
-    {
-        return await session.LoadAsync<Server>(id);
-    }
+    public async Task<Server?> Get([FromRoute] Guid id, IDocumentSession session) =>
+        await session.LoadAsync<Server>(id);
 
     [Transactional]
     [WolverinePost(ApiRouteBuilder.CreateServerPath)]
@@ -37,7 +34,8 @@ public class LasertagEndpoints
 
     [AggregateHandler(AggregateType = typeof(Server))]
     [WolverinePost(ApiRouteBuilder.RegisterGameSetPath)]
-    public (RegisterGameSetResponse, GameSetRegistered) RegisterGameSet(LasertagCommands.RegisterGameSet command, Server server)
+    public (RegisterGameSetResponse, GameSetRegistered) RegisterGameSet(LasertagCommands.RegisterGameSet command,
+        Server server)
     {
         if (server.Status is not ServerStatus.Created and ServerStatus.ReadyForLobby)
         {
@@ -52,7 +50,9 @@ public class LasertagEndpoints
 
     [AggregateHandler(AggregateType = typeof(Server))]
     [WolverinePost(ApiRouteBuilder.PrepareGamePath)]
-    public (GameCreatedResponse, IStartStream) PrepareGame(LasertagCommands.PrepareGame command, ILogger logger, IEventStream<Server> serverStream)
+    public (GameCreatedResponse, IStartStream) PrepareGame(
+        LasertagCommands.PrepareGame command,
+        IEventStream<Server> serverStream)
     {
         var server = serverStream.Aggregate;
         if (server.Status != ServerStatus.ReadyForLobby)
@@ -75,21 +75,21 @@ public class LasertagEndpoints
         var gameId = Guid.NewGuid();
 
         var gamePrepared = new GamePrepared(server.Id, gameId, lobby);
-        var gameStream = MartenOps.StartStream<Game>(gameId, gamePrepared);
         serverStream.AppendOne(gamePrepared);
+
+        var gameStream = MartenOps.StartStream<Game>(gameId, gamePrepared);
 
         return (new GameCreatedResponse(gameStream.StreamId), gameStream);
     }
 
     [WolverineGet(ApiRouteBuilder.GetGameByIdPathTemplate)]
-    public async Task<Game?> GetGame([FromRoute] Guid id, IDocumentSession session)
-    {
-        return await session.LoadAsync<Game>(id);
-    }
+    public async Task<Game?> GetGame([FromRoute] Guid id, IDocumentSession session) =>
+        await session.LoadAsync<Game>(id);
 
     [AggregateHandler(AggregateType = typeof(Game))]
     [WolverinePost(ApiRouteBuilder.StartGamePath)]
-    public async Task<GameStartedResponse> StartGame(LasertagCommands.StartGame command, IEventStream<Game> gameStream, IDocumentSession session, IMessageBus bus, ILogger logger)
+    public async Task<GameStartedResponse> StartGame(LasertagCommands.StartGame command, IEventStream<Game> gameStream,
+        IDocumentSession session, IMessageBus bus, ILogger logger)
     {
         var serverStream = await session.Events.FetchForWriting<Server>(command.ServerId);
         var server = serverStream.Aggregate;
@@ -138,7 +138,8 @@ public class LasertagEndpoints
             return TypedResults.Accepted(ApiRouteBuilder.GetGameById(command.GameId.ToString()));
         }
 
-        throw new InvalidOperationException($"The server or game is not in the right state: {serverStatus} / {gameStatus}");
+        throw new InvalidOperationException(
+            $"The server or game is not in the right state: {serverStatus} / {gameStatus}");
     }
 
     [AggregateHandler(AggregateType = typeof(Game))]

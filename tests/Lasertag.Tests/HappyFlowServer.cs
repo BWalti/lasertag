@@ -23,7 +23,7 @@ public class HappyFlowServer : IntegrationContext
     public async Task HappyFlow()
     {
         var numberOfGameSets = 2;
-        var gameDuration = TimeSpan.FromSeconds(1);
+        var gameDuration = TimeSpan.FromSeconds(3);
 
         // Create server:
         var serverId = await PrepareServer();
@@ -59,12 +59,18 @@ public class HappyFlowServer : IntegrationContext
         await Task.Delay(1.2 * gameDuration);
         game = await ReloadGame(gamePrepared, g => g.Status.Should().Be(GameStatus.Finished));
 
-        Game game1 = game!;
-        await DeleteGame(game1.Id);
+        await FireShot(game!.Id, gameSets[0]);
+
+        await DeleteGame(game.Id);
 
         // now as the game got deleted, we shouldn't be able to load it anymore:
         game = await ReloadGame(gamePrepared, mustExist: false);
         game.Should().BeNull();
+    }
+
+    async Task FireShot(Guid gameId, RegisterGameSetResponse gameSet)
+    {
+        await _simulator.Shoot(gameId, gameSet);
     }
 
     async Task EnsureGameSetsRegistered(int numberOfGameSets, Guid serverId)
@@ -92,7 +98,7 @@ public class HappyFlowServer : IntegrationContext
         serverCreated.Should().NotBeNull();
         serverCreated!.Id.Should().NotBe(Guid.Empty);
 
-        return serverCreated!.Id;
+        return serverCreated.Id;
     }
 
     async Task<RegisterGameSetResponse[]> RegisterGameSets(Guid serverId, int numberOfGameSets = 2)

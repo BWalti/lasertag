@@ -1,4 +1,6 @@
-﻿namespace Lasertag.Core.Domain.Lasertag;
+﻿using JasperFx.Core;
+
+namespace Lasertag.Core.Domain.Lasertag;
 
 public class Game
 {
@@ -18,9 +20,7 @@ public class Game
 
     public void Apply(LasertagEvents.GameSetActivated @event)
     {
-#pragma warning disable S6602
-        var team = Lobby.Teams.FirstOrDefault(t => t.GameSets.Any(gs => gs.Id == @event.GameSetId));
-#pragma warning restore S6602
+        var team = Lobby.Teams.FindFirst(t => t.GameSets.Any(gs => gs.Id == @event.GameSetId));
         if (team != null)
         {
             var gameSet = team.GameSets.First(gs => gs.Id == @event.GameSetId);
@@ -40,16 +40,6 @@ public class Game
     public void Apply(LasertagEvents.GameStarted @event)
     {
         Status = GameStatus.Started;
-    }
-
-    public void Apply(LasertagEvents.GameSetFiredShot @event)
-    {
-        // do something with this!
-    }
-
-    public void Apply(LasertagEvents.GameSetGotHit @event)
-    {
-        // do something with this!
     }
 
     public void Apply(LasertagEvents.GameFinished @event)

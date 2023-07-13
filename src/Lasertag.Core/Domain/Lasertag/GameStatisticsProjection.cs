@@ -14,4 +14,10 @@ public class GameStatisticsProjection : SingleStreamProjection<GameStatistics>
     {
         statistics.ShotsFired++;
     }
+
+    public void Apply(LasertagEvents.GameSetGotHit @event, GameStatistics statistics)
+    {
+        // do something with this!
+        statistics.GotHit++;
+    }
 }

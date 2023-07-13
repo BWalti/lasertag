@@ -6,4 +6,5 @@ public class GameStatistics
     public int Version { get; set; }
 
     public int ShotsFired { get; set; }
+    public int GotHit { get; set; }
 }
