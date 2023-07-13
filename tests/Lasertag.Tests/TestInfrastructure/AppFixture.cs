@@ -1,5 +1,4 @@
 ﻿using Alba;
-using Marten;
 using Microsoft.AspNetCore.Hosting;
 using Oakton;
 using Wolverine;
@@ -38,7 +37,7 @@ public class AppFixture : IAsyncLifetime
             // Just putting in some baseline data for our database
             // There's usually *some* sort of reference data in 
             // enterprise-y systems
-            services.InitializeMartenWith<InitialAccountData>();
+            //services.InitializeMartenWith<InitialAccountData>()
         });
     }
 

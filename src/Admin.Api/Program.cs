@@ -1,5 +1,4 @@
 using Admin.Api;
-using Admin.Api.Domain.Account;
 using Admin.Api.Domain.Lasertag;
 using Admin.Api.Extensions;
 using JasperFx.Core;
@@ -58,10 +57,6 @@ builder.Host
         opts.OnException<ConcurrencyException>().RetryTimes(3);
         opts.OnException<NpgsqlException>()
             .RetryWithCooldown(50.Milliseconds(), 100.Milliseconds(), 250.Milliseconds());
-
-        opts.Policies
-            .ForMessagesOfType<AccountCommands.IAccountCommand>()
-            .AddMiddleware<AccountLookupMiddleware>();
 
         opts.Policies
             .ForMessagesOfType<LasertagCommands.IServerCommands>()
