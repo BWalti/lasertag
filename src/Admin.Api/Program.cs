@@ -58,14 +58,6 @@ builder.Host
         opts.OnException<ConcurrencyException>().RetryTimes(3);
         opts.OnException<NpgsqlException>()
             .RetryWithCooldown(50.Milliseconds(), 100.Milliseconds(), 250.Milliseconds());
-
-        opts.Policies
-            .ForMessagesOfType<LasertagCommands.IServerCommands>()
-            .AddMiddleware<ServerLookupMiddleware>();
-
-        opts.Policies
-            .ForMessagesOfType<LasertagEvents.IServerEvents>()
-            .AddMiddleware<ServerLookupMiddleware>();
     });
 
 builder.Services.AddResourceSetupOnStartup();
