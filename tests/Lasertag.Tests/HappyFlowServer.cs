@@ -6,6 +6,7 @@ using Lasertag.IoT.Simulator;
 using Lasertag.Tests.TestInfrastructure;
 using Xunit;
 using static Lasertag.Core.Domain.Lasertag.LasertagEvents;
+using static Admin.Api.Models.Response;
 
 namespace Lasertag.Tests;
 

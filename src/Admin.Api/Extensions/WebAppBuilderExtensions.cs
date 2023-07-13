@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 
-namespace Admin.Api;
+namespace Admin.Api.Extensions;
 
 public static class WebAppBuilderExtensions
 {

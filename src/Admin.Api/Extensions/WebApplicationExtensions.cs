@@ -1,4 +1,4 @@
-﻿namespace Admin.Api;
+﻿namespace Admin.Api.Extensions;
 
 #pragma warning disable S125
 public static class WebApplicationExtensions

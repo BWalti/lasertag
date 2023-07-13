@@ -1,4 +1,4 @@
-namespace Admin.Api;
+namespace Admin.Api.Models;
 
 public class RabbitMqSettings
 {

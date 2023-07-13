@@ -28,6 +28,7 @@ public class MqttAdapterService : IHostedService
         _client.ApplicationMessageReceivedAsync += ClientOnApplicationMessageReceivedAsync;
         _client.ConnectedAsync += ClientOnConnectedAsync;
         _client.DisconnectedAsync += ClientOnDisconnectedAsync;
+
         await _client.ConnectAsync(_options, cancellationToken);
     }
 
@@ -57,6 +58,7 @@ public class MqttAdapterService : IHostedService
     {
         _logger.LogInformation("Got disconnected, going to re-connect!");
         _client.ConnectedAsync += ClientOnConnectedAsync;
+
         await _client.ConnectAsync(_options);
     }
 

@@ -8,8 +8,9 @@ using Wolverine.Attributes;
 using Wolverine.Http;
 using Wolverine.Marten;
 using static Lasertag.Core.Domain.Lasertag.LasertagEvents;
+using static Admin.Api.Models.Response;
 
-namespace Admin.Api;
+namespace Admin.Api.Endpoints;
 
 [UsedImplicitly]
 public class LasertagEndpoints

@@ -15,8 +15,6 @@ using Wolverine.ErrorHandling;
 using Wolverine.Http;
 using Wolverine.Marten;
 
-#pragma warning disable S125
-
 var builder = WebApplication
     .CreateBuilder(args)
     .UseDefaultInfrastructure()
@@ -44,7 +42,7 @@ builder.Services.AddMarten(opts =>
     .UseLightweightSessions()
     .AddAsyncDaemon(DaemonMode.HotCold)
     .ApplyAllDatabaseChangesOnStartup()
-    .EventForwardingToWolverine(); // includes ".IntegrateWithWolverine()"
+    .EventForwardingToWolverine();
 
 builder.Host
     .ApplyOaktonExtensions()
@@ -52,8 +50,7 @@ builder.Host
     {
         opts.Policies.AutoApplyTransactions();
 
-        opts.LocalQueue("important")
-            .UseDurableInbox();
+        opts.LocalQueue("important").UseDurableInbox();
 
         opts.OnException<ConcurrencyException>().RetryTimes(3);
         opts.OnException<NpgsqlException>()
@@ -66,8 +63,7 @@ builder.Services.AddMqttClient(builder.Configuration.GetSection("Mqtt"));
 builder.Services.AddHostedService<MqttAdapterService>();
 
 var app = builder.Build();
-
-app.UseDevelopmentDefaults();
-app.MapWolverineEndpoints();
+app.UseDevelopmentDefaults()
+    .MapWolverineEndpoints();
 
 return await app.RunOaktonCommands(args);
