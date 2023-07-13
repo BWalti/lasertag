@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		.husky\csx\commit-lint.csx = .husky\csx\commit-lint.csx
 		Directory.Packages.props = Directory.Packages.props
 		.config\dotnet-tools.json = .config\dotnet-tools.json
 	EndProjectSection
@@ -40,7 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Messages", "src\La
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OtelTest", "src\OtelTest\OtelTest.csproj", "{EA87D04F-6837-423C-9D14-044A6A995774}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lasertag.Core", "src\Lasertag.Core\Lasertag.Core.csproj", "{F341B8F3-AC08-491D-ADE4-47E27FC662D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lasertag.Core", "src\Lasertag.Core\Lasertag.Core.csproj", "{F341B8F3-AC08-491D-ADE4-47E27FC662D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
