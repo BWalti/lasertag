@@ -31,6 +31,6 @@ public class IotStateMachine : IHandleMessages
         var clientId = _simulatorOptions.Value.ClientId;
 
         await _mqttAdapter.RegisterListener(this, new[] { MqttTopics.AllMessagesForClient(clientId), MqttTopics.ToAllClients });
-        await _mqttAdapter.SendMessageAsync(MqttTopics.GameSetConnected, string.Empty);
+        await _mqttAdapter.SendMessageAsync(MqttTopics.ConnectGameSet, string.Empty);
     }
 }

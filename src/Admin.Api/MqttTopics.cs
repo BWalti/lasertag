@@ -2,9 +2,9 @@
 
 public static class MqttTopics
 {
-    public const string GameSetConnected = "client/connected";
-    public const string GameSetActivated = "client/activated";
-    public const string ShotFired = "client/shotFired";
+    public const string ConnectGameSet = "client/connected";
+    public const string ActivateGameSet = "client/activated";
+    public const string FireShot = "client/shotFired";
     public const string GameSetGotHit = "client/hit";
 
     public const string EverythingFromAnyClient = "client/#";

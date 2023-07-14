@@ -1,6 +1,5 @@
 using System.Text;
 using Lasertag.Core.Domain.Lasertag;
-using Marten;
 using MQTTnet;
 using MQTTnet.Client;
 using Newtonsoft.Json;
@@ -12,16 +11,16 @@ public class MqttAdapterService : IHostedService
 {
     readonly IMqttClient _client;
     readonly ILogger<MqttAdapterService> _logger;
-    readonly IDocumentSession _session;
+    readonly IMessageBus _bus;
     readonly MqttClientOptions _options;
 
     public MqttAdapterService(IMqttClient client, MqttClientOptions options, ILogger<MqttAdapterService> logger,
-        IDocumentSession session)
+        IMessageBus bus)
     {
         _client = client;
         _options = options;
         _logger = logger;
-        _session = session;
+        _bus = bus;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -86,14 +85,6 @@ public class MqttAdapterService : IHostedService
             return message!;
         }
 
-        async Task SendToStream<TStream>(Guid streamId, object @event)
-            where TStream : class
-        {
-            var stream = await _session.Events.FetchForWriting<TStream>(streamId);
-            stream.AppendOne(@event);
-            await _session.SaveChangesAsync();
-        }
-
         var content = arg.ApplicationMessage.PayloadSegment.Count > 0
             ? Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment)
             : string.Empty;
@@ -102,19 +93,24 @@ public class MqttAdapterService : IHostedService
 
         switch (arg.ApplicationMessage.Topic)
         {
-            case MqttTopics.GameSetConnected:
-                var gameSetConnected = ExtractMessage<LasertagEvents.GameSetConnected>(content);
-                await SendToStream<Server>(gameSetConnected.ServerId, gameSetConnected);
+            case MqttTopics.ConnectGameSet:
+                var gameSetConnected = ExtractMessage<LasertagCommands.ConnectGameSet>(content);
+                await _bus.SendAsync(gameSetConnected);
                 break;
 
-            case MqttTopics.GameSetActivated:
-                var gameSetActivated = ExtractMessage<LasertagEvents.GameSetActivated>(content);
-                await SendToStream<Game>(gameSetActivated.GameId, gameSetActivated);
+            case MqttTopics.ActivateGameSet:
+                var gameSetActivated = ExtractMessage<LasertagCommands.ActivateGameSet>(content);
+                await _bus.SendAsync(gameSetActivated);
                 break;
 
-            case MqttTopics.ShotFired:
-                var shotFired = ExtractMessage<LasertagEvents.GameSetFiredShot>(content);
-                await SendToStream<Game>(shotFired.GameId, shotFired);
+            case MqttTopics.FireShot:
+                var shotFired = ExtractMessage<LasertagCommands.FireShot>(content);
+                await _bus.SendAsync(shotFired);
+                break;
+
+            case MqttTopics.GameSetGotHit:
+                var registerHit = ExtractMessage<LasertagCommands.RegisterHit>(content);
+                await _bus.SendAsync(registerHit);
                 break;
         }
 

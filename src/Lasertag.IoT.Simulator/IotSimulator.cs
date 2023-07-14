@@ -2,7 +2,7 @@
 using MQTTnet;
 using MQTTnet.Client;
 using Newtonsoft.Json;
-using static Lasertag.Core.Domain.Lasertag.LasertagEvents;
+using static Lasertag.Core.Domain.Lasertag.LasertagCommands;
 using static Admin.Api.Models.Response;
 
 namespace Lasertag.IoT.Simulator;
@@ -20,11 +20,11 @@ public class IotSimulator
     {
         foreach (var gameSet in gameSets)
         {
-            var gameSetActivated = new GameSetConnected(gameSet.ServerId, gameSet.Id);
+            var gameSetActivated = new ConnectGameSet(gameSet.ServerId, gameSet.Id);
             var serialized = JsonConvert.SerializeObject(gameSetActivated);
 
             var message = new MqttApplicationMessageBuilder()
-                .WithTopic(MqttTopics.GameSetConnected)
+                .WithTopic(MqttTopics.ConnectGameSet)
                 .WithPayload(serialized)
                 .Build();
 
@@ -34,11 +34,11 @@ public class IotSimulator
 
     public async Task ActivateGameSet(RegisterGameSetResponse gameSet, Guid gameId, int playerId)
     {
-        var gameSetActivated = new GameSetActivated(gameId, gameSet.Id, playerId);
+        var gameSetActivated = new ActivateGameSet(gameId, gameSet.Id, playerId);
         var serialized = JsonConvert.SerializeObject(gameSetActivated);
 
         var message = new MqttApplicationMessageBuilder()
-            .WithTopic(MqttTopics.GameSetActivated)
+            .WithTopic(MqttTopics.ActivateGameSet)
             .WithPayload(serialized)
             .Build();
 
@@ -47,11 +47,11 @@ public class IotSimulator
 
     public async Task Shoot(Guid gameId, RegisterGameSetResponse gameSet)
     {
-        var shot = new GameSetFiredShot(gameId, gameSet.Id);
+        var shot = new FireShot(gameId, gameSet.Id);
         var serialized = JsonConvert.SerializeObject(shot);
 
         var message = new MqttApplicationMessageBuilder()
-            .WithTopic(MqttTopics.ShotFired)
+            .WithTopic(MqttTopics.FireShot)
             .WithPayload(serialized)
             .Build();
 
