@@ -36,8 +36,6 @@ builder.Services.AddMarten(opts =>
 
         opts.Projections.Snapshot<Server>(SnapshotLifecycle.Inline);
         opts.Projections.Snapshot<Game>(SnapshotLifecycle.Inline);
-
-        opts.Projections.Add<GameStatisticsProjection>(ProjectionLifecycle.Async);
     })
     .UseLightweightSessions()
     .AddAsyncDaemon(DaemonMode.HotCold)

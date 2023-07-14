@@ -50,28 +50,26 @@ public class HappyFlowServer : IntegrationContext
 
         await _simulator.ActivateGameSet(gameSets[0], gamePrepared.Id, 1);
         await _simulator.ActivateGameSet(gameSets[1], gamePrepared.Id, 2);
+        await Task.Delay(TimeSpan.FromSeconds(1));
 
         await StartGame(serverId, game!, gameDuration);
         await ReloadGame(gamePrepared, g => g.Status.Should().Be(GameStatus.Started));
 
         await _simulator.Shoot(game!.Id, gameSets[0]);
+        await _simulator.Shoot(game.Id, gameSets[0]);
+        await _simulator.Shoot(game.Id, gameSets[1]);
+        await Task.Delay(TimeSpan.FromSeconds(1));
+        _ = await ReloadGame(gamePrepared, g => g.Statistics.ShotsFired.Should().Be(3));
 
         // await end of game:
-        await Task.Delay(1.2 * gameDuration);
+        await Task.Delay(1.2 * gameDuration - TimeSpan.FromSeconds(1));
         game = await ReloadGame(gamePrepared, g => g.Status.Should().Be(GameStatus.Finished));
 
-        await FireShot(game!.Id, gameSets[0]);
-
-        await DeleteGame(game.Id);
+        await DeleteGame(game!.Id);
 
         // now as the game got deleted, we shouldn't be able to load it anymore:
         game = await ReloadGame(gamePrepared, mustExist: false);
         game.Should().BeNull();
-    }
-
-    async Task FireShot(Guid gameId, RegisterGameSetResponse gameSet)
-    {
-        await _simulator.Shoot(gameId, gameSet);
     }
 
     async Task EnsureGameSetsRegistered(int numberOfGameSets, Guid serverId)

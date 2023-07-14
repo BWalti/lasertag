@@ -2,9 +2,16 @@
 
 public class GameStatistics
 {
-    public Guid Id { get; set; }
-    public int Version { get; set; }
-
     public int ShotsFired { get; set; }
     public int GotHit { get; set; }
+
+    public void Apply(LasertagEvents.GameSetFiredShot @event)
+    {
+        ShotsFired++;
+    }
+
+    public void Apply(LasertagEvents.GameSetGotHit @event)
+    {
+        GotHit++;
+    }
 }

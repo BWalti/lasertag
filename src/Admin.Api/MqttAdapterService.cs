@@ -1,5 +1,6 @@
 using System.Text;
 using Lasertag.Core.Domain.Lasertag;
+using Marten;
 using MQTTnet;
 using MQTTnet.Client;
 using Newtonsoft.Json;
@@ -9,18 +10,18 @@ namespace Admin.Api;
 
 public class MqttAdapterService : IHostedService
 {
-    readonly IMessageContext _bus;
     readonly IMqttClient _client;
     readonly ILogger<MqttAdapterService> _logger;
+    readonly IDocumentSession _session;
     readonly MqttClientOptions _options;
 
     public MqttAdapterService(IMqttClient client, MqttClientOptions options, ILogger<MqttAdapterService> logger,
-        IMessageContext bus)
+        IDocumentSession session)
     {
         _client = client;
         _options = options;
         _logger = logger;
-        _bus = bus;
+        _session = session;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -77,32 +78,43 @@ public class MqttAdapterService : IHostedService
 
     async Task ClientOnApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
     {
-        async Task ProcessMessage<T>(string serializedContent)
+        T ExtractMessage<T>(string serializedContent)
         {
             var message = JsonConvert.DeserializeObject<T>(serializedContent);
-            _logger.LogInformation($"Got something: {message}");
+            _logger.LogInformation("Got something: {Message}", message);
 
-            await _bus.SendAsync(message);
+            return message!;
+        }
+
+        async Task SendToStream<TStream>(Guid streamId, object @event)
+            where TStream : class
+        {
+            var stream = await _session.Events.FetchForWriting<TStream>(streamId);
+            stream.AppendOne(@event);
+            await _session.SaveChangesAsync();
         }
 
         var content = arg.ApplicationMessage.PayloadSegment.Count > 0
             ? Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment)
             : string.Empty;
 
-        _logger.LogInformation($"Got a message from Mqtt: {arg.ApplicationMessage.Topic} -> '{content}'");
+        _logger.LogInformation("Got a message from MQTT: {Topic} -> '{Content}'", arg.ApplicationMessage.Topic, content);
 
         switch (arg.ApplicationMessage.Topic)
         {
             case MqttTopics.GameSetConnected:
-                await ProcessMessage<LasertagEvents.GameSetConnected>(content);
+                var gameSetConnected = ExtractMessage<LasertagEvents.GameSetConnected>(content);
+                await SendToStream<Server>(gameSetConnected.ServerId, gameSetConnected);
                 break;
 
             case MqttTopics.GameSetActivated:
-                await ProcessMessage<LasertagEvents.GameSetActivated>(content);
+                var gameSetActivated = ExtractMessage<LasertagEvents.GameSetActivated>(content);
+                await SendToStream<Game>(gameSetActivated.GameId, gameSetActivated);
                 break;
 
             case MqttTopics.ShotFired:
-                await ProcessMessage<LasertagEvents.GameSetFiredShot>(content);
+                var shotFired = ExtractMessage<LasertagEvents.GameSetFiredShot>(content);
+                await SendToStream<Game>(shotFired.GameId, shotFired);
                 break;
         }
 

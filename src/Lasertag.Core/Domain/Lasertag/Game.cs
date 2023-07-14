@@ -5,9 +5,8 @@ namespace Lasertag.Core.Domain.Lasertag;
 public class Game
 {
     public Guid Id { get; set; }
+    public GameStatistics Statistics { get; } = new();
     public GameStatus Status { get; set; }
-    public Guid Version { get; set; }
-
     public Lobby Lobby { get; set; } = new();
 
     public static Game Create(LasertagEvents.GamePrepared prepared) =>
@@ -27,7 +26,7 @@ public class Game
             gameSet.IsActive = true;
         }
 
-        if (Status != GameStatus.ReadyToStart)
+        if (Status == GameStatus.Created)
         {
             var atLeastTwoTeamsHaveActivePlayers = Lobby.Teams.Count(t => t.GameSets.Any(gs => gs.IsActive)) >= 2;
             if (atLeastTwoTeamsHaveActivePlayers)
@@ -35,6 +34,16 @@ public class Game
                 Status = GameStatus.ReadyToStart;
             }
         }
+    }
+
+    public void Apply(LasertagEvents.GameSetFiredShot @event)
+    {
+        Statistics.Apply(@event);
+    }
+
+    public void Apply(LasertagEvents.GameSetGotHit @event)
+    {
+        Statistics.Apply(@event);
     }
 
     public void Apply(LasertagEvents.GameStarted @event)
