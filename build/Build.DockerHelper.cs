@@ -55,7 +55,7 @@ public partial class Build
                 return false;
             }
 
-            return inspectionResults.First().State?.Running ?? false;
+            return inspectionResults[0].State?.Running ?? false;
         }
         catch (ProcessException)
         {
@@ -90,13 +90,13 @@ public partial class Build
                     (builder, output) => builder.AppendLine(output.Text), builder => builder.ToString());
 
             var inspectionResults = JsonConvert.DeserializeObject<List<InspectResult>>(stdOutput);
-            if (!inspectionResults.Any())
+            if (inspectionResults == null || !inspectionResults.Any())
             // non existing, thus "not stopped":
             {
                 return false;
             }
 
-            var first = inspectionResults.First();
+            var first = inspectionResults[0];
             return first.State is { Running: true, Status: "exited" };
         }
         catch (ProcessException)

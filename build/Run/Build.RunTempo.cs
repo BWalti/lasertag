@@ -59,6 +59,6 @@ partial class Build
 
             TryDockerRm(settings);
 
-            EnsureCleanDirectory(TempoData);
+            TempoData.CreateOrCleanDirectory();
         });
 }
