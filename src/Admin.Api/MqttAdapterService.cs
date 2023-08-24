@@ -80,7 +80,7 @@ public class MqttAdapterService : IHostedService
         T ExtractMessage<T>(string serializedContent)
         {
             var message = JsonConvert.DeserializeObject<T>(serializedContent);
-            _logger.LogInformation("Got something: {Message}", message);
+            _logger.LogInformation("Deserialized message: {Message}", message);
 
             return message!;
         }
@@ -89,7 +89,7 @@ public class MqttAdapterService : IHostedService
             ? Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment)
             : string.Empty;
 
-        _logger.LogInformation("Got a message from MQTT: {Topic} -> '{Content}'", arg.ApplicationMessage.Topic, content);
+        _logger.LogDebug("Got a message from MQTT: {Topic} -> '{Content}'", arg.ApplicationMessage.Topic, content);
 
         switch (arg.ApplicationMessage.Topic)
         {

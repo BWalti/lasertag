@@ -40,7 +40,7 @@ public abstract class IntegrationContext : IAsyncLifetime
         await MqttClient.ConnectAsync(options);
     }
 
-    protected Task<(ITrackedSession, IScenarioResult?)> TrackedHttpCall(Action<Scenario> configuration) =>
+    internal Task<(ITrackedSession, IScenarioResult?)> TrackedHttpCall(Action<Scenario> configuration) =>
         TrackedHttpCall(configuration, TimeSpan.FromSeconds(5));
 
     // This method allows us to make HTTP calls into our system
@@ -48,7 +48,7 @@ public abstract class IntegrationContext : IAsyncLifetime
     // for message tracking to both record outgoing messages and to ensure
     // that any cascaded work spawned by the initial command is completed
     // before passing control back to the calling test
-    protected async Task<(ITrackedSession, IScenarioResult?)> TrackedHttpCall(Action<Scenario> configuration,
+    internal async Task<(ITrackedSession, IScenarioResult?)> TrackedHttpCall(Action<Scenario> configuration,
         TimeSpan timeout)
     {
         IScenarioResult? result = null;

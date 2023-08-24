@@ -19,7 +19,7 @@ public static class LasertagCommands
 
     public record StartGame(Guid ServerId, Guid GameId, TimeSpan GameDuration) : IServerCommands, IGameCommands;
     public record FireShot(Guid GameId, int GameSetId) : IGameCommands;
-    public record RegisterHit(Guid GameId, int ShotSourceGameSetId, int GameSetId) : IGameCommands;
+    public record RegisterHit(Guid GameId, int ShotSourceGameSetId, int GameSetId, int ShotCounter) : IGameCommands;
     public record EndGame(Guid ServerId, Guid GameId) : IServerCommands, IGameCommands;
 
     public record DeleteGame(Guid GameId) : IGameCommands;

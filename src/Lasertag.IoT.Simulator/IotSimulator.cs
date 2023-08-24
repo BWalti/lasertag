@@ -57,4 +57,18 @@ public class IotSimulator
 
         await MqttClient.PublishAsync(message);
     }
+
+    public async Task GotHit(Guid gameId, RegisterGameSetResponse gameSetHitReceiver,
+        RegisterGameSetResponse gameSetHitSender, int shotCounter)
+    {
+        var shot = new RegisterHit(gameId, gameSetHitReceiver.Id, gameSetHitSender.Id, shotCounter);
+        var serialized = JsonConvert.SerializeObject(shot);
+
+        var message = new MqttApplicationMessageBuilder()
+            .WithTopic(MqttTopics.GameSetGotHit)
+            .WithPayload(serialized)
+            .Build();
+
+        await MqttClient.PublishAsync(message);
+    }
 }
