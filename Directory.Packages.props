@@ -71,10 +71,10 @@
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="Orleans.EventSourcing" Version="1.0.3.2" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.8.0.76515" />
-    <PackageVersion Include="WolverineFx" Version="1.1.3" />
-    <PackageVersion Include="WolverineFx.Http" Version="1.1.3" />
-    <PackageVersion Include="WolverineFx.Marten" Version="1.1.3" />
-    <PackageVersion Include="WolverineFx.RabbitMQ" Version="1.1.3" />
+    <PackageVersion Include="WolverineFx" Version="1.6.0" />
+    <PackageVersion Include="WolverineFx.Http" Version="1.6.0" />
+    <PackageVersion Include="WolverineFx.Marten" Version="1.6.0" />
+    <PackageVersion Include="WolverineFx.RabbitMQ" Version="1.6.0" />
     <PackageVersion Include="xunit" Version="2.5.0" />
     <PackageVersion Include="xunit.analyzers" Version="1.2.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.0" />
