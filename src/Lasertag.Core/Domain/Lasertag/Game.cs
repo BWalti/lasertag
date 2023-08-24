@@ -9,26 +9,32 @@ public class Game
     public GameStatus Status { get; set; }
     public Lobby Lobby { get; set; } = new();
 
-    public static Game Create(LasertagEvents.GamePrepared prepared) =>
-        new()
+    public static Game Create(LasertagEvents.GamePrepared prepared)
+    {
+        var game = new Game
         {
             Id = prepared.GameId,
             Lobby = prepared.Lobby,
             Status = GameStatus.Created
         };
 
+        game.Statistics.Apply(prepared);
+
+        return game;
+    }
+
     public void Apply(LasertagEvents.GameSetActivated @event)
     {
-        var team = Lobby.Teams.FindFirst(t => t.GameSets.Any(gs => gs.Id == @event.GameSetId));
-        if (team != null)
+        var team = Lobby.Teams.FindFirst(t => t.Value.GameSets.Any(gs => gs.Id == @event.GameSetId));
+        if (team.Value != null)
         {
-            var gameSet = team.GameSets.First(gs => gs.Id == @event.GameSetId);
+            var gameSet = team.Value.GameSets.First(gs => gs.Id == @event.GameSetId);
             gameSet.IsActive = true;
         }
 
         if (Status == GameStatus.Created)
         {
-            var atLeastTwoTeamsHaveActivePlayers = Lobby.Teams.Count(t => t.GameSets.Any(gs => gs.IsActive)) >= 2;
+            var atLeastTwoTeamsHaveActivePlayers = Lobby.Teams.Count(t => t.Value.GameSets.Any(gs => gs.IsActive)) >= 2;
             if (atLeastTwoTeamsHaveActivePlayers)
             {
                 Status = GameStatus.ReadyToStart;

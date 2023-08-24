@@ -26,7 +26,7 @@ public static class CommandHandlers
         [AggregateHandler]
         public static LasertagEvents.GameSetActivated Handle(LasertagCommands.ActivateGameSet command, Game game)
         {
-            if (!Array.Exists(game.Lobby.Teams, t => t.GameSets.Any(gs => gs.Id == command.GameSetId)))
+            if (!game.Lobby.Teams.Any(t => t.Value.GameSets.Any(gs => gs.Id == command.GameSetId)))
             {
                 throw new InvalidOperationException($"GameSet with ID {command.GameSetId} is unknown in this Game!");
             }
@@ -38,7 +38,7 @@ public static class CommandHandlers
         [AggregateHandler]
         public static LasertagEvents.GameSetFiredShot Handle(LasertagCommands.FireShot command, Game game)
         {
-            if (!Array.Exists(game.Lobby.Teams, t => t.GameSets.Any(gs => gs.Id == command.GameSetId)))
+            if (!game.Lobby.Teams.Any(t => t.Value.GameSets.Any(gs => gs.Id == command.GameSetId)))
             {
                 throw new InvalidOperationException($"GameSet with ID {command.GameSetId} is unknown in this Game!");
             }
@@ -50,13 +50,12 @@ public static class CommandHandlers
         [AggregateHandler]
         public static LasertagEvents.GameSetGotHit Handle(LasertagCommands.RegisterHit command, Game game)
         {
-            if (!Array.Exists(game.Lobby.Teams, t => t.GameSets.Any(gs => gs.Id == command.GameSetId)))
+            if (!game.Lobby.Teams.Any(t => t.Value.GameSets.Any(gs => gs.Id == command.GameSetId)))
             {
                 throw new InvalidOperationException($"GameSet with ID {command.GameSetId} is unknown in this Game!");
             }
 
-            var gameSetFiredShot = new LasertagEvents.GameSetGotHit(command.GameId, command.ShotSourceGameSetId, command.GameSetId);
-            return gameSetFiredShot;
+            return new LasertagEvents.GameSetGotHit(command.GameId, command.ShotSourceGameSetId, command.GameSetId);
         }
     }
 
@@ -75,7 +74,7 @@ public static class CommandHandlers
                     .Select((gameSet, index) => (gameSet, index))
                     .GroupBy(tuple => tuple.index % inputConfig.NumberOfTeams)
                     .Select(ConvertGroupingToTeam)
-                    .ToArray()
+                    .ToDictionary(g => g.TeamId, g => g)
             };
 
             var gameId = Guid.NewGuid();

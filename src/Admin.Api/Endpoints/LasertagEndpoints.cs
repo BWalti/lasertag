@@ -38,7 +38,7 @@ public class LasertagEndpoints
     public (RegisterGameSetResponse, GameSetRegistered) RegisterGameSet(LasertagCommands.RegisterGameSet command,
         Server server)
     {
-        if (server.Status is not ServerStatus.Created and ServerStatus.ReadyForLobby)
+        if (server.Status is not ServerStatus.Created and not ServerStatus.ReadyForLobby)
         {
             throw new InvalidOperationException($"Server is not in the right state: {server.Status}");
         }
@@ -70,7 +70,7 @@ public class LasertagEndpoints
                 .Select((gameSet, index) => (gameSet, index))
                 .GroupBy(tuple => tuple.index % inputConfig.NumberOfTeams)
                 .Select(ConvertGroupingToTeam)
-                .ToArray()
+                .ToDictionary(g => g.TeamId, g => g)
         };
 
         var gameId = Guid.NewGuid();

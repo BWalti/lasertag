@@ -3,7 +3,7 @@
 public class Server
 {
     public Guid Id { get; set; }
-    public Guid Version { get; set; }
+    public int Version { get; set; }
     public ServerStatus Status { get; set; }
     public Guid? CurrentGameId { get; set; }
 

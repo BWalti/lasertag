@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Lasertag.Core.Domain.Lasertag;
 using Lasertag.Tests.TestInfrastructure;
+using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,7 +22,7 @@ public class HappyFlowServer : IntegrationContext
     {
         var numberOfGameSets = 2;
         var numberOfTeams = 2;
-        var gameDuration = TimeSpan.FromSeconds(1);
+        var gameDuration = TimeSpan.FromSeconds(2);
 
         var gameInfra = await GameInfraBuilder.Create(this)
             .WithGameDuration(gameDuration)
@@ -36,7 +37,9 @@ public class HappyFlowServer : IntegrationContext
             g.Lobby.Teams[0].Should().NotBeNull();
             g.Lobby.Teams[1].Should().NotBeNull();
             g.Lobby.Teams[0].GameSets.Should().HaveCount(1);
+            g.Lobby.Teams[0].GameSets.Single().Id.Should().Be(1);
             g.Lobby.Teams[1].GameSets.Should().HaveCount(1);
+            g.Lobby.Teams[1].GameSets.Single().Id.Should().Be(2);
         });
 
         await gameInfra.ActivateGameSet(0, 1);
@@ -63,7 +66,26 @@ public class HappyFlowServer : IntegrationContext
 
         // await end of game:
         await Task.Delay(1.05 * gameDuration - awaitShotsTime);
-        await gameInfra.ReloadGame(g => g.Status.Should().Be(GameStatus.Finished));
+        await gameInfra.ReloadGame(g =>
+        {
+            g.Status.Should().Be(GameStatus.Finished);
+            g.Statistics.Teams.Should().HaveCount(2);
+            var teamZero = g.Statistics.Teams.FirstOrDefault(t => t.TeamId == 0);
+            teamZero.Should().NotBeNull();
+            teamZero!.ShotsFired.Should().Be(2);
+
+            _outputHelper.WriteLine(JsonConvert.SerializeObject(g.Statistics));
+
+            var teamOne = g.Statistics.Teams.FirstOrDefault(t => t.TeamId == 1);
+            teamOne.Should().NotBeNull();
+            teamOne!.ShotsFired.Should().Be(1);
+
+            var playerOne = g.Statistics.GameSetLookup[1];
+            playerOne.GotHit.Should().Be(0);
+
+            var playerTwo = g.Statistics.GameSetLookup[2];
+            playerTwo.GotHit.Should().Be(1);
+        });
 
         await gameInfra.DeleteGame();
 
