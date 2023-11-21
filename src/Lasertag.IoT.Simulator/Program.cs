@@ -43,7 +43,7 @@ var host = Host.CreateDefaultBuilder()
         {
             var section = context.Configuration.GetSection("Mqtt");
             var options = new MqttClientOptionsBuilder()
-                .WithWebSocketServer(section["Server"])
+                .WithWebSocketServer(builder => builder.WithUri(section["Server"]))
                 .Build();
 
             return options;

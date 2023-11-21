@@ -2,7 +2,6 @@ using System.Runtime.Serialization;
 
 namespace Admin.Api;
 
-#pragma warning disable S3925
 #pragma warning disable CS0628
 
 [Serializable]
@@ -22,6 +21,7 @@ public sealed class ConfigurationException : Exception
     }
 
     // Without this constructor, deserialization will fail
+    [Obsolete("Binary Formatter and all relevant pieces are obsolete since .NET 8.0")]
     protected ConfigurationException(SerializationInfo info, StreamingContext context)
         : base(info, context)
     {
@@ -29,4 +29,3 @@ public sealed class ConfigurationException : Exception
 }
 
 #pragma warning restore CS0628
-#pragma warning restore S3925

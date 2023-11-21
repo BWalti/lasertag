@@ -16,7 +16,10 @@ public static class MqttServiceCollectionExtensions
             var keepAlivePeriod = configurationSection["KeepAlivePeriod"] ?? TimeSpan.FromSeconds(15).ToString();
 
             var options = new MqttClientOptionsBuilder()
-                .WithWebSocketServer(configurationSection["Server"])
+                .WithWebSocketServer(builder =>
+                {
+                    builder.WithUri(configurationSection["Server"]);
+                })
                 .WithKeepAlivePeriod(TimeSpan.Parse(keepAlivePeriod, CultureInfo.InvariantCulture))
                 .Build();
 

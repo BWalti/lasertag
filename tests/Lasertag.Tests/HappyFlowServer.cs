@@ -8,21 +8,14 @@ using Xunit.Abstractions;
 namespace Lasertag.Tests;
 
 [Collection("integration")]
-public class HappyFlowServer : IntegrationContext
+public class HappyFlowServer(AppFixture fixture, ITestOutputHelper outputHelper) : IntegrationContext(fixture)
 {
-    readonly ITestOutputHelper _outputHelper;
-
-    public HappyFlowServer(AppFixture fixture, ITestOutputHelper outputHelper) : base(fixture)
-    {
-        _outputHelper = outputHelper;
-    }
-
     [Fact]
     public async Task HappyFlow()
     {
         var numberOfGameSets = 2;
         var numberOfTeams = 2;
-        var gameDuration = TimeSpan.FromSeconds(2);
+        var gameDuration = TimeSpan.FromSeconds(3);
 
         var gameInfra = await GameInfraBuilder.Create(this)
             .WithGameDuration(gameDuration)
@@ -74,7 +67,7 @@ public class HappyFlowServer : IntegrationContext
             teamZero.Should().NotBeNull();
             teamZero!.ShotsFired.Should().Be(2);
 
-            _outputHelper.WriteLine(JsonConvert.SerializeObject(g.Statistics));
+            outputHelper.WriteLine(JsonConvert.SerializeObject(g.Statistics));
 
             var teamOne = g.Statistics.Teams.FirstOrDefault(t => t.TeamId == 1);
             teamOne.Should().NotBeNull();
