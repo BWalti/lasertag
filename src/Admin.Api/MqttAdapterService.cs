@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Text;
+using Admin.Api.Extensions;
 using Lasertag.Core.Domain.Lasertag;
 using MQTTnet;
 using MQTTnet.Client;
@@ -43,6 +45,8 @@ public class MqttAdapterService : IHostedService
 
     public async Task Handle(LasertagEvents.ServerCreated @event)
     {
+        using var activity = OpenTelemetryExtensions.ActivitySource.StartActivity(ActivityKind.Internal);
+
         var serialized = JsonConvert.SerializeObject(@event);
 
         _logger.LogInformation("Going to publish a message...");
@@ -56,6 +60,8 @@ public class MqttAdapterService : IHostedService
 
     async Task ClientOnDisconnectedAsync(MqttClientDisconnectedEventArgs arg)
     {
+        using var activity = OpenTelemetryExtensions.ActivitySource.StartActivity(ActivityKind.Consumer);
+
         _logger.LogInformation("Got disconnected, going to re-connect!");
         _client.ConnectedAsync += ClientOnConnectedAsync;
 
@@ -64,6 +70,8 @@ public class MqttAdapterService : IHostedService
 
     async Task ClientOnConnectedAsync(MqttClientConnectedEventArgs arg)
     {
+        using var activity = OpenTelemetryExtensions.ActivitySource.StartActivity(ActivityKind.Consumer);
+
         _client.ConnectedAsync -= ClientOnConnectedAsync;
 
         var subscribeOptions = new MqttClientSubscribeOptionsBuilder()
@@ -88,6 +96,9 @@ public class MqttAdapterService : IHostedService
         var content = arg.ApplicationMessage.PayloadSegment.Count > 0
             ? Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment)
             : string.Empty;
+
+        using var activity = OpenTelemetryExtensions.ActivitySource.StartActivity(ActivityKind.Consumer,
+            tags: new[] { new KeyValuePair<string, object?>("Topic", arg.ApplicationMessage.Topic) });
 
         _logger.LogDebug("Got a message from MQTT: {Topic} -> '{Content}'", arg.ApplicationMessage.Topic, content);
 
