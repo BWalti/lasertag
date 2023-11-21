@@ -2,7 +2,6 @@ using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.Tools.Docker;
 using static Nuke.Common.Tools.Docker.DockerTasks;
-using static Nuke.Common.IO.FileSystemTasks;
 
 // ReSharper disable UnusedMember.Global
 
