@@ -97,7 +97,7 @@ public partial class Build
             }
 
             var first = inspectionResults[0];
-            return first.State is { Running: true, Status: "exited" };
+            return first.State is { Running: false, Status: "exited" };
         }
         catch (ProcessException)
         {
